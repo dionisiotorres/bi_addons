@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <menuitem name="Transfer Requests" id="transfer_request_main_menu"/>
+        <menuitem name="Transfer Requests" id="appointment_sub_menu" parent="transfer_request_main_menu"
+                  action="transfer_request_action" sequence="1"/>
+
+    </data>
+</odoo>

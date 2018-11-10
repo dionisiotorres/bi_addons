@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="transfer_request_sequence" model="ir.sequence">
+            <field name="name">Transfer Request</field>
+            <field name="code">transfer.request</field>
+            <field name="padding">4</field>
+            <field name="prefix">TR/</field>
+        </record>
+
+        <record id="transfer_request_line_form_view" model="ir.ui.view">
+            <field name="name">transfer.request.form.view</field>
+            <field name="model">transfer.request.line</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="product_id"/>
+                            <field name="qty"/>
+                            <field name="product_uom_id"/>
+                        </group>
+                        <group>
+                            <field name="transferred_qty"/>
+                            <field name="notes"/>
+                            <field name="transfer_created" invisible="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="transfer_request_form_view" model="ir.ui.view">
+            <field name="name">transfer.request.form.view</field>
+            <field name="model">transfer.request</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="set_state_to_approve" string="Submit TO Approve" type="object" states="draft"
+                                class="btn-primary" groups="bi_transfer_request.approve_transfer_request"/>
+
+                        <button name="set_state_to_cancelled" string="Cancel Request" type="object"
+                                states="draft,approve"
+                                class="btn-primary"/>
+
+                        <button name="set_state_to_draft" string="Set To Draft" type="object"
+                                states="cancelled"
+                                class="btn-primary"/>
+
+                        <field name="state" widget="statusbar" statusbar_visible="draft,approve,transferring,done"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="requested_by_employee_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                                <field name="analytic_account_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            </group>
+                            <group>
+                                <field name="requested_for_employee_id"
+                                       attrs="{'readonly': [('state', '!=','draft')]}"/>
+                                <field name="create_date" readonly="1"/>
+                            </group>
+
+
+                        </group>
+                        <notebook>
+                            <page string="Transferred Products">
+                                <field name="transfer_request_line_ids" attrs="{'readonly': [('state', '!=','draft')]}">
+                                    <tree editable="bottom">
+                                        <field name="product_id"/>
+                                        <field name="qty"/>
+                                        <field name="product_uom_id"/>
+                                        <field name="transferred_qty"/>
+                                        <field name="notes"/>
+                                        <field name="transfer_created" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Cancel Reason">
+                                <field name="cancel_reason" attrs="{'readonly': [('state', '=','done')]}"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                </form>
+            </field>
+        </record>
+
+        <record id="transfer_request_tree_view" model="ir.ui.view">
+            <field name="name">transfer.request.tree.view</field>
+            <field name="model">transfer.request</field>
+            <field name="arch" type="xml">
+                <tree string="Transfer Requests">
+                    <field name="name"/>
+                    <field name="requested_by_employee_id"/>
+                    <field name="requested_for_employee_id"/>
+                    <field name="analytic_account_id"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="transfer_request_action" model="ir.actions.act_window">
+            <field name="name">Transfer Requests</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">transfer.request</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+    </data>
+</odoo>
+
+
