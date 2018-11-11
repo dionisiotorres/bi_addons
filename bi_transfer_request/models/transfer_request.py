@@ -14,6 +14,9 @@ class TransferRequest(models.Model):
     cancel_reason = fields.Html(string='Cancel Reason')
     transfer_request_line_ids = fields.One2many('transfer.request.line', 'transfer_request_id',
                                                 string='Transferred Products')
+    source_stock_location_id = fields.Many2one('stock.location', string='Source Location', )
+    destination_stock_location_id = fields.Many2one('stock.location', string='Destination Location',
+                                                    domain=[('usage', '=', 'transit')])
     state = fields.Selection(
         [('draft', 'Draft'), ('approve', 'Approve'), ('transferring', 'Transferring'), ('done', 'Done'),
          ('cancelled', 'Cancelled')], string='State', default='draft', track_visibility='onchange')
@@ -46,6 +49,16 @@ class TransferRequest(models.Model):
     def set_state_to_draft(self):
         for rec in self:
             rec.state = 'draft'
+
+    @api.multi
+    def set_state_to_transferring(self):
+        for rec in self:
+            rec.state = 'transferring'
+
+    @api.multi
+    def set_state_to_done(self):
+        for rec in self:
+            rec.state = 'done'
 
 
 class TransferRequestLine(models.Model):

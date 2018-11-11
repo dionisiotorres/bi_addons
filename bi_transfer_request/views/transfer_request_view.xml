@@ -46,6 +46,14 @@
                                 states="cancelled"
                                 class="btn-primary"/>
 
+                        <button name="set_state_to_transferring" string="Transfer Request" type="object"
+                                states="approve" class="btn-primary"
+                                groups="bi_transfer_request.approve_transfer_request"/>
+
+                        <button name="set_state_to_done" string="Set TO Done" type="object" states="transferring"
+                                class="btn-primary" groups="bi_transfer_request.approve_transfer_request"/>
+
+
                         <field name="state" widget="statusbar" statusbar_visible="draft,approve,transferring,done"/>
                     </header>
                     <sheet>
@@ -58,14 +66,17 @@
                             <group>
                                 <field name="requested_by_employee_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
                                 <field name="analytic_account_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                                <field name="source_stock_location_id"
+                                       attrs="{'readonly': [('state', 'not in',('draft','approve'))],'required':[('state','in',('approve','transferring'))]}"/>
                             </group>
                             <group>
                                 <field name="requested_for_employee_id"
                                        attrs="{'readonly': [('state', '!=','draft')]}"/>
                                 <field name="create_date" readonly="1"/>
+                                <field name="destination_stock_location_id"
+                                       attrs="{'readonly': [('state', 'not in',('draft','approve'))],'required':[('state','in',('approve','transferring'))]}"/>
+
                             </group>
-
-
                         </group>
                         <notebook>
                             <page string="Transferred Products">
