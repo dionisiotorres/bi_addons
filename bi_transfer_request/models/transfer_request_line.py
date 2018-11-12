@@ -18,6 +18,13 @@ class TransferRequestLine(models.Model):
         [('draft', 'Draft'), ('approve', 'Approve'), ('transferring', 'Transferring'), ('done', 'Done'),
          ('cancelled', 'Cancelled')], string='State', default='draft', related='transfer_request_id.state')
 
+    @api.constrains('transferred_qty')
+    def check_transferred_qty(self):
+        for line in self:
+            if line.transferred_qty and line.qty:
+                if line.transferred_qty > line.qty:
+                    raise ValidationError(_('Transferred qty must be less than or equal ordered qty.'))
+
     @api.onchange('product_id')
     def default_fields(self):
         for line in self:

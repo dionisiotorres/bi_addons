@@ -3,6 +3,12 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
 
+class StockPicking(models.Model):
+    _inherit = 'stock.picking'
+
+    transfer_request_id = fields.Many2one('transfer.request', string='Transfer Request')
+
+
 class TransferRequest(models.Model):
     _name = 'transfer.request'
     _inherit = ['mail.thread', 'resource.mixin']
@@ -21,6 +27,8 @@ class TransferRequest(models.Model):
         [('draft', 'Draft'), ('approve', 'Approve'), ('transferring', 'Transferring'), ('done', 'Done'),
          ('cancelled', 'Cancelled')], string='State', default='draft', track_visibility='onchange')
 
+    picking_count = fields.Integer(string='Transfers', compute='get_request_picking_count')
+
     @api.model
     def create(self, vals):
         vals['name'] = self.env['ir.sequence'].next_by_code('transfer.request')
@@ -28,8 +36,8 @@ class TransferRequest(models.Model):
 
     @api.multi
     def unlink(self):
-        for appointment in self:
-            if appointment.state == 'done':
+        for rec in self:
+            if rec.state == 'done':
                 raise ValidationError(_('You cannot delete done transfer request.'))
         return super(TransferRequest, self).unlink()
 
@@ -59,6 +67,13 @@ class TransferRequest(models.Model):
     def set_state_to_done(self):
         for rec in self:
             rec.state = 'done'
+
+    @api.multi
+    def get_request_picking_count(self):
+        for rec in self:
+            stock_picking_objects = self.env['stock.picking'].search(
+                [('transfer_request_id', '=', rec.id)])
+            rec.picking_count = len(stock_picking_objects)
 
     @api.multi
     def transfer_products(self):

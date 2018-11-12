@@ -8,6 +8,14 @@
             <field name="prefix">TR/</field>
         </record>
 
+        <record id="transfer_request_stock_picking_action" model="ir.actions.act_window">
+            <field name="name">Transfers</field>
+            <field name="res_model">stock.picking</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('transfer_request_id','=',active_id)]</field>
+            <field name="context">{'default_transfer_request_id': active_id}</field>
+        </record>
+
         <record id="transfer_request_form_view" model="ir.ui.view">
             <field name="name">transfer.request.form.view</field>
             <field name="model">transfer.request</field>
@@ -38,6 +46,14 @@
                         <field name="state" widget="statusbar" statusbar_visible="draft,approve,transferring,done"/>
                     </header>
                     <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="%(transfer_request_stock_picking_action)d" class="oe_stat_button"
+                                    icon="fa-book"
+                                    type="action">
+                                <field name="picking_count" widget="statinfo"/>
+
+                            </button>
+                        </div>
                         <div class="oe_title">
                             <h1>
                                 <field name="name"/>
@@ -71,7 +87,6 @@
                                         <field name="transfer_created" invisible="1"/>
                                         <field name="state" invisible="1"/>
                                         <button name="create_line_transfer" string="Transfer" type="object"
-                                                states="transferring"
                                                 attrs="{'invisible': ['|',('transfer_created', '=',True),('state', '!=','transferring')]}"
                                                 class="btn-primary"/>
                                     </tree>
