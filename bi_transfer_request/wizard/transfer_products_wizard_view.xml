@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="transfer_products_wizard_form_view" model="ir.ui.view">
+            <field name="name">transfer.products.wizard.form.view</field>
+            <field name="model">transfer.products.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="source_stock_location_id"/>
+                            <field name="destination_stock_location_id"/>
+                        </group>
+                        <group>
+                            <field name="transfer_request_line_ids" options="{'no_create': True, 'no_open': True}"/>
+                        </group>
+                        <footer>
+                            <button name="create_transfer_for_products" string="Confirm" type="object"
+                                    class="btn-primary"/>
+
+                            <button string="Cancel" class="btn-default" special="cancel"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

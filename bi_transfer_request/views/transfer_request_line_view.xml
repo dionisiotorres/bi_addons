@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="transfer_request_line_form_view" model="ir.ui.view">
+            <field name="name">transfer.request.form.view</field>
+            <field name="model">transfer.request.line</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="product_id"/>
+                            <field name="qty"/>
+                            <field name="product_uom_id"/>
+                        </group>
+                        <group>
+                            <field name="transferred_qty"/>
+                            <field name="notes"/>
+                            <field name="transfer_created" invisible="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="transfer_request_line_tree_view" model="ir.ui.view">
+            <field name="name">transfer.request.line.tree.view</field>
+            <field name="model">transfer.request.line</field>
+            <field name="arch" type="xml">
+                <tree string="Transfer Request Line">
+                    <field name="product_id"/>
+                    <field name="qty"/>
+                    <field name="product_uom_id"/>
+                    <field name="transferred_qty"/>
+                    <field name="notes"/>
+                </tree>
+            </field>
+        </record>
+    </data>
+</odoo>

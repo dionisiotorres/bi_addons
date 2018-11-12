@@ -8,27 +8,6 @@
             <field name="prefix">TR/</field>
         </record>
 
-        <record id="transfer_request_line_form_view" model="ir.ui.view">
-            <field name="name">transfer.request.form.view</field>
-            <field name="model">transfer.request.line</field>
-            <field name="arch" type="xml">
-                <form>
-                    <sheet>
-                        <group>
-                            <field name="product_id"/>
-                            <field name="qty"/>
-                            <field name="product_uom_id"/>
-                        </group>
-                        <group>
-                            <field name="transferred_qty"/>
-                            <field name="notes"/>
-                            <field name="transfer_created" invisible="1"/>
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
-
         <record id="transfer_request_form_view" model="ir.ui.view">
             <field name="name">transfer.request.form.view</field>
             <field name="model">transfer.request</field>
@@ -53,6 +32,8 @@
                         <button name="set_state_to_done" string="Set TO Done" type="object" states="transferring"
                                 class="btn-primary" groups="bi_transfer_request.approve_transfer_request"/>
 
+                        <button name="transfer_products" string="Transfer Products" type="object" states="transferring"
+                                class="btn-primary"/>
 
                         <field name="state" widget="statusbar" statusbar_visible="draft,approve,transferring,done"/>
                     </header>
@@ -88,10 +69,15 @@
                                         <field name="transferred_qty"/>
                                         <field name="notes"/>
                                         <field name="transfer_created" invisible="1"/>
+                                        <field name="state" invisible="1"/>
+                                        <button name="create_line_transfer" string="Transfer" type="object"
+                                                states="transferring"
+                                                attrs="{'invisible': ['|',('transfer_created', '=',True),('state', '!=','transferring')]}"
+                                                class="btn-primary"/>
                                     </tree>
                                 </field>
                             </page>
-                            <page string="Cancel Reason">
+                            <page string="Cancellation Reason">
                                 <field name="cancel_reason" attrs="{'readonly': [('state', '=','done')]}"/>
                             </page>
                         </notebook>
@@ -122,7 +108,6 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
         </record>
-
 
     </data>
 </odoo>
