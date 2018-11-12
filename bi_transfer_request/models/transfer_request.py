@@ -70,7 +70,7 @@ class TransferRequestLine(models.Model):
     transfer_created = fields.Boolean(string='Transfer Created')
     qty = fields.Float(string='Qty', required=True, default=1.0)
     notes = fields.Char(string='Notes')
-    product_uom_id = fields.Many2one('product.uom', string='UoM',
+    product_uom_id = fields.Many2one('uom.uom', string='UoM',
                                      required=True)
 
     @api.onchange('product_id')
