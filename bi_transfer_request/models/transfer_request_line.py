@@ -26,7 +26,7 @@ class TransferRequestLine(models.Model):
                     raise ValidationError(_('Transferred qty must be less than or equal ordered qty.'))
 
     @api.onchange('product_id')
-    def default_fields(self):
+    def get_uom_from_product(self):
         for line in self:
             if line.product_id:
                 line.product_uom_id = line.product_id.uom_id.id
@@ -43,10 +43,10 @@ class TransferRequestLine(models.Model):
                 'view_id': self.env.ref('bi_transfer_request.transfer_products_wizard_form_view').id,
                 'type': 'ir.actions.act_window',
                 'context': {
+                    'default_transfer_request_id': line.transfer_request_id.id,
                     'default_source_stock_location_id': line.transfer_request_id.source_stock_location_id.id,
                     'default_destination_stock_location_id': line.transfer_request_id.destination_stock_location_id.id,
                     'default_transfer_request_line_ids': [line.id if line.transfer_created == False else False],
-                    'domain': [
-                        ('transfer_request_line_ids', '=', [line.id if line.transfer_created == False else False])]
+                    'default_created_from': 'transfer_request_line',
                 },
             }
