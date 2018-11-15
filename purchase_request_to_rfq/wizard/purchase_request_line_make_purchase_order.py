@@ -4,6 +4,7 @@
 
 import odoo.addons.decimal_precision as dp
 from odoo import _, api, exceptions, fields, models
+from datetime import datetime
 
 
 class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
@@ -166,7 +167,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
             # 'product_qty': qty,
             'account_analytic_id': item.line_id.analytic_account_id.id,
             'purchase_request_lines': [(4, item.line_id.id)],
-            'date_planned': item.line_id.date_required
+            'date_planned': datetime.combine(item.line_id.date_required, datetime.min.time())
         }
         # procurement dose not exist in odoo11
         # if item.line_id.procurement_id:
@@ -246,7 +247,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
 
             # The onchange quantity is altering the scheduled date of the PO
             # lines. We do not want that:
-            po_line.date_planned = item.line_id.date_required
+            po_line.date_planned = datetime.combine(item.line_id.date_required, datetime.min.time())
             res.append(purchase.id)
 
         return {

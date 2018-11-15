@@ -13,6 +13,7 @@
     "category": "Purchase Management",
     "depends": [
         "purchase",
+        "uom",
         "product",
         "stock"
     ],

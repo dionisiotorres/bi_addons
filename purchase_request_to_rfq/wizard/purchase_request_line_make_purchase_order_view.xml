@@ -19,7 +19,7 @@
                             string="New PO details:"/>
                     <newline/>
                     <group>
-                        <field name="supplier_id"/>
+                        <field name="supplier_id" context="{'default_supplier': 1, 'default_customer': 0}"/>
                     </group>
                     <newline/>
                     <group>
@@ -33,7 +33,7 @@
                                 <field name="name"/>
                                 <field name="product_qty"/>
                                 <field name="product_uom_id"
-                                       groups="product.group_uom"/>
+                                       groups="uom.group_uom"/>
                                 <field name="keep_description"/>
                             </tree>
                         </field>
