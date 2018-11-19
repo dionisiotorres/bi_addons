@@ -20,7 +20,7 @@ class TransferRequest(models.Model):
     cancel_reason = fields.Html(string='Cancellation Reason')
     transfer_request_line_ids = fields.One2many('transfer.request.line', 'transfer_request_id',
                                                 string='Transferred Products')
-    source_stock_location_id = fields.Many2one('stock.location', string='Source Location', )
+    source_stock_location_id = fields.Many2one('stock.location', string='Source Location', domain=[('usage', '=', 'internal')])
     destination_stock_location_id = fields.Many2one('stock.location', string='Destination Location',
                                                     domain=[('usage', '=', 'transit')])
     state = fields.Selection(
@@ -78,20 +78,62 @@ class TransferRequest(models.Model):
     @api.multi
     def transfer_products(self):
         for rec in self:
-            transfer_line_ids = [line.id for line in rec.transfer_request_line_ids if
-                                 rec.transfer_request_line_ids and line.transfer_created == False]
-            return {
-                'name': _('Transfer Products'),
-                'view_type': 'form',
-                'view_mode': 'form',
-                'target': 'new',
-                'res_model': 'transfer.products.wizard',
-                'view_id': self.env.ref('bi_transfer_request.transfer_products_wizard_form_view').id,
-                'type': 'ir.actions.act_window',
-                'context': {
-                    'default_source_stock_location_id': rec.source_stock_location_id.id,
-                    'default_destination_stock_location_id': rec.destination_stock_location_id.id,
-                    'default_transfer_request_line_ids': transfer_line_ids,
-                    'default_created_from': 'transfer_request',
-                },
+            rec.create_transfer_for_products()
+
+            # old implementation
+            # transfer_line_ids = [line.id for line in rec.transfer_request_line_ids if
+            #                      rec.transfer_request_line_ids and line.transfer_created == False]
+            # return {
+            #     'name': _('Transfer Products'),
+            #     'view_type': 'form',
+            #     'view_mode': 'form',
+            #     'target': 'new',
+            #     'res_model': 'transfer.products.wizard',
+            #     'view_id': self.env.ref('bi_transfer_request.transfer_products_wizard_form_view').id,
+            #     'type': 'ir.actions.act_window',
+            #     'context': {
+            #         'default_source_stock_location_id': rec.source_stock_location_id.id,
+            #         'default_destination_stock_location_id': rec.destination_stock_location_id.id,
+            #         'default_transfer_request_line_ids': transfer_line_ids,
+            #         'default_created_from': 'transfer_request',
+            #     },
+            # }
+
+
+    def create_transfer_for_products(self):
+        picking_line_vals = []
+        internal_picking_type_id = self.env['stock.picking.type'].search(
+            [('code', '=', 'internal')], limit=1).id
+        if not internal_picking_type_id:
+            raise ValidationError(_('Please configure internal transfer.'))
+
+        for line in self.transfer_request_line_ids:
+            if line.transfer_created == False:
+                picking_line_vals.append((0, 0, {
+                    'product_id': line.product_id.id,
+                    'name': line.product_id.name,
+                    'product_uom_qty': line.transferred_qty,
+                    'product_uom': line.product_uom_id.id,
+                    'company_id': self.env.user.company_id.id,
+                    'location_id': self.source_stock_location_id.id,
+                    'location_dest_id': self.destination_stock_location_id.id,
+                }))
+        if len(picking_line_vals):
+            picking_vals = {
+                'origin': self.name,
+                'scheduled_date': fields.Datetime.now(),
+                'picking_type_id': internal_picking_type_id,
+                'location_id': self.source_stock_location_id.id,
+                'location_dest_id': self.destination_stock_location_id.id,
+                'company_id': self.env.user.company_id.id,
+                'move_type': 'direct',
+                'state': 'draft',
+                'move_lines': picking_line_vals,
+                'transfer_request_id': self.id
+
             }
+            created_picking = self.env['stock.picking'].create(picking_vals)
+            if created_picking:
+                created_picking.action_confirm()
+                for line in self.transfer_request_line_ids:
+                    line.transfer_created = True

@@ -50,3 +50,20 @@ class TransferRequestLine(models.Model):
                     'default_created_from': 'transfer_request_line',
                 },
             }
+
+    @api.model
+    def create(self, vals):
+        # check transfer request state
+        if 'transfer_request_id' in vals and vals['transfer_request_id']:
+            req = self.env['transfer.request'].browse([vals['transfer_request_id']])
+            if req.state not in ['draft']:
+                raise ValidationError(_('You can add transfer request line in draft state only.'))
+        res = super(TransferRequestLine, self).create(vals)
+        return res
+
+    @api.multi
+    def unlink(self):
+        for rec in self:
+            if rec.transfer_request_id and rec.transfer_request_id.state not in ['draft']:
+                raise ValidationError(_('You can delete transfer request line in draft state only.'))
+        return super(TransferRequestLine, self).unlink()
