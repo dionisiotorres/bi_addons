@@ -6,16 +6,30 @@
             <field name="model">purchase.request</field>
             <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='description']" position="after">
-                    <field name="tag_ids" widget="many2many_tags"/>
-                    <field name="requested_by_employee_id"/>
-                    <field name="requested_for_employee_id"/>
-                    <field name="department_id"/>
-                    <field name="hall_id"/>
+                <!--<xpath expr="//field[@name='description']" position="after">-->
+                    <!--<field name="tag_ids" widget="many2many_tags"/>-->
+                    <!--<field name="requested_by_employee_id"/>-->
+                    <!--<field name="requested_for_employee_id"/>-->
+                    <!--<field name="department_id"/>-->
+                    <!--<field name="hall_id"/>-->
+                <!--</xpath>-->
+                <xpath expr="//field[@name='description']" position="replace"/>
+                <xpath expr="//field[@name='picking_type_id']" position="attributes">
+                    <attribute name="domain">[('code', 'in', ['incoming'])]</attribute>
+                </xpath>
+                <xpath expr="//field[@name='requested_by']" position="attributes">
+                    <attribute name="readonly">1</attribute>
                 </xpath>
                 <xpath expr="//field[@name='line_ids']/tree" position="attributes">
                     <attribute name="editable">bottom</attribute>
                 </xpath>
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='product_uom_id']" position="after">
+                    <field name="vendor_id" groups="purchase.group_purchase_user,purchase.group_purchase_manager"/>
+                </xpath>
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='analytic_account_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='button_draft']" position="replace"/>
                 <xpath expr="//button[@name='button_approved']" position="replace">
                     <button name="button_approved"
                             states="to_approve"
