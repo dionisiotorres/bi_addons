@@ -112,7 +112,7 @@ class TransferRequest(models.Model):
                 picking_line_vals.append((0, 0, {
                     'product_id': line.product_id.id,
                     'name': line.product_id.name,
-                    'product_uom_qty': line.transferred_qty,
+                    'product_uom_qty': line.transferred_qty or line.qty,
                     'product_uom': line.product_uom_id.id,
                     'company_id': self.env.user.company_id.id,
                     'location_id': self.source_stock_location_id.id,
