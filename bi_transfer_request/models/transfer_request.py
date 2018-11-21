@@ -13,8 +13,16 @@ class TransferRequest(models.Model):
     _name = 'transfer.request'
     _inherit = ['mail.thread', 'resource.mixin']
 
+
+    def _get_default_requester(self):
+        emp = self.env['hr.employee'].search([('user_id', '=', self.env.uid)])
+        if emp:
+            return emp[0].id
+        else:
+            return False
+
     name = fields.Char(string='Name', readonly=1)
-    requested_by_employee_id = fields.Many2one('hr.employee', string='Requester')
+    requested_by_employee_id = fields.Many2one('hr.employee', string='Requester', default=_get_default_requester)
     requested_for_employee_id = fields.Many2one('hr.employee', string='Requested For')
     analytic_account_id = fields.Many2one('account.analytic.account', string='Analytic Account', )
     cancel_reason = fields.Html(string='Cancellation Reason')

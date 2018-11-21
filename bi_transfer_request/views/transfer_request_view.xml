@@ -33,17 +33,17 @@
                                 states="cancelled"
                                 class="btn-primary"/>
 
-                        <button name="set_state_to_transferring" string="Transfer Request" type="object"
-                                states="approve" class="btn-primary"
-                                groups="bi_transfer_request.approve_transfer_request"/>
+                        <!--<button name="set_state_to_transferring" string="Transfer Request" type="object"-->
+                                <!--states="approve" class="btn-primary"-->
+                                <!--groups="bi_transfer_request.approve_transfer_request"/>-->
 
-                        <button name="set_state_to_done" string="Set TO Done" type="object" states="transferring"
+                        <button name="set_state_to_done" string="Set TO Done" type="object" states="approve,transferring"
                                 class="btn-primary" groups="bi_transfer_request.approve_transfer_request"/>
 
-                        <button name="transfer_products" string="Transfer Products" type="object" states="transferring"
+                        <button name="transfer_products" string="Transfer Products" type="object" states="approve,transferring"
                                 class="btn-primary"/>
 
-                        <field name="state" widget="statusbar" statusbar_visible="draft,approve,transferring,done"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,approve,done"/>
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">

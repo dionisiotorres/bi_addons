@@ -115,9 +115,8 @@ class PurchaseRequestLineInherit(models.Model):
     @api.onchange('product_id', 'product_qty')
     def _change_product(self):
         if self.product_id:
-            seller = self.product_id._select_seller(quantity=self.product_qty)
-            if seller:
-                self.vendor_id = seller.id
+            if self.product_id.seller_ids:
+                self.vendor_id = self.product_id.seller_ids[0].name
             else:
                 self.vendor_id = False
                 raise ValidationError(_('This product has no vendor'))
