@@ -57,8 +57,8 @@ class TransferRequest(models.Model):
     @api.multi
     def set_state_to_cancelled(self):
         for rec in self:
-            if not rec.cancel_reason:
-                raise ValidationError(_('Please add reason for cancel request first.'))
+            if not rec.cancel_reason or rec.cancel_reason == '<p><br></p>':
+                raise ValidationError(_('Please add reason for canceling request first.'))
             rec.state = 'cancelled'
 
     @api.multi
@@ -87,6 +87,7 @@ class TransferRequest(models.Model):
     def transfer_products(self):
         for rec in self:
             rec.create_transfer_for_products()
+            rec.set_state_to_transferring()
 
             # old implementation
             # transfer_line_ids = [line.id for line in rec.transfer_request_line_ids if
