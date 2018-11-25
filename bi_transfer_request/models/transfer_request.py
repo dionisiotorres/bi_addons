@@ -9,6 +9,12 @@ class StockPicking(models.Model):
     transfer_request_id = fields.Many2one('transfer.request', string='Transfer Request')
 
 
+class TransferRequestReason(models.Model):
+    _name = 'transfer.request.reason'
+
+    name = fields.Char(string='Transfer Reason')
+
+
 class TransferRequest(models.Model):
     _name = 'transfer.request'
     _inherit = ['mail.thread', 'resource.mixin']
@@ -36,6 +42,7 @@ class TransferRequest(models.Model):
          ('cancelled', 'Cancelled')], string='State', default='draft', track_visibility='onchange')
 
     picking_count = fields.Integer(string='Transfers', compute='get_request_picking_count')
+    transfer_reason = fields.Many2one('transfer.request.reason', string='Transfer Reason')
 
     @api.model
     def create(self, vals):
@@ -111,10 +118,13 @@ class TransferRequest(models.Model):
 
     def create_transfer_for_products(self):
         picking_line_vals = []
-        internal_picking_type_id = self.env['stock.picking.type'].search(
-            [('code', '=', 'internal')], limit=1).id
-        if not internal_picking_type_id:
+        source_warehouse = self.source_stock_location_id.get_warehouse()
+        internal_picking_type = self.env['stock.picking.type'].search(
+            [('code', '=', 'internal'), ('warehouse_id', '=', source_warehouse.id)], limit=1)
+        if not internal_picking_type:
             raise ValidationError(_('Please configure internal transfer.'))
+        else:
+            internal_picking_type_id = internal_picking_type.id
 
         for line in self.transfer_request_line_ids:
             if line.transfer_created == False:

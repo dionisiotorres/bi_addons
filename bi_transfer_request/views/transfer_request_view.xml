@@ -37,13 +37,13 @@
                                 <!--states="approve" class="btn-primary"-->
                                 <!--groups="bi_transfer_request.approve_transfer_request"/>-->
 
-                        <button name="set_state_to_done" string="Set TO Done" type="object" states="approve,transferring"
-                                class="btn-primary" groups="bi_transfer_request.approve_transfer_request"/>
+                        <!--<button name="set_state_to_done" string="Set TO Done" type="object" states="approve,transferring"-->
+                                <!--class="btn-primary" groups="bi_transfer_request.approve_transfer_request"/>-->
 
-                        <button name="transfer_products" string="Transfer Products" type="object" states="approve,transferring"
+                        <button name="transfer_products" string="Transfer Products" type="object" states="approve"
                                 class="btn-primary"/>
 
-                        <field name="state" widget="statusbar" statusbar_visible="draft,approve,done"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,approve"/>
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
@@ -65,6 +65,7 @@
                                 <field name="analytic_account_id" invisible="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
                                 <field name="source_stock_location_id"
                                        attrs="{'readonly': [('state', 'not in',('draft','approve'))],'required':[('state','in',('approve','transferring'))]}"/>
+                                <field name="transfer_reason"/>
                             </group>
                             <group>
                                 <field name="requested_for_employee_id"
@@ -83,7 +84,7 @@
                                         <field name="product_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                                         <field name="qty" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                                         <field name="product_uom_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
-                                        <field name="transferred_qty" attrs="{'readonly': [('state', 'not in', ['draft', 'approve'])]}"/>
+                                        <field name="transferred_qty" invisible="1" attrs="{'readonly': [('state', 'not in', ['draft', 'approve'])]}"/>
                                         <field name="notes" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                                         <field name="transfer_created" invisible="1"/>
                                         <!--<button name="create_line_transfer" string="Transfer" type="object"-->
