@@ -210,3 +210,11 @@ class PurchaseRequestLineInherit(models.Model):
         if not item.product_id:
             order_line_data.append(('name', '=', item.name))
         return order_line_data
+
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        # use purchase unit of measure
+        res = super(PurchaseRequestLineInherit, self).onchange_product_id()
+        if self.product_id:
+            self.product_uom_id = self.product_id.uom_po_id.id
+        return res
