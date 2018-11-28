@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- views -->
+    <!-- views -->
+    <record id="view_res_users_form_inherit" model="ir.ui.view">
+        <field name="name">res.users.form.inherit</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="warehouse" string="Warehouse">
+                    <group>
+                        <group>
+                            <field name="warehouse_id" readonly="1"/>
+                            <field name="dest_location_id" readonly="1"/>
+                            <field name="operation_type_id" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

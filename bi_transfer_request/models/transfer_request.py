@@ -19,24 +19,36 @@ class TransferRequest(models.Model):
     _name = 'transfer.request'
     _inherit = ['mail.thread', 'resource.mixin']
 
+    # old implementation
+    # def _get_default_requester(self):
+    #     emp = self.env['hr.employee'].search([('user_id', '=', self.env.uid)])
+    #     if emp:
+    #         return emp[0].id
+    #     else:
+    #         return False
 
-    def _get_default_requester(self):
-        emp = self.env['hr.employee'].search([('user_id', '=', self.env.uid)])
-        if emp:
-            return emp[0].id
+    @api.model
+    def _get_default_requested_by(self):
+        return self.env['res.users'].browse(self.env.uid)
+
+    @api.model
+    def _default_dest_location(self):
+        if self.env.user.dest_location_id:
+            return self.env.user.dest_location_id.id
         else:
             return False
 
     name = fields.Char(string='Name', readonly=1)
-    requested_by_employee_id = fields.Many2one('hr.employee', string='Requester', default=_get_default_requester)
-    requested_for_employee_id = fields.Many2one('hr.employee', string='Requested For')
+    requested_by = fields.Many2one('res.users', 'Requested by', required=True, default=_get_default_requested_by)
+    # requested_by_employee_id = fields.Many2one('hr.employee', string='Requester', default=_get_default_requester)
+    # requested_for_employee_id = fields.Many2one('hr.employee', string='Requested For')
     analytic_account_id = fields.Many2one('account.analytic.account', string='Analytic Account', )
     cancel_reason = fields.Html(string='Cancellation Reason')
     transfer_request_line_ids = fields.One2many('transfer.request.line', 'transfer_request_id',
                                                 string='Transferred Products')
     source_stock_location_id = fields.Many2one('stock.location', string='Source Location', domain=[('usage', '=', 'internal')])
     destination_stock_location_id = fields.Many2one('stock.location', string='Destination Location',
-                                                    domain=[('usage', '=', 'transit')])
+                                                    domain=[('usage', '=', 'transit')], default=_default_dest_location)
     state = fields.Selection(
         [('draft', 'Draft'), ('approve', 'Approve'), ('transferring', 'Transferring'), ('done', 'Done'),
          ('cancelled', 'Cancelled')], string='State', default='draft', track_visibility='onchange')
@@ -46,7 +58,13 @@ class TransferRequest(models.Model):
 
     @api.model
     def create(self, vals):
+        if not self.env.user.dest_location_id:
+            raise ValidationError(_('Please configure destination location in current user related employee.'))
         vals['name'] = self.env['ir.sequence'].next_by_code('transfer.request')
+        vals.update({
+            'requested_by': self.env.uid,
+            'destination_stock_location_id': self.env.user.dest_location_id.id,
+        })
         return super(TransferRequest, self).create(vals)
 
     @api.multi

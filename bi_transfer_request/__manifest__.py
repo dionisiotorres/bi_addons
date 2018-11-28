@@ -8,7 +8,7 @@
     'author': "BI Solutions Development Team",
     'category': 'Human Resources',
     'version': '0.1',
-    'depends': ['stock_account', 'hr'],
+    'depends': ['stock_account', 'hr', 'bi_employee_warehouse'],
     'data': [
         'security/bi_transfer_request_security_view.xml',
         'security/ir.model.access.csv',

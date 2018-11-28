@@ -7,6 +7,14 @@ from datetime import datetime
 class PurchaseRequestInherit(models.Model):
     _inherit = 'purchase.request'
 
+    @api.model
+    def _default_operation_type(self):
+        # to add the new implementation
+        if self.env.user.operation_type_id:
+            return self.env.user.operation_type_id.id
+        else:
+            return False
+
     def get_users_can_approved_purchase_request(self):
         all_users = self.env['res.users'].search([])
         users = [user.id for user in all_users if user.has_group('bi_purchase_request_inherit.purchase_request_approve')]
@@ -20,6 +28,8 @@ class PurchaseRequestInherit(models.Model):
     hall_id = fields.Many2one('purchase.requests.hall', string='Hall')
     assigned_to = fields.Many2one('res.users', string='Approver', track_visibility='onchange',
                                   domain=lambda self: self.get_users_can_approved_purchase_request())
+    picking_type_id = fields.Many2one('stock.picking.type',
+                                      'Picking Type', default=_default_operation_type)
 
     @api.multi
     def description_tree_function(self):
@@ -100,8 +110,11 @@ class PurchaseRequestInherit(models.Model):
 
     @api.model
     def create(self, vals):
+        if not self.env.user.operation_type_id:
+            raise ValidationError(_('Please configure operation type in current user related employee.'))
         vals.update({
             'requested_by': self.env.uid,
+            'picking_type_id': self.env.user.operation_type_id.id,
         })
         res = super(PurchaseRequestInherit, self).create(vals)
         return res

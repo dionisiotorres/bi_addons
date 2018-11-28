@@ -61,18 +61,20 @@
                         </div>
                         <group>
                             <group>
-                                <field name="requested_by_employee_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                                <field name="requested_by" readonly="True"/>
+                                <!--<field name="requested_by_employee_id" attrs="{'readonly': [('state', '!=','draft')]}" invisible="1"/>-->
                                 <field name="analytic_account_id" invisible="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
                                 <field name="source_stock_location_id"
                                        attrs="{'readonly': [('state', 'not in',('draft','approve'))],'required':[('state','in',('approve','transferring'))]}"/>
                                 <field name="transfer_reason"/>
                             </group>
                             <group>
-                                <field name="requested_for_employee_id"
-                                       attrs="{'readonly': [('state', '!=','draft')]}" invisible="1"/>
+                                <!--<field name="requested_for_employee_id"-->
+                                       <!--attrs="{'readonly': [('state', '!=','draft')]}" invisible="1"/>-->
                                 <field name="create_date" readonly="1"/>
                                 <field name="destination_stock_location_id"
-                                       attrs="{'readonly': [('state', 'not in',('draft','approve'))],'required':[('state','in',('approve','transferring'))]}"/>
+                                       readonly="1"/>
+                                       <!--attrs="{'readonly': [('state', 'not in',('draft','approve'))],'required':[('state','in',('approve','transferring'))]}"/>-->
 
                             </group>
                         </group>
@@ -109,8 +111,9 @@
             <field name="arch" type="xml">
                 <tree string="Transfer Requests">
                     <field name="name"/>
-                    <field name="requested_by_employee_id"/>
-                    <field name="requested_for_employee_id"/>
+                    <field name="requested_by"/>
+                    <!--<field name="requested_by_employee_id"/>-->
+                    <!--<field name="requested_for_employee_id"/>-->
                     <field name="analytic_account_id"/>
                     <field name="state"/>
                 </tree>
