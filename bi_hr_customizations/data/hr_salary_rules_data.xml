@@ -1,35 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="hr_salary_rule_transportation" model="hr.salary.rule">
+            <field name="code">Transportation</field>
+            <field name="name">Transportation Allowance</field>
+            <field name="category_id" ref="hr_payroll.ALW"/>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.transportation_amount</field>
+            <field name="sequence" eval="12"/>
+            <field name="note">Transportation Allowance</field>
+        </record>
 
-        <!--<record id="hr_salary_rule_transportation" model="hr.salary.rule">-->
-        <!--<field name="code">TRANS</field>-->
-        <!--<field name="name">Transportation Allowance</field>-->
-        <!--<field name="category_id" ref="hr_payroll.ALW"/>-->
-        <!--<field name="amount_select">code</field>-->
-        <!--<field name="amount_python_compute">result = contract.transportation_amount</field>-->
-        <!--<field name="sequence" eval="12"/>-->
-        <!--<field name="note">Transportation Allowance</field>-->
-        <!--</record>-->
+        <record id="hr_salary_rule_food" model="hr.salary.rule">
+            <field name="code">Food</field>
+            <field name="name">Food Allowance</field>
+            <field name="category_id" ref="hr_payroll.ALW"/>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.food_amount</field>
+            <field name="sequence" eval="13"/>
+            <field name="note">Food Allowance</field>
+        </record>
 
-        <!--<record id="hr_salary_rule_food" model="hr.salary.rule">-->
-        <!--<field name="code">Food</field>-->
-        <!--<field name="name">Food Allowance</field>-->
-        <!--<field name="category_id" ref="hr_payroll.ALW"/>-->
-        <!--<field name="amount_select">code</field>-->
-        <!--<field name="amount_python_compute">result = contract.food_allowance_amount</field>-->
-        <!--<field name="sequence" eval="12"/>-->
-        <!--<field name="note">Food Allowance</field>-->
-        <!--</record>-->
+        <record id="hr_salary_rule_mobile" model="hr.salary.rule">
+            <field name="code">Mobile</field>
+            <field name="name">Mobile Allowance</field>
+            <field name="category_id" ref="hr_payroll.ALW"/>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.mobile_amount</field>
+            <field name="sequence" eval="14"/>
+            <field name="note">Mobile Allowance</field>
+        </record>
 
-        <!--<record id="hr_salary_rule_mobile" model="hr.salary.rule">-->
-        <!--<field name="code">Mobile</field>-->
-        <!--<field name="name">Mobile Allowance</field>-->
-        <!--<field name="category_id" ref="hr_payroll.ALW"/>-->
-        <!--<field name="amount_select">code</field>-->
-        <!--<field name="amount_python_compute">result = contract.mobile_allowance_amount</field>-->
-        <!--<field name="sequence" eval="12"/>-->
-        <!--<field name="note">Mobile Allowance</field>-->
-        <!--</record>-->
+        <record id="hr_salary_rule_petrol" model="hr.salary.rule">
+            <field name="code">Petrol</field>
+            <field name="name">Petrol Allowance</field>
+            <field name="category_id" ref="hr_payroll.ALW"/>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.petrol_amount</field>
+            <field name="sequence" eval="15"/>
+            <field name="note">Petrol Allowance</field>
+        </record>
+
+        <record id="hr_salary_rule_out_source" model="hr.salary.rule">
+            <field name="code">Out Source</field>
+            <field name="name">Out Source Allowance</field>
+            <field name="category_id" ref="hr_payroll.ALW"/>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.out_source_amount</field>
+            <field name="sequence" eval="16"/>
+            <field name="note">Out Source Allowance</field>
+        </record>
+        <record id="hr_salary_rule_other_fixed_allowances" model="hr.salary.rule">
+            <field name="code">Other Fixed Allowances</field>
+            <field name="name">Other Fixed Allowances</field>
+            <field name="category_id" ref="hr_payroll.ALW"/>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.other_fixed_allowances_amount</field>
+            <field name="sequence" eval="17"/>
+            <field name="note">Other Fixed Allowances</field>
+        </record>
+
+
     </data>
 </odoo>
