@@ -10,6 +10,7 @@
     'version': '0.1',
     'depends': ['hr_payroll'],
     'data': [
+        'security/ir.model.access.csv',
         'data/hr_salary_rules_data.xml',
         'views/hr_employee_inherit_view.xml',
         'views/hr_contract_inherit_view.xml',

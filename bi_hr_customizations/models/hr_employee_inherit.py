@@ -3,6 +3,14 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
 
+class EmployeeChild(models.Model):
+    _name = 'employee.child'
+
+    name = fields.Char(string='Name', required=True)
+    age = fields.Float(string='Age')
+    employee_id = fields.Many2one('hr.employee', string='Employee')
+
+
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
@@ -12,10 +20,10 @@ class HrEmployee(models.Model):
     use_municipality_card = fields.Boolean(string='Use Municipality Card')
     mc_start_date = fields.Date(string='MC Start Date')
     mc_expiry_date = fields.Date(string='MC Expiry Date')
-
+    employee_child_ids = fields.One2many('employee.child', 'employee_id', string='Childs')
 
     @api.multi
-    @api.constrains('iqama_start_date','iqama_expiry_date','mc_start_date','mc_expiry_date')
+    @api.constrains('iqama_start_date', 'iqama_expiry_date', 'mc_start_date', 'mc_expiry_date')
     def check_dates(self):
         for rec in self:
             if rec.iqama_start_date > rec.iqama_expiry_date:
