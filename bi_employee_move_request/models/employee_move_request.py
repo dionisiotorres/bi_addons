@@ -49,13 +49,20 @@ class EmployeeMoveRequest(models.Model):
     def get_employee_data(self):
         for rec in self:
             rec.employee_department_id = rec.employee_id.department_id.id
-            # rec.employee_analytic_account_id = rec.employee_id.contract_id.analytic_account_id.id
+            rec.employee_analytic_account_id = rec.employee_id.contract_id.analytic_account_id.id
             rec.employee_warehouse_id = rec.employee_id.warehouse_id.id
 
     @api.multi
     def set_state_to_confirmed(self):
         for rec in self:
             rec.state = 'confirmed'
+            rec.employee_id.write({
+                'department_id': rec.department_id.id,
+                'warehouse_id': rec.warehouse_id.id
+            })
+            rec.employee_id.contract_id.write({
+                'analytic_account_id': rec.analytic_account_id.id,
+            })
 
     @api.multi
     def set_state_to_cancelled(self):

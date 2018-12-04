@@ -8,7 +8,7 @@
     'author': "BI Solutions Development Team",
     'category': 'Human Resources',
     'version': '0.1',
-    'depends': ['bi_employee_warehouse', 'hr_contract', 'account'],
+    'depends': ['bi_employee_warehouse', 'hr_payroll_account', ],
     'data': [
         'security/ir.model.access.csv',
         'views/employee_move_request_view.xml',
