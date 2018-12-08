@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem name="Employee Resignation" id="employee_resignation_menu" action="employee_resignation_action"
+                  parent="hr.menu_hr_root" sequence="10"/>
+    </data>
+</odoo>
