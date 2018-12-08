@@ -17,11 +17,29 @@
         </record>
 
 
+        <record id="employee_course_form_view" model="ir.ui.view">
+            <field name="name">employee.course.form.view</field>
+            <field name="model">employee.course</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
         <record id="view_hr_employee_form_info_inherit" model="ir.ui.view">
             <field name="name">view.hr.employee.form.info.inherit</field>
             <field name="model">hr.employee</field>
             <field name="inherit_id" ref="hr.view_employee_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='tz']" position="after">
+                    <field name="employee_number"/>
+                </xpath>
                 <xpath expr="//notebook" position="inside">
                     <page name="employee_info" string="Employee Info">
                         <group>
@@ -29,8 +47,10 @@
                                 <field name="passport_expiry_date"/>
                                 <field name="iqama_start_date"/>
                                 <field name="iqama_expiry_date"/>
+                                <field name="account_asset_id"/>
                             </group>
                             <group>
+                                <field name="employee_course_ids" widget="many2many_tags"/>
                                 <field name="use_municipality_card"/>
                                 <field name="mc_start_date"
                                        attrs="{'invisible':[('use_municipality_card', '=', False)],'required':[('use_municipality_card', '=', True)]}"/>

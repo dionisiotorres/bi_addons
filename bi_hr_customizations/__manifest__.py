@@ -8,7 +8,7 @@
     'author': "BI Solutions Development Team",
     'category': 'Human Resources',
     'version': '0.1',
-    'depends': ['hr_payroll'],
+    'depends': ['hr_payroll', 'account_asset'],
     'data': [
         'security/ir.model.access.csv',
         'data/hr_salary_rules_data.xml',
