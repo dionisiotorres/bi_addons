@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem name="Employee Start Work Request" id="employee_start_work_request_menu"
+                  action="employee_start_work_request_action"
+                  parent="hr.menu_hr_root" sequence="11"/>
+    </data>
+</odoo>

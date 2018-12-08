@@ -14,6 +14,8 @@
         'data/hr_salary_rules_data.xml',
         'views/hr_employee_inherit_view.xml',
         'views/hr_contract_inherit_view.xml',
+        'views/employee_start_work_request_view.xml',
+        'views/menu_item_view.xml',
     ],
     'installable': True,
     'auto_install': False,
