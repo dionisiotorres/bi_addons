@@ -20,6 +20,15 @@ class HrEmployee(models.Model):
     other_fixed_allowances_amount = fields.Float(string='Other Fixed Allowances', )
 
     @api.multi
+    @api.onchange('employee_id')
+    def get_start_date_for_employee(self):
+        for rec in self:
+            last_employee_start_work_request = self.env['employee.start.work.request'].search(
+                [('employee_id', '=', rec.employee_id.id), ('state', '=', 'confirmed')], limit=1,
+                order='create_date desc')
+            rec.date_start = last_employee_start_work_request.start_work_date
+
+    @api.multi
     @api.constrains('transportation', )
     def check_transportation_percentage(self):
         for rec in self:
