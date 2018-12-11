@@ -6,15 +6,16 @@ from odoo.exceptions import ValidationError
 class EmployeeMoveReason(models.Model):
     _name = 'employee.move.reason'
 
-    name = fields.Char(string='Name', required=True)
+    name = fields.Char(string='Name', required=True,translate=True)
 
 
 class EmployeeMoveRequest(models.Model):
     _name = 'employee.move.request'
-    _inherit = ['mail.thread', 'resource.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'resource.mixin']
+    _description = "Employee Move Request"
 
     name = fields.Char(string='Name', readonly=True)
-    request_date = fields.Date(string='Transfer Date', required=True)
+    request_date = fields.Date(string='Transfer Date', required=True,translate=True)
     employee_move_reason_id = fields.Many2one('employee.move.reason', string='Transfer Reason', required=True)
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True)
     state = fields.Selection(

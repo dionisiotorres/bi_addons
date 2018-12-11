@@ -5,8 +5,10 @@ from odoo.exceptions import ValidationError
 
 class EmployeeStartWorkRequest(models.Model):
     _name = 'employee.start.work.request'
-    _inherit = ['mail.thread', 'resource.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'resource.mixin']
+    _description = "Employee Start Work Request"
     _rec_name = 'employee_id'
+
 
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True)
     country_id = fields.Many2one('res.country', string='Nationality (Country)', related='employee_id.country_id',
@@ -16,7 +18,7 @@ class EmployeeStartWorkRequest(models.Model):
     bank_account_id = fields.Many2one('res.partner.bank', string='Bank Account Number',
                                       related='employee_id.bank_account_id',
                                       readonly=1)
-    start_work_date = fields.Date(string='Start Work At', required=True)
+    start_work_date = fields.Date(string='Start Work At', required=True, translate=True)
     state = fields.Selection(
         [('draft', 'Draft'), ('confirmed', 'Confirmed'),
          ('cancelled', 'Cancelled')], string='State', default='draft', track_visibility='onchange')
@@ -32,6 +34,7 @@ class EmployeeStartWorkRequest(models.Model):
     def set_state_to_confirmed(self):
         for rec in self:
             rec.state = 'confirmed'
+            rec.employee_id.contract_id.write({'date_start': rec.start_work_date})
 
     @api.multi
     def set_state_to_cancelled(self):

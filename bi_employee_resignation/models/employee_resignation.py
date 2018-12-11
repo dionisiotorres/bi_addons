@@ -5,7 +5,8 @@ from odoo.exceptions import ValidationError
 
 class EmployeeResignation(models.Model):
     _name = 'employee.resignation'
-    _inherit = ['mail.thread', 'resource.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'resource.mixin']
+    _description = "Employee Resignation Request"
     _rec_name = 'employee_id'
 
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True)
@@ -15,7 +16,7 @@ class EmployeeResignation(models.Model):
     job_id = fields.Many2one('hr.job', string='Job Position', related='employee_id.job_id', readonly=1)
     employee_number = fields.Char(string='Employee Number', related='employee_id.employee_number', readonly=1)
 
-    resignation_date = fields.Date(string='Resignation Date', required=True)
+    resignation_date = fields.Date(string='Resignation Date', required=True,translate=True)
     state = fields.Selection(
         [('draft', 'Draft'), ('confirmed', 'Confirmed'),
          ('cancelled', 'Cancelled')], string='State', default='draft', track_visibility='onchange')

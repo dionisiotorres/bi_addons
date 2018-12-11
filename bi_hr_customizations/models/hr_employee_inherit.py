@@ -13,6 +13,8 @@ class EmployeeChild(models.Model):
 
     name = fields.Char(string='Name', required=True)
     age = fields.Float(string='Age')
+    identification_number = fields.Char(string='ID')
+    gender = fields.Selection(([('male','Male'),('female','Female')]),string='Gender')
     employee_id = fields.Many2one('hr.employee', string='Employee')
 
 
@@ -20,15 +22,21 @@ class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
     passport_expiry_date = fields.Date(string='Passport Expiry Date')
+    passport_expiry_hijri_date = fields.Char(string='Passport Expiry Hijri Date')
     iqama_start_date = fields.Date(string='Iqama Start Date')
     iqama_expiry_date = fields.Date(string='Iqama Expiry Date')
-    use_municipality_card = fields.Boolean(string='Use Municipality Card')
+    iqama_expiry_hijri_date = fields.Char(string='Iqama Expiry Hijri Date')
+    use_municipality_card = fields.Boolean(string='Use Baladya Card')
     mc_start_date = fields.Date(string='MC Start Date')
     mc_expiry_date = fields.Date(string='MC Expiry Date')
+    mc_expiry_hijri_date = fields.Char(string='MC Expiry Hijri Date')
     employee_child_ids = fields.One2many('employee.child', 'employee_id', string='Childs')
     employee_number = fields.Char(string='Employee Number')
     employee_course_ids = fields.Many2many('employee.course',string='Employee Courses')
     account_asset_id = fields.Many2one('account.asset.asset',string='Employee Linked Asset')
+    employee_wife_iqama_no = fields.Char(string="Wife's Iqama No.")
+
+
 
     @api.multi
     @api.constrains('iqama_start_date', 'iqama_expiry_date', 'mc_start_date', 'mc_expiry_date')

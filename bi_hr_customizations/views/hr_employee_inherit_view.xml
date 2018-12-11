@@ -10,6 +10,8 @@
                         <group>
                             <field name="name"/>
                             <field name="age"/>
+                            <field name="gender"/>
+                            <field name="identification_number"/>
                         </group>
                     </sheet>
                 </form>
@@ -40,13 +42,21 @@
                 <xpath expr="//field[@name='tz']" position="after">
                     <field name="employee_number"/>
                 </xpath>
+                <xpath expr="//field[@name='marital']" position="after">
+                    <field name="employee_wife_iqama_no" attrs="{'invisible': [('marital', '!=', 'married')]}"/>
+                </xpath>
+                <xpath expr="//field[@name='permit_no']" position="attributes">
+                    <attribute name="string">Work Border No</attribute>
+                </xpath>
                 <xpath expr="//notebook" position="inside">
                     <page name="employee_info" string="Employee Info">
                         <group>
                             <group>
                                 <field name="passport_expiry_date"/>
+                                <field name="passport_expiry_hijri_date"/>
                                 <field name="iqama_start_date"/>
                                 <field name="iqama_expiry_date"/>
+                                <field name="iqama_expiry_hijri_date"/>
                                 <field name="account_asset_id"/>
                             </group>
                             <group>
@@ -56,6 +66,9 @@
                                        attrs="{'invisible':[('use_municipality_card', '=', False)],'required':[('use_municipality_card', '=', True)]}"/>
                                 <field name="mc_expiry_date"
                                        attrs="{'invisible':[('use_municipality_card', '=', False)],'required':[('use_municipality_card', '=', True)]}"/>
+
+                                <field name="mc_expiry_hijri_date"
+                                       attrs="{'invisible':[('use_municipality_card', '=', False)]}"/>
                             </group>
                         </group>
                         <group>
@@ -63,6 +76,8 @@
                                 <tree editable="top">
                                     <field name="name"/>
                                     <field name="age"/>
+                                    <field name="gender"/>
+                                    <field name="identification_number"/>
                                 </tree>
                             </field>
                         </group>
