@@ -6,7 +6,7 @@ from odoo.exceptions import ValidationError
 class EmployeeMoveReason(models.Model):
     _name = 'employee.move.reason'
 
-    name = fields.Char(string='Name', required=True,translate=True)
+    name = fields.Char(string='Name', required=True, translate=True)
 
 
 class EmployeeMoveRequest(models.Model):
@@ -15,11 +15,11 @@ class EmployeeMoveRequest(models.Model):
     _description = "Employee Move Request"
 
     name = fields.Char(string='Name', readonly=True)
-    request_date = fields.Date(string='Transfer Date', required=True,translate=True)
+    request_date = fields.Date(string='Transfer Date', required=True, translate=True)
     employee_move_reason_id = fields.Many2one('employee.move.reason', string='Transfer Reason', required=True)
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True)
     state = fields.Selection(
-        [('draft', 'Draft'), ('confirmed', 'Confirmed'),
+        [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('validated', 'Validated'),
          ('cancelled', 'Cancelled')], string='State', default='draft', track_visibility='onchange')
     employee_department_id = fields.Many2one('hr.department', string='Department', compute='get_employee_data',
                                              store=True)
@@ -57,13 +57,19 @@ class EmployeeMoveRequest(models.Model):
     def set_state_to_confirmed(self):
         for rec in self:
             rec.state = 'confirmed'
+
+    @api.multi
+    def set_state_to_validated(self):
+        for rec in self:
+            rec.state = 'validated'
             rec.employee_id.write({
                 'department_id': rec.department_id.id,
                 'warehouse_id': rec.warehouse_id.id
             })
-            rec.employee_id.contract_id.write({
-                'analytic_account_id': rec.analytic_account_id.id,
-            })
+            if rec.employee_id.contract_id:
+                rec.employee_id.contract_id.write({
+                    'analytic_account_id': rec.analytic_account_id.id,
+                })
 
     @api.multi
     def set_state_to_cancelled(self):
