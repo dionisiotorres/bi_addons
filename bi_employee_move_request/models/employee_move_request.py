@@ -41,8 +41,8 @@ class EmployeeMoveRequest(models.Model):
     @api.multi
     def unlink(self):
         for rec in self:
-            if rec.state == 'confirmed':
-                raise ValidationError(_('You cannot delete confirmed move request.'))
+            if rec.state == 'validated':
+                raise ValidationError(_('You cannot delete validated move request.'))
         return super(EmployeeMoveRequest, self).unlink()
 
     @api.multi

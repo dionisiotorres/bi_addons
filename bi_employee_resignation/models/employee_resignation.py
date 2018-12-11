@@ -18,20 +18,27 @@ class EmployeeResignation(models.Model):
 
     resignation_date = fields.Date(string='Resignation Date', required=True,translate=True)
     state = fields.Selection(
-        [('draft', 'Draft'), ('confirmed', 'Confirmed'),
+        [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('validated', 'Validated'),
          ('cancelled', 'Cancelled')], string='State', default='draft', track_visibility='onchange')
 
     @api.multi
     def unlink(self):
         for rec in self:
-            if rec.state == 'confirmed':
-                raise ValidationError(_('You cannot delete confirmed employee resignation.'))
+            if rec.state == 'validated':
+                raise ValidationError(_('You cannot delete validated employee resignation.'))
         return super(EmployeeResignation, self).unlink()
 
     @api.multi
     def set_state_to_confirmed(self):
         for rec in self:
+            if self.env.uid != rec.employee_id.parent_id.user_id.id:
+                raise ValidationError(_('only employee direct manager can confirm employee resignation.'))
             rec.state = 'confirmed'
+
+    @api.multi
+    def set_state_to_validated(self):
+        for rec in self:
+            rec.state = 'validated'
 
     @api.multi
     def set_state_to_cancelled(self):

@@ -9,21 +9,25 @@
                     <header>
                         <button name="set_state_to_confirmed" string="Confirm" type="object" states="draft"
                                 class="btn-primary"/>
+
+                        <button name="set_state_to_validated" string="Validate" type="object" states="confirmed"
+                                class="btn-primary" groups="hr.group_hr_manager"/>
+
                         <button name="set_state_to_cancelled" string="Cancel Request" type="object"
-                                states="draft"
+                                states="draft,confirmed"
                                 class="btn-primary"/>
 
                         <button name="set_state_to_draft" string="Set To Draft" type="object"
                                 states="cancelled"
                                 class="btn-primary"/>
 
-                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,validated"/>
                     </header>
                     <sheet>
                         <group>
                             <group>
-                                <field name="employee_id" attrs="{'readonly':[('state', '=', 'confirmed')]}"/>
-                                <field name="resignation_date" attrs="{'readonly':[('state', '=', 'confirmed')]}"/>
+                                <field name="employee_id" attrs="{'readonly':[('state', '=', 'validated')]}"/>
+                                <field name="resignation_date" attrs="{'readonly':[('state', '=', 'validated')]}"/>
                                 <field name="employee_number"/>
                             </group>
                             <group>
