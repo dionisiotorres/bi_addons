@@ -33,7 +33,6 @@
             </field>
         </record>
 
-
         <record id="view_hr_employee_form_info_inherit" model="ir.ui.view">
             <field name="name">view.hr.employee.form.info.inherit</field>
             <field name="model">hr.employee</field>

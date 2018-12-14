@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report id="employee_start_work_report"
+                model="employee.start.work.request"
+                string="إشعار مباشرة موظف"
+                report_type="qweb-pdf"
+                name="bi_hr_customizations.employee_start_work_template"
+                file="bi_hr_customizations.employee_start_work_template"
+                attachment_use="True"
+                menu="True"/>
+
+        <template id="employee_start_work_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page" align="right">
+                            <div class="oe_structure"/>
+                            <br/>
+                            <p>التاریخ :
+                                <t t-esc="datetime.datetime.now().strftime('%Y/%m/%d')"/>
+                            </p>
+                            <p>/ الاستاذ
+                            </p>
+                            <p>رئيس الحسابات
+                            </p>
+                            <p>،،، السلام عليكم ورحمه الله وبركاتة
+                            </p>
+                            <center>الموضوع : إشعار مباشرة موظف</center>
+                            <br/>
+                            <p>
+                                <span>
+                                    <span t-field="o.employee_id.job_id.name"/>
+                                </span>
+                                <span>بهذا نشعركم بأن الموظف التالية بياناته أدناه قد تم تعينه فى الشركة على وظيفة
+                                </span>
+                                <span>
+                                    , وقد باشر
+                                    عمله بتاريخ
+                                </span>
+                                <span>
+                                    <span t-field="o.start_work_date"/>
+                                </span>
+                            </p>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <td align="center">رقم الحساب البنكى</td>
+                                    <td align="center">رقم الهوية الوطنية / الأقامة</td>
+                                    <td align="center">الجنسية</td>
+                                    <td align="center">الاسم</td>
+                                </thead>
+                                <tbody>
+                                    <td align="center">
+                                        <span t-field="o.bank_account_id"/>
+                                    </td>
+                                    <td align="center">
+                                        <span t-field="o.identification_id"/>
+                                    </td>
+                                    <td align="center">
+                                        <span t-field="o.country_id.name"/>
+                                    </td>
+                                    <td align="center">
+                                        <span t-field="o.employee_id.name"/>
+                                    </td>
+                                </tbody>
+                            </table>
+                            <p>. وذلك للإحاطة والعمل بموجبه</p>
+                            <center>،،،،،، وتقبلوا خالص التحية والتقدير
+                            </center>
+                            <br/>
+                            <p>
+                                <span align="right">الموظف /</span>
+                                <span align="center" style="margin-right:250px;">رئيس القسم</span>
+                            </p>
+                            <h6>
+                                <span align="right">الأصل : لملف الموظف</span>
+                            </h6>
+                            <h6>
+                                <span align="right">صورة : للمالية</span>
+                            </h6>
+                            <center>المدير العام</center>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
+from odoo.addons.base.models.res_partner import _tz_get
+import pytz
 
 class EmployeeCourse(models.Model):
     _name = 'employee.course'
@@ -35,6 +37,9 @@ class HrEmployee(models.Model):
     employee_course_ids = fields.Many2many('employee.course',string='Employee Courses')
     account_asset_id = fields.Many2one('account.asset.asset',string='Employee Linked Asset')
     employee_wife_iqama_no = fields.Char(string="Wife's Iqama No.")
+    tz = fields.Selection(
+        _tz_get, string='Timezone', required=True,
+        default='Asia/Riyadh',)
 
 
 
