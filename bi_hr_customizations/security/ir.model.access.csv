@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_employee_child,access.employee.child,model_employee_child,,1,1,1,1
+access_employee_course,access.employee.course,model_employee_course,,1,1,1,1
+access_employee_start_work_request,access.employee.start.work.request,model_employee_start_work_request,,1,1,1,1

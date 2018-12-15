@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="hr_contract_view_form_inherit" model="ir.ui.view">
+            <field name="name">hr.contract.view.form.inherit</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='date_start']" position="replace">
+                    <field name="register_date"/>
+                    <field name="date_start" string="Starting Work At"/>
+                </xpath>
+                <xpath expr="//label[@for='wage']" position="attributes">
+                    <attribute name="string">Basic</attribute>
+                </xpath>
+                <xpath expr="//div[@name='wage']" position="after">
+                    <field name="transportation_allowed"/>
+                    <field name="transportation_type"
+                           attrs="{'invisible': [('transportation_allowed', '=',False)],'required': [('transportation_allowed', '=',True)]}"/>
+                    <field name="transportation" attrs="{'invisible': [('transportation_allowed', '=',False)]}"/>
+                    <field name="transportation_amount"
+                           attrs="{'invisible':[('transportation_type', '!=', 'percentage')]}"/>
+                    <field name="food_amount"/>
+                    <field name="mobile_amount"/>
+                    <field name="petrol_amount"/>
+                    <field name="out_source_amount"/>
+                    <field name="other_fixed_allowances_amount"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

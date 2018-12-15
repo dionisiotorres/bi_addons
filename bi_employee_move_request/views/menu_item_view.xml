@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem name="Employee Move Requests" id="employee_move_request_main_menu" parent="hr.menu_hr_root"
+                  action="employee_move_request_action"/>
+
+    </data>
+</odoo>
