@@ -13,6 +13,7 @@
         'security/ir.model.access.csv',
         'views/employee_resignation_view.xml',
         'views/menu_item_view.xml',
+        'reports/employee_resignation_report_view.xml',
     ],
     'installable': True,
     'auto_install': False,

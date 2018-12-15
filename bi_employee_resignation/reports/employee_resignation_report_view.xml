@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report id="employee_start_work_report"
+                model="employee.resignation"
+                string="طلب استقالة"
+                report_type="qweb-pdf"
+                name="bi_employee_resignation.employee_resignation_template"
+                file="bi_employee_resignation.employee_resignation_template"
+                attachment_use="True"
+                menu="True"/>
+
+        <template id="employee_resignation_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page" align="right">
+                            <div class="oe_structure"/>
+                            <br/>
+                            <center>HR Policies And Procedures</center>
+                            <br/>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <td align="left" style="background-color: #D8D8D8;">Employee</td>
+                                    <td align="right" style="background-color: #D8D8D8;">الموظف</td>
+                                </thead>
+                            </table>
+                            <table class="table table-bordered" style="margin-top:-15px;">
+                                <tr>
+                                    <td align="left">Name :</td>
+                                    <td align="center">
+                                        <span t-field="o.employee_id.name"/>
+                                    </td>
+                                    <td align="right">: الاسم</td>
+                                </tr>
+                                <tr>
+                                    <td align="left">Job Title :</td>
+                                    <td align="center">
+                                        <span t-field="o.job_id.name"/>
+                                    </td>
+                                    <td align="right">: المسمي الوظيفى</td>
+                                </tr>
+                                <tr>
+                                    <td align="left">Employee Number :</td>
+                                    <td align="center">
+                                        <span t-field="o.employee_number"/>
+                                    </td>
+                                    <td align="right">: الرقم الوظيفى</td>
+                                </tr>
+
+                                <tr>
+                                    <td align="left">Division:</td>
+                                    <td align="center">
+                                        <span t-field="o.department_id.name"/>
+                                    </td>
+                                    <td align="right">: الإدارة</td>
+                                </tr>
+
+                                <tr>
+                                    <td align="left">Branch :</td>
+                                    <td align="center">
+                                        <span t-field="o.warehouse_id.name"/>
+                                    </td>
+                                    <td align="right">: الفرع</td>
+                                </tr>
+                            </table>
+                            <table class="table table-bordered" style="margin-top:-15px;width:100%">
+                                <tr>
+                                    <td style="width:50%">
+                                        Hereby, Please note that I have decided to submit my resignation/desire for
+                                        stopping my contract renewal, hence, stopping attending to work beginning on
+                                        date
+                                        <span t-field="o.resignation_date"/>
+                                        for the following reasons
+                                        <span>
+                                            ...................................................................
+                                        </span>
+                                        <span>
+                                            ...................................................................
+                                        </span>
+                                    </td>
+                                    <td style="width:50%" align="right">
+                                        <span>
+
+                                            بهذا أرجو العلم برغبتي بتقديم الاستقالة/ عدم تجديد العقد، وبالتالي أرغب
+                                            بالتوقف عن العمل اعتبارا من تاريخ
+
+                                        </span>
+                                        <span t-field="o.resignation_date"/>
+                                        <span>وذلك للاسباب التالية</span>
+                                        <span style="margin-top:50px;">
+                                            ...................................................................
+                                        </span>
+                                        <span>
+                                            ...................................................................
+                                        </span>
+                                    </td>
+                                    <tr>
+                                        <td align="left" style="width:50%">
+                                            <span align="left">Employee Signature:</span>
+                                            <span>...........</span>
+                                            <span align="right">: توقيع الموظف</span>
+                                        </td>
+
+                                        <td align="right" style="width:50%">
+                                            <span>Date :</span>
+                                            <span>.........................................</span>
+                                            <span align="right">: التاريخ</span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td align="left" style="width:50%;background-color: #D8D8D8;">
+                                            <span align="left">Notes of Direct Supervisor:</span>
+                                        </td>
+
+                                        <td align="right" style="width:50%;background-color: #D8D8D8;">
+                                            <span align="right">: ملاحظات الرئيس المباشر</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="left" style="width:50%;">
+                                            <span align="left">........................................................</span>
+                                        </td>
+
+                                        <td align="right" style="width:50%;">
+                                            <span align="right">........................................................</span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td align="left" style="width:50%">
+                                            <span align="left">Direct Supervisor Signature:</span>
+                                            <span>.....</span>
+                                            <span align="right">: توقيع الرئيس المباشر</span>
+                                        </td>
+
+                                        <td align="right" style="width:50%">
+                                            <span>Date :</span>
+                                            <span>.........................................</span>
+                                            <span align="right">: التاريخ</span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td align="left" style="width:50%;background-color: #D8D8D8;">
+                                            <span align="left">Notes of HR &amp; Admin Section Head:</span>
+                                        </td>
+
+                                        <td align="right" style="width:50%;background-color: #D8D8D8;">
+                                            <span align="right">: ملاحظات رئيس قسم الموارد البشرية والإدارية</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="left" style="width:50%;">
+                                            <span align="left">.........................................</span>
+                                        </td>
+
+                                        <td align="right" style="width:50%;">
+                                            <span align="right">.........................................</span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td align="left" style="width:50%">
+                                            <span align="left" style="width:16.5%">HR &amp; Admin Section Head Signature:</span>
+                                            <span style="width:16.5%">.........................................</span>
+                                            <span align="right" style="width:16.5%">: توقيع رئيس قسم الموارد البشرية والادارية</span>
+                                        </td>
+
+                                        <td align="right" style="width:50%">
+                                            <span>Date :</span>
+                                            <span>.........................................</span>
+                                            <span align="right">: التاريخ</span>
+                                        </td>
+                                    </tr>
+
+
+                                </tr>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>
