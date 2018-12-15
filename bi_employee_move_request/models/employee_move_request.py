@@ -36,6 +36,26 @@ class EmployeeMoveRequest(models.Model):
     @api.model
     def create(self, vals):
         vals['name'] = self.env['ir.sequence'].next_by_code('employee.move.request')
+        employee_object = self.env['hr.employee'].browse(vals['employee_id'])
+
+        # send mail and notification to hr manager
+        all_users = self.env['res.users'].search([])
+        user_partner_ids = [user.partner_id.id for user in all_users if user.has_group('hr.group_hr_manager')]
+        message_user_partner_ids = [(4, user.partner_id.id) for user in all_users if user.has_group('hr.group_hr_manager')]
+        message = '<p>%s</p>' % _('New move request created for %s and need your confirmation' % employee_object.name)
+        # send email to hr manager to confirm move order
+        self.env['mail.thread'].message_post(
+            body=message,
+            partner_ids=user_partner_ids,
+        )
+        # send notification to hr manager to confirm move order
+        self.env['mail.thread'].message_post(
+            body=message,
+            subtype='mt_comment',
+            message_type='comment',
+            partner_ids=message_user_partner_ids,
+        )
+
         return super(EmployeeMoveRequest, self).create(vals)
 
     @api.multi
@@ -56,6 +76,25 @@ class EmployeeMoveRequest(models.Model):
     @api.multi
     def set_state_to_confirmed(self):
         for rec in self:
+            # send mail and notification to accounting manager to validate
+            all_users = self.env['res.users'].search([])
+            user_partner_ids = [user.partner_id.id for user in all_users if user.has_group('account.group_account_manager')]
+            message_user_partner_ids = [(4, user.partner_id.id) for user in all_users if
+                                        user.has_group('account.group_account_manager')]
+            message = '<p>%s</p>' % _(
+                'Move request confirmed for %s and need to validate' % rec.employee_id.name)
+            # send email to accounting manager to validate move order
+            self.env['mail.thread'].message_post(
+                body=message,
+                partner_ids=user_partner_ids,
+            )
+            # send notification to accounting  manager to validate move order
+            self.env['mail.thread'].message_post(
+                body=message,
+                subtype='mt_comment',
+                message_type='comment',
+                partner_ids=message_user_partner_ids,
+            )
             rec.state = 'confirmed'
 
     @api.multi
