@@ -9,8 +9,11 @@
             <tree string="Loan Requests">
                 <field name="name"/>
                 <field name="employee_id"/>
-                <field name="loan_amount"/>
                 <field name="date"/>
+                <field name="loan_amount"/>
+                <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="total_paid_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="balance_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                 <field name="state"/>
             </tree>
         </field>
