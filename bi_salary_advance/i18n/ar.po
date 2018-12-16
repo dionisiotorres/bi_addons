@@ -1,0 +1,483 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* bi_salary_advance
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 12.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-12-16 20:46+0000\n"
+"PO-Revision-Date: 2018-12-16 23:07+0200\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: en_US\n"
+"X-Generator: Poedit 1.7.5\n"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__message_needaction
+msgid "Action Needed"
+msgstr "الإجراءات اللازمة"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__activity_ids
+msgid "Activities"
+msgstr "أنشطة"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__activity_state
+msgid "Activity State"
+msgstr "حالة النشاط"
+
+#. module: bi_salary_advance
+#: model:ir.ui.menu,name:bi_salary_advance.parent_menu_salary_advance
+msgid "Advance"
+msgstr "مقدما"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__advance
+msgid "Advance Amount"
+msgstr "مبلغ مقدم"
+
+#. module: bi_salary_advance
+#: model:hr.salary.rule,name:bi_salary_advance.hr_payslip_rule_advance
+msgid "Advance Salary"
+msgstr "راتب مقدما"
+
+#. module: bi_salary_advance
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_form
+msgid "Approve"
+msgstr "وافق"
+
+#. module: bi_salary_advance
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_filter
+#: selection:salary.advance,state:0
+msgid "Approved"
+msgstr "موافق عليه"
+
+#. module: bi_salary_advance
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_filter
+msgid "Approved Requests"
+msgstr "الطلبات المعتمدة"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__message_attachment_count
+msgid "Attachment Count"
+msgstr "عدد المرفقات"
+
+#. module: bi_salary_advance
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_form
+msgid "Cancel"
+msgstr "إلغاء"
+
+#. module: bi_salary_advance
+#: selection:salary.advance,state:0
+msgid "Cancelled"
+msgstr "ألغيت"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__company_id
+msgid "Company"
+msgstr "شركة"
+
+#. module: bi_salary_advance
+#: model:ir.model,name:bi_salary_advance.model_res_config_settings
+msgid "Config Settings"
+msgstr "إعدادات"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__employee_contract_id
+msgid "Contract"
+msgstr "عقد"
+
+#. module: bi_salary_advance
+#: model_terms:ir.actions.act_window,help:bi_salary_advance.action_my_salary_advance
+#: model_terms:ir.actions.act_window,help:bi_salary_advance.action_my_salary_advance_request_approved
+#: model_terms:ir.actions.act_window,help:bi_salary_advance.action_salary_advance_to_approve
+msgid "Create Requests."
+msgstr "إنشاء طلبات."
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__create_uid
+msgid "Created by"
+msgstr "أنشيء بواسطة"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__create_date
+msgid "Created on"
+msgstr "أنشيء في"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__currency_id
+msgid "Currency"
+msgstr "عملة"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__date
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_filter
+msgid "Date"
+msgstr "تاريخ"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__department
+msgid "Department"
+msgstr "قسم"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__display_name
+msgid "Display Name"
+msgstr "اسم العرض"
+
+#. module: bi_salary_advance
+#: selection:salary.advance,state:0
+msgid "Draft"
+msgstr "مسودة"
+
+#. module: bi_salary_advance
+#: model:ir.model,name:bi_salary_advance.model_hr_employee
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__employee_id
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_filter
+msgid "Employee"
+msgstr "موظف"
+
+#. module: bi_salary_advance
+#: model:ir.model,name:bi_salary_advance.model_hr_contract
+msgid "Employee Contract"
+msgstr "عقد الموظف"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__exceed_condition
+msgid "Exceed than maximum"
+msgstr "يتجاوز من الحد الأقصى"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__message_follower_ids
+msgid "Followers"
+msgstr "متابعون"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__message_channel_ids
+msgid "Followers (Channels)"
+msgstr "المتابعين (القنوات)"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "المتابعون (الشركاء)"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__id
+msgid "ID"
+msgstr ""
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,help:bi_salary_advance.field_salary_advance__message_unread
+msgid "If checked new messages require your attention."
+msgstr ""
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,help:bi_salary_advance.field_salary_advance__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,help:bi_salary_advance.field_salary_advance__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__message_is_follower
+msgid "Is Follower"
+msgstr "متابع"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__journal
+msgid "Journal"
+msgstr "دفتر اليومية"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance____last_update
+msgid "Last Modified on"
+msgstr "آخر تعديل في"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__write_uid
+msgid "Last Updated by"
+msgstr "آخر تعديل بواسطة"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__write_date
+msgid "Last Updated on"
+msgstr "آخر تعديل في"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "المرفق الرئيسي"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_hr_contract__max_percent
+msgid "Max.Salary Advance Percentage"
+msgstr "أقصى نسبة مقدم المرتبات"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__message_has_error
+msgid "Message Delivery error"
+msgstr "خطأ في تسليم الرسائل"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__message_ids
+msgid "Messages"
+msgstr "رسائل"
+
+#. module: bi_salary_advance
+#: model:ir.ui.menu,name:bi_salary_advance.menu_my_salary_advance_approved
+msgid "My Approved Salary Advance"
+msgstr "رصيدي المعتمد مقدما"
+
+#. module: bi_salary_advance
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_filter
+msgid "My Requests"
+msgstr "طلباتي"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__name
+msgid "Name"
+msgstr "اسم"
+
+#. module: bi_salary_advance
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_filter
+msgid "New Requests"
+msgstr "طلبات جديدة"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "النشاط التالي الموعد النهائي"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__activity_summary
+msgid "Next Activity Summary"
+msgstr "ملخص النشاط التالي"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__activity_type_id
+msgid "Next Activity Type"
+msgstr "نوع النشاط التالي"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__message_needaction_counter
+msgid "Number of Actions"
+msgstr "عدد الاجراءات"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__message_has_error_counter
+msgid "Number of error"
+msgstr "عدد الخطأ"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,help:bi_salary_advance.field_salary_advance__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "عدد الرسائل التي تتطلب اتخاذ إجراء"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,help:bi_salary_advance.field_salary_advance__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "عدد الرسائل مع خطأ في التسليم"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,help:bi_salary_advance.field_salary_advance__message_unread_counter
+msgid "Number of unread messages"
+msgstr "عدد الرسائل غير المقروءة"
+
+#. module: bi_salary_advance
+#: selection:salary.advance,activity_state:0
+msgid "Overdue"
+msgstr "متأخر"
+
+#. module: bi_salary_advance
+#: model:ir.model,name:bi_salary_advance.model_hr_payslip
+msgid "Pay Slip"
+msgstr "قسيمة الدفع"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__payment_method
+msgid "Payment Method"
+msgstr "طريقة الدفع"
+
+#. module: bi_salary_advance
+#: selection:salary.advance,activity_state:0
+msgid "Planned"
+msgstr "مخطط"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__reason
+msgid "Reason"
+msgstr "السبب"
+
+#. module: bi_salary_advance
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_form
+msgid "Reject"
+msgstr "رفض"
+
+#. module: bi_salary_advance
+#: selection:salary.advance,state:0
+msgid "Rejected"
+msgstr "مرفوض"
+
+#. module: bi_salary_advance
+#: model:ir.ui.menu,name:bi_salary_advance.menu_my_salary_advance
+msgid "Request Salary Advance"
+msgstr "طلب راتب مقدما"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__activity_user_id
+msgid "Responsible User"
+msgstr "المستخدم المسؤول"
+
+#. module: bi_salary_advance
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_employee_form_sa_inherit
+msgid "Salary Adv."
+msgstr "الراتب مقدما"
+
+#. module: bi_salary_advance
+#: model:ir.actions.act_window,name:bi_salary_advance.act_hr_employee_sa
+#: model:ir.actions.act_window,name:bi_salary_advance.action_my_salary_advance
+#: model:ir.actions.act_window,name:bi_salary_advance.action_my_salary_advance_request_approved
+#: model:ir.actions.act_window,name:bi_salary_advance.action_salary_advance_to_approve
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_account_config_inherit
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_filter
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_form
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_tree
+msgid "Salary Advance"
+msgstr "راتب مقدما"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_res_config_settings__sa_emp_account_id
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__credit
+msgid "Salary Advance Account"
+msgstr "حساب الراتب مقدما"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_hr_employee__sa_count
+msgid "Salary Advance Count"
+msgstr "عدد الراتب مقدما"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_res_config_settings__sa_journal_id
+msgid "Salary Advance Journal"
+msgstr "يومية الراتب مقدما"
+
+#. module: bi_salary_advance
+#: model:ir.ui.menu,name:bi_salary_advance.menu_salary_advance
+msgid "Salary Advance To Approve"
+msgstr "الراتب مقدما للموافقة"
+
+#. module: bi_salary_advance
+#: model:ir.model,name:bi_salary_advance.model_hr_payroll_structure
+msgid "Salary Structure"
+msgstr "هيكلة الرواتب"
+
+#. module: bi_salary_advance
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_filter
+msgid "Search"
+msgstr "بحث"
+
+#. module: bi_salary_advance
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_filter
+msgid "State"
+msgstr "حالة"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__state
+msgid "Status"
+msgstr "الحالة"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,help:bi_salary_advance.field_salary_advance__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: bi_salary_advance
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_form
+msgid "Submit"
+msgstr "قدم"
+
+#. module: bi_salary_advance
+#: selection:salary.advance,state:0
+msgid "Submitted"
+msgstr "قدمت"
+
+#. module: bi_salary_advance
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_filter
+msgid "Submitted Requests"
+msgstr "الطلبات المقدمة"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,help:bi_salary_advance.field_salary_advance__exceed_condition
+msgid "The Advance is greater than the maximum percentage in salary structure"
+msgstr "الراتب مقدما  أكبر من النسبة القصوى في هيكل الرواتب"
+
+#. module: bi_salary_advance
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_filter
+msgid "To Approve"
+msgstr "ليوافق"
+
+#. module: bi_salary_advance
+#: model_terms:ir.ui.view,arch_db:bi_salary_advance.view_salary_advance_filter
+msgid "To Submit"
+msgstr "للتقديم"
+
+#. module: bi_salary_advance
+#: selection:salary.advance,activity_state:0
+msgid "Today"
+msgstr "اليوم"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_res_config_settings__sa_treasury_account_id
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__debit
+msgid "Treasury Account"
+msgstr "حساب الخزينة"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__message_unread
+msgid "Unread Messages"
+msgstr "رسائل غير مقروءة"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "عداد الرسائل غير المقروءة"
+
+#. module: bi_salary_advance
+#: selection:salary.advance,state:0
+msgid "Waiting Approval"
+msgstr "في انتظار الموافقة"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,field_description:bi_salary_advance.field_salary_advance__website_message_ids
+msgid "Website Messages"
+msgstr "رسائل الموقع"
+
+#. module: bi_salary_advance
+#: model:ir.model.fields,help:bi_salary_advance.field_salary_advance__website_message_ids
+msgid "Website communication history"
+msgstr "تاريخ اتصال موقع الويب"
+
+#. module: bi_salary_advance
+#: code:addons/bi_salary_advance/models/salary_advance.py:203
+#, python-format
+msgid "You cannot delete approved salary advance requests."
+msgstr "لا يمكنك حذف طلبات الراتب المقدم المعتمدة."
+
+#. module: bi_salary_advance
+#: model:ir.model,name:bi_salary_advance.model_salary_advance
+msgid "salary.advance"
+msgstr ""
