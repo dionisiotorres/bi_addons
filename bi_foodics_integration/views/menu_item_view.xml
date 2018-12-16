@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <menuitem name="Foodics API" id="foodics_api_main_menu"/>
+        <menuitem name="Foodics API" id="foodics_api_sub_menu" parent="foodics_api_main_menu"
+                  action="foodics_api_action" sequence="1"/>
+
+    </data>
+</odoo>

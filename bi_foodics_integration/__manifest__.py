@@ -1,0 +1,28 @@
+# -*- coding: utf-8 -*-
+{
+    'name': "BI Foodics Integration",
+    'summary': "BI Foodics Integration",
+    'description': """ 
+            This module adds the Foodics API integration.
+     """,
+    'author': "BI Solutions Development Team",
+    'category': '',
+    'version': '0.1',
+    'depends': ['point_of_sale', 'account', 'product'],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/pos_res_config_settings_views.xml',
+        'views/pos_branch_views.xml',
+        'views/point_of_sale_views_inherit.xml',
+        'views/foodics_api_view.xml',
+        'views/account_journal_views_inherit.xml',
+        'views/account_tax_views_inherit.xml',
+        'views/res_partner_views_inherit.xml',
+        'views/res_users_views_inherit.xml',
+        'views/product_views_inherit.xml',
+        'views/menu_item_view.xml',
+    ],
+    'installable': True,
+    'auto_install': False,
+    'sequence': 1
+}

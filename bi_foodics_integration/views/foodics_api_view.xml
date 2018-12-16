@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <record id="foodics_api_form_view" model="ir.ui.view">
+            <field name="name">foodics.api.form.view</field>
+            <field name="model">foodics.api</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="get_data" string="Get Data" type="object"
+                                class="btn-primary"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="foodics_api_tree_view" model="ir.ui.view">
+            <field name="name">foodics.api.tree.view</field>
+            <field name="model">foodics.api</field>
+            <field name="arch" type="xml">
+                <tree string="Orders">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="foodics_api_action" model="ir.actions.act_window">
+            <field name="name">Foodics API</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">foodics.api</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>
+
+
