@@ -33,9 +33,9 @@
                     			<field name="advance" attrs="{'readonly':[('state','=','approve')]}"/>
                                 <field name="currency_id" groups="base.group_multi_currency" attrs="{'readonly':[('state','=','approve')]}"/>
                                 <field name="company_id"  groups="base.group_multi_currency" attrs="{'readonly':[('state','=','approve')]}"/>
-                                <field name="credit" required="1" attrs="{'readonly':[('state','=','approve')]}" groups="account.group_account_manager"/>
-                                <field name="debit" required="1" attrs="{'readonly':[('state','=','approve')]}" groups="account.group_account_manager"/>
-                                <field name="journal" required="1" attrs="{'readonly':[('state','=','approve')]}" groups="account.group_account_manager"/>
+                                <field name="credit" attrs="{'readonly':[('state','=','approve')], 'required': [('state', 'in', ['waiting_approval'])]}" groups="account.group_account_user,account.group_account_manager"/>
+                                <field name="debit" attrs="{'readonly':[('state','=','approve')], 'required': [('state', 'in', ['waiting_approval'])]}" groups="account.group_account_user,account.group_account_manager"/>
+                                <field name="journal" attrs="{'readonly':[('state','=','approve')], 'required': [('state', 'in', ['waiting_approval'])]}" groups="account.group_account_user,account.group_account_manager"/>
                                 <field name="employee_contract_id"  attrs="{'readonly':[('state','=','approve')]}" groups="hr.group_hr_manager,hr.group_hr_user"/>
 	                    	</group>
                     	</group>

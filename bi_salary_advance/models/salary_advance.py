@@ -95,16 +95,16 @@ class SalaryAdvancePayment(models.Model):
                                              ('state', '=', 'approve')])
         current_month = datetime.strptime(str(self.date), '%Y-%m-%d').date().month
         for each_advance in salary_advance_search:
-            existing_month = datetime.strptime(each_advance.date, '%Y-%m-%d').date().month
+            existing_month = each_advance.date.month
             if current_month == existing_month:
                 raise except_orm('Error!', 'Advance can be requested once in a month')
         if not self.employee_contract_id:
             raise except_orm('Error!', 'Define a contract for the employee')
         struct_id = self.employee_contract_id.struct_id
-        if not struct_id.max_percent or not struct_id.advance_date:
-            raise except_orm('Error!', 'Max percentage or advance days are not provided in Contract')
+        if not self.employee_contract_id.max_percent: # or not self.employee_contract_id.advance_date:
+            raise except_orm('Error!', 'Max percentage is not provided in Contract')
         adv = self.advance
-        amt = (self.employee_contract_id.struct_id.max_percent * self.employee_contract_id.wage) / 100
+        amt = (self.employee_contract_id.max_percent * self.employee_contract_id.wage) / 100
         if adv > amt and not self.exceed_condition:
             raise except_orm('Error!', 'Advance amount is greater than allotted')
 
@@ -116,14 +116,15 @@ class SalaryAdvancePayment(models.Model):
         if payslip_obj:
             raise except_orm('Warning', "This month salary already calculated")
 
-        for slip in self.env['hr.payslip'].search([('employee_id', '=', self.employee_id.id)]):
-            slip_moth = slip.date_from.month
-            if current_month == slip_moth + 1:
-                slip_day = datetime.strptime(slip.date_from, '%Y-%m-%d').date().day
-                current_day = datetime.strptime(self.date, '%Y-%m-%d').date().day
-                if current_day - slip_day < struct_id.advance_date:
-                    raise exceptions.Warning(
-                        _('Request can be done after "%s" Days From prevoius month salary') % struct_id.advance_date)
+        # to check advance_date
+        # for slip in self.env['hr.payslip'].search([('employee_id', '=', self.employee_id.id)]):
+        #     slip_moth = slip.date_from.month
+        #     if current_month == slip_moth + 1:
+        #         slip_day = datetime.strptime(slip.date_from, '%Y-%m-%d').date().day
+        #         current_day = datetime.strptime(self.date, '%Y-%m-%d').date().day
+        #         if current_day - slip_day < struct_id.advance_date:
+        #             raise exceptions.Warning(
+        #                 _('Request can be done after "%s" Days From prevoius month salary') % struct_id.advance_date)
         self.state = 'waiting_approval'
 
     @api.one
@@ -134,7 +135,7 @@ class SalaryAdvancePayment(models.Model):
                                              ('state', '=', 'approve')])
         current_month = self.date.month
         for each_advance in salary_advance_search:
-            existing_month = datetime.strptime(each_advance.date, '%Y-%m-%d').date().month
+            existing_month = each_advance.date.month
             if current_month == existing_month:
                 raise except_orm('Error!', 'Advance can be requested once in a month')
         if not self.debit or not self.credit or not self.journal:
@@ -142,57 +143,58 @@ class SalaryAdvancePayment(models.Model):
         if not self.advance:
             raise except_orm('Warning', 'You must Enter the Salary Advance amount')
 
-        move_obj = self.env['account.move']
-        timenow = time.strftime('%Y-%m-%d')
-        line_ids = []
-        debit_sum = 0.0
-        credit_sum = 0.0
-        for request in self:
-            amount = request.advance
-            request_name = request.employee_id.name
-            reference = request.name
-            journal_id = request.journal.id
-            move = {
-                'narration': 'Salary Advance Of ' + request_name,
-                'ref': reference,
-                'journal_id': journal_id,
-                'date': timenow,
-                'state': 'posted',
-            }
-
-            debit_account_id = request.debit.id
-            credit_account_id = request.credit.id
-
-            if debit_account_id:
-                debit_line = (0, 0, {
-                    'name': request_name,
-                    'account_id': debit_account_id,
-                    'journal_id': journal_id,
-                    'date': timenow,
-                    'debit': amount > 0.0 and amount or 0.0,
-                    'credit': amount < 0.0 and -amount or 0.0,
-                    'currency_id': self.currency_id.id,
-                })
-                line_ids.append(debit_line)
-                debit_sum += debit_line[2]['debit'] - debit_line[2]['credit']
-
-            if credit_account_id:
-                credit_line = (0, 0, {
-                    'name': request_name,
-                    'account_id': credit_account_id,
-                    'journal_id': journal_id,
-                    'date': timenow,
-                    'debit': amount < 0.0 and -amount or 0.0,
-                    'credit': amount > 0.0 and amount or 0.0,
-                    'currency_id': self.currency_id.id,
-                })
-                line_ids.append(credit_line)
-                credit_sum += credit_line[2]['credit'] - credit_line[2]['debit']
-
-            move.update({'line_ids': line_ids})
-            move_obj.create(move)
-            self.state = 'approve'
-            return True
+        # to add accounting entries
+        # move_obj = self.env['account.move']
+        # timenow = time.strftime('%Y-%m-%d')
+        # line_ids = []
+        # debit_sum = 0.0
+        # credit_sum = 0.0
+        # for request in self:
+        #     amount = request.advance
+        #     request_name = request.employee_id.name
+        #     reference = request.name
+        #     journal_id = request.journal.id
+        #     move = {
+        #         'narration': 'Salary Advance Of ' + request_name,
+        #         'ref': reference,
+        #         'journal_id': journal_id,
+        #         'date': timenow,
+        #         'state': 'posted',
+        #     }
+        #
+        #     debit_account_id = request.debit.id
+        #     credit_account_id = request.credit.id
+        #
+        #     if debit_account_id:
+        #         debit_line = (0, 0, {
+        #             'name': request_name,
+        #             'account_id': debit_account_id,
+        #             'journal_id': journal_id,
+        #             'date': timenow,
+        #             'debit': amount > 0.0 and amount or 0.0,
+        #             'credit': amount < 0.0 and -amount or 0.0,
+        #             'currency_id': self.currency_id.id,
+        #         })
+        #         line_ids.append(debit_line)
+        #         debit_sum += debit_line[2]['debit'] - debit_line[2]['credit']
+        #
+        #     if credit_account_id:
+        #         credit_line = (0, 0, {
+        #             'name': request_name,
+        #             'account_id': credit_account_id,
+        #             'journal_id': journal_id,
+        #             'date': timenow,
+        #             'debit': amount < 0.0 and -amount or 0.0,
+        #             'credit': amount > 0.0 and amount or 0.0,
+        #             'currency_id': self.currency_id.id,
+        #         })
+        #         line_ids.append(credit_line)
+        #         credit_sum += credit_line[2]['credit'] - credit_line[2]['debit']
+        #
+        #     move.update({'line_ids': line_ids})
+        #     move_obj.create(move)
+        self.state = 'approve'
+        return True
 
     @api.multi
     def unlink(self):

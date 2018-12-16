@@ -7,7 +7,7 @@
             <field name="name">Advance Salary</field>
             <field name="category_id" ref="hr_payroll.DED"/>
             <field name="amount_select">code</field>
-            <field name="amount_python_compute">result = inputs.SAR and - (inputs.SAR.amount)</field>
+            <field name="amount_python_compute">result = inputs.SAR and (inputs.SAR.amount)</field>
             <field name="appears_on_payslip" eval="True"/>
             <field name="sequence" eval="190"/>
         </record>
@@ -17,15 +17,16 @@
             <field name="name">Salary Advance</field>
             <field name="input_id" ref="hr_payslip_rule_advance"/>
         </record>
-        <!-- salary structure -->
-        <record model="ir.ui.view" id="model_salary_structure">
-            <field name="name">salary.structure.form</field>
-            <field name="model">hr.payroll.structure</field>
-            <field name="inherit_id" ref="hr_payroll.view_hr_employee_grade_form"/>
+
+        <!-- hr contract -->
+        <record model="ir.ui.view" id="model_hr_contract">
+            <field name="name">hr.contract</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='parent_id']" position="after">
+                <xpath expr="//field[@name='advantages']" position="after">
                     <field name="max_percent"/>
-                    <field name="advance_date"/>
+                    <!--<field name="advance_date"/>-->
                 </xpath>
             </field>
         </record>
