@@ -150,6 +150,19 @@ class PosConfigInherit(models.Model):
             raise ValidationError(_('There is no payment method found with the hid %s') % (hid))
 
     @api.model
+    def get_pos_related_payment_method_by_hid(self, hid, pos_session):
+        pos_id = pos_session.config_id
+        journal = False
+        for j in pos_id.journal_ids:
+            if j.hid == hid:
+                journal = j
+                break
+        if journal:
+            return journal
+        else:
+            raise ValidationError(_('POS has no payment method with the hid %s') % (hid))
+
+    @api.model
     def get_user_by_hid(self, hid):
         user = self.env['res.users'].search([('hid', '=', hid)], limit=1)
         if user:
@@ -206,7 +219,7 @@ class PosConfigInherit(models.Model):
     def _prepare_api_statements(self, lines, current_session):
         s_lines = []
         for line in lines:
-            journal = self.get_payment_method_by_hid(line['payment_method']['hid'])
+            journal = self.get_pos_related_payment_method_by_hid(line['payment_method']['hid'], current_session)
             if not journal.default_debit_account_id:
                 raise ValidationError(_('Please define the default debit/credit account for journal %s')%(journal.name))
             s_lines.append([0, 0, {

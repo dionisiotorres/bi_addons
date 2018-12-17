@@ -9,9 +9,9 @@ class AccountJournalInherit(models.Model):
 
     hid = fields.Char(string='HID', copy=False)
 
-    @api.constrains('hid')
-    def check_unique_hid(self):
-        for rec in self:
-            if rec.hid:
-                if self.env['account.journal'].search_count([('hid', '=', rec.hid)]) > 1:
-                    raise ValidationError(_('This HID already exists.'))
+    # @api.constrains('hid')
+    # def check_unique_hid(self):
+    #     for rec in self:
+    #         if rec.hid:
+    #             if self.env['account.journal'].search_count([('hid', '=', rec.hid)]) > 1:
+    #                 raise ValidationError(_('This HID already exists.'))
