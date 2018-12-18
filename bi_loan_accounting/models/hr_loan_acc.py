@@ -16,9 +16,20 @@ class HrLoanAcc(models.Model):
     def _get_default_journal(self):
         return int(self.env['ir.config_parameter'].sudo().get_param('bi_loan_accounting.loan_journal_id')) or False
 
+    @api.multi
+    def _get_loan_lines_state(self):
+        for loan in self:
+            ready = False
+            for line in loan.loan_lines:
+                if not line.paid:
+                    ready = True
+            loan.is_loan_lines_ready = ready
+
+
     emp_account_id = fields.Many2one('account.account', string="Loan Account", default=_get_default_emp_account)
     treasury_account_id = fields.Many2one('account.account', string="Treasury Account", default=_get_default_treasury_account)
     journal_id = fields.Many2one('account.journal', string="Journal", default=_get_default_journal)
+    is_loan_lines_ready = fields.Boolean(string="Loan Lines Ready", compute='_get_loan_lines_state')
 
     @api.multi
     def action_approve(self):

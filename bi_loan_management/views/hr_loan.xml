@@ -59,7 +59,7 @@
                     <notebook>
                         <page string="Installments">
                             <field name="loan_lines" attrs="{'readonly':[('state','=','approve')]}">
-                                <tree string="Installments" editable="bottom">
+                                <tree string="Installments" editable="bottom" decoration-danger="paid == False" decoration-info="paid == True">
                                     <field name="date"/>
                                     <field name="amount"/>
                                     <field name="paid" invisible="1"/>

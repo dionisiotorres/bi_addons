@@ -12,6 +12,7 @@
         'base', 'hr_payroll', 'hr', 'account', 'bi_loan_management',
     ],
     'data': [
+        'wizard/loan_payment_wizard.xml',
         'views/hr_loan_config.xml',
         'views/hr_loan_acc.xml',
     ],
