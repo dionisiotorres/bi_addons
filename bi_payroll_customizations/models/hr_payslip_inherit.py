@@ -12,5 +12,5 @@ class HrPayslip(models.Model):
         if self.contract_id.analytic_account_id and self.move_id:
             for line in self.move_id.line_ids:
                 line.write({'analytic_account_id': self.contract_id.analytic_account_id.id,
-                            'name': line.name + ' / ' + self.employee_id.name})
+                            'partner_id': self.employee_id.address_home_id.id})
         return result
