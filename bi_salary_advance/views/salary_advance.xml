@@ -43,6 +43,7 @@
                         <group class="oe_subtotal_footer oe_right" colspan="2" >
                             <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="total_paid_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="balance_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                         </group>
                         <div class="oe_clear"/>
 		            </sheet>
@@ -59,6 +60,7 @@
                     <field name="date"/>
                     <field name="advance"/>
                     <field name="total_paid_amount"/>
+                    <field name="balance_amount"/>
                     <field name="state"/>
                 </tree>
             </field>

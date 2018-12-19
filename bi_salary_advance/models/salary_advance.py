@@ -26,8 +26,11 @@ class SalaryAdvancePayment(models.Model):
             total_paid = 0.0
             if adv.paid:
                 total_paid += adv.advance
+            balance_amount = adv.advance - total_paid
+
             adv.total_amount = adv.advance
             adv.total_paid_amount = total_paid
+            adv.balance_amount = balance_amount
 
     name = fields.Char(string='Name', readonly=True, default=lambda self: 'Adv/')
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True)
@@ -54,6 +57,7 @@ class SalaryAdvancePayment(models.Model):
     employee_contract_id = fields.Many2one('hr.contract', string='Contract')
     paid = fields.Boolean(string="Paid", copy=False)
     total_amount = fields.Float(string="Total Amount", compute='_compute_advance_amount')
+    balance_amount = fields.Float(string="Balance Amount", compute='_compute_advance_amount')
     total_paid_amount = fields.Float(string="Total Paid Amount", compute='_compute_advance_amount')
 
     @api.onchange('employee_id')
