@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_account_asset_asset_form_inherit" model="ir.ui.view">
+            <field name="name">view.account.asset.asset.form.inherit</field>
+            <field name="model">account.asset.asset</field>
+            <field name="inherit_id" ref="account_asset.view_account_asset_asset_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='account_analytic_id']" position="after">
+                    <field name="employee_id"/>
+                    <field name="department_id"/>
+                    <field name="receive_date"/>
+                </xpath>
+                <xpath expr="//notebook" position="inside">
+                    <page string="Asset History">
+                        <field name="asset_history_ids">
+                            <tree editable="bottom" create="false">
+                                <field name="employee_id" readonly="1"/>
+                                <field name="department_id" readonly="1"/>
+                                <field name="receive_date" readonly="1"/>
+                                <field name="delivered_date"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

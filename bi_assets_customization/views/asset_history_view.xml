@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_asset_history_form" model="ir.ui.view">
+            <field name="name">view.asset.history.form</field>
+            <field name="model">asset.history</field>
+            <field name="arch" type="xml">
+                <form string="Asset History">
+                    <sheet>
+                        <group col="4">
+                            <field name="employee_id"/>
+                            <field name="department_id"/>
+                            <field name="receive_date"/>
+                            <field name="delivered_date"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>
