@@ -20,6 +20,18 @@ class SalaryAdvancePayment(models.Model):
     def _get_default_journal(self):
         return int(self.env['ir.config_parameter'].sudo().get_param('bi_salary_advance.sa_journal_id')) or False
 
+    @api.multi
+    def _compute_advance_amount(self):
+        for adv in self:
+            total_paid = 0.0
+            if adv.paid:
+                total_paid += adv.advance
+            balance_amount = adv.advance - total_paid
+
+            adv.total_amount = adv.advance
+            adv.total_paid_amount = total_paid
+            adv.balance_amount = balance_amount
+
     name = fields.Char(string='Name', readonly=True, default=lambda self: 'Adv/')
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True)
     date = fields.Date(string='Date', required=True, default=lambda self: fields.Date.today())
@@ -43,6 +55,10 @@ class SalaryAdvancePayment(models.Model):
     credit = fields.Many2one('account.account', string='Salary Advance Account', default=_get_default_emp_account)
     journal = fields.Many2one('account.journal', string='Journal', default=_get_default_journal)
     employee_contract_id = fields.Many2one('hr.contract', string='Contract')
+    paid = fields.Boolean(string="Paid", copy=False)
+    total_amount = fields.Float(string="Total Amount", compute='_compute_advance_amount')
+    balance_amount = fields.Float(string="Balance Amount", compute='_compute_advance_amount')
+    total_paid_amount = fields.Float(string="Total Paid Amount", compute='_compute_advance_amount')
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):

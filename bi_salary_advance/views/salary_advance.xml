@@ -31,6 +31,7 @@
 		                    </group>
 		                    <group>
                     			<field name="advance" attrs="{'readonly':[('state','=','approve')]}"/>
+                    			<field name="paid" invisible="1"/>
                                 <field name="currency_id" groups="base.group_multi_currency" attrs="{'readonly':[('state','=','approve')]}"/>
                                 <field name="company_id"  groups="base.group_multi_currency" attrs="{'readonly':[('state','=','approve')]}"/>
                                 <field name="credit" attrs="{'readonly':[('state','=','approve')], 'required': [('state', 'in', ['waiting_approval'])]}" groups="account.group_account_user,account.group_account_manager"/>
@@ -39,6 +40,12 @@
                                 <field name="employee_contract_id"  attrs="{'readonly':[('state','=','approve')]}" groups="hr.group_hr_manager,hr.group_hr_user"/>
 	                    	</group>
                     	</group>
+                        <group class="oe_subtotal_footer oe_right" colspan="2" >
+                            <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="total_paid_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="balance_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                        <div class="oe_clear"/>
 		            </sheet>
                 </form>
             </field>
@@ -52,6 +59,8 @@
                     <field name="employee_id"/>
                     <field name="date"/>
                     <field name="advance"/>
+                    <field name="total_paid_amount"/>
+                    <field name="balance_amount"/>
                     <field name="state"/>
                 </tree>
             </field>

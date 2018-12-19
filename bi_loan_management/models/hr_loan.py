@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
+from odoo.tools import float_compare
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import except_orm, ValidationError
@@ -56,8 +57,12 @@ class HrLoan(models.Model):
 
     @api.model
     def create(self, values):
-        loan_count = self.env['hr.loan'].search_count([('employee_id', '=', values['employee_id']), ('state', '=', 'approve'),
-                                                       ('balance_amount', '!=', 0)])
+        loan_count = False
+        loans = self.env['hr.loan'].search([('employee_id', '=', values['employee_id']), ('state', '=', 'approve'), ('balance_amount', '!=', 0)])
+        for loan in loans:
+            if float_compare(loan.balance_amount, 0.0, 5) != 0:
+                loan_count = True
+                break
         if loan_count:
             raise except_orm('Error!', 'The employee has already a pending installment')
         else:

@@ -22,7 +22,7 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button name="set_state_to_approve" string="Submit TO Approve" type="object" states="draft"
+                        <button name="set_state_to_approve" string="Approve" type="object" states="draft"
                                 class="btn-primary" groups="bi_transfer_request.approve_transfer_request"/>
 
                         <button name="set_state_to_cancelled" string="Cancel Request" type="object"

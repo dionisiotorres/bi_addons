@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from odoo import models
+from odoo import models, fields, api
+
+
+class HrPayslipInput(models.Model):
+    _inherit = 'hr.payslip.input'
+
+    sa_id = fields.Many2one('salary.advance', string="Salary Advance")
 
 
 class SalaryRuleInput(models.Model):
@@ -23,4 +29,12 @@ class SalaryRuleInput(models.Model):
                 for result in res:
                     if state == 'approve' and amount != 0 and result.get('code') == 'SAR':
                         result['amount'] = amount
+                        result['sa_id'] = adv_obj.id
         return res
+
+    @api.multi
+    def action_payslip_done(self):
+        for line in self.input_line_ids:
+            if line.sa_id:
+                line.sa_id.paid = True
+        return super(SalaryRuleInput, self).action_payslip_done()
