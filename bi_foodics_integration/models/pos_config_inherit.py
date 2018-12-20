@@ -259,7 +259,7 @@ class PosConfigInherit(models.Model):
             user = self.get_user_by_hid(order['cashier']['hid'])
 
         if 'customer' in order and order['customer'] and order['customer']['hid']:
-            customer = self.get_user_by_hid(order['customer']['hid'])
+            customer = self.get_partner_by_hid(order['customer']['hid'])
 
         amount_paid = 0.0
         if 'payments' in order:
