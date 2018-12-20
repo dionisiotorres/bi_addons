@@ -33,9 +33,10 @@
             <field name="inherit_id" ref="point_of_sale.view_pos_config_kanban"/>
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='open_session_cb']" position="after">
-                    <button t-if="!record.current_session_id.raw_value &amp;&amp; !record.pos_session_username.value" class="btn btn-primary" name="import_foodics_data" type="object">Import Foodics Data</button>
+                    <button t-if="!record.current_session_id.raw_value &amp;&amp; !record.pos_session_username.value" class="btn btn-primary" name="%(bi_foodics_integration.action_import_foodics_wizard)d" type="action">Import Foodics Data</button>
                 </xpath>
             </field>
         </record>
+
     </data>
 </odoo>

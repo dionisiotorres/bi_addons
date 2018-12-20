@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="import_foodics_wizard" model="ir.ui.view">
+        <field name="name">import.foodics.wizard</field>
+        <field name="model">import.foodics.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Foodics Data">
+                <group>
+                    <field name="pos_id" invisible="1"/>
+                    <field name="date"/>
+                </group>
+                <footer>
+                    <button string='Import Data' name="import_foodics_data" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_import_foodics_wizard" model="ir.actions.act_window">
+        <field name="name">Import Foodics Data</field>
+        <field name="res_model">import.foodics.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="import_foodics_wizard"/>
+        <field name="context">{'default_pos_id': active_id}</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="action_import_foodics_all_wizard" model="ir.actions.act_window">
+        <field name="name">Import Foodics Data</field>
+        <field name="res_model">import.foodics.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="import_foodics_wizard"/>
+        <field name="target">new</field>
+    </record>
+
+    <act_window
+        id="action_import_foodics_orders_all"
+        res_model="import.foodics.wizard"
+        src_model="pos.config"
+        target="new"
+        multi="True"
+        key2="action_import_foodics_all_wizard"
+        view_mode="form"
+        name="Import Foodics Data"/>
+
+</odoo>

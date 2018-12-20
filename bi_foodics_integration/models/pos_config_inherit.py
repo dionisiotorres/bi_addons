@@ -297,7 +297,7 @@ class PosConfigInherit(models.Model):
         }
 
     @api.multi
-    def import_foodics_data(self):
+    def import_foodics_data(self, date):
         self.ensure_one()
 
         foodics_base_url = self.env['ir.config_parameter'].sudo().get_param('bi_foodics_integration.foodics_base_url')
@@ -307,35 +307,16 @@ class PosConfigInherit(models.Model):
             raise ValidationError(_('Please configure Foodics base URL and secret.'))
 
         if not self.pos_branch_id:
-            raise ValidationError(_('Please set the branch of this pos.'))
+            raise ValidationError(_('Please set the branch in the pos.'))
 
-        business_date = datetime.now().strftime('%Y-%m-%d')
-        # business_date = '2018-10-14'
+        business_date = date.strftime('%Y-%m-%d')
 
         headers = self.get_headers(foodics_base_url, foodics_secret)
-        branches = self.get_branches(foodics_base_url, headers)
-        # orders = self.get_orders(foodics_base_url, headers, business_date, self.pos_branch_id.hid)
+        orders = self.get_orders(foodics_base_url, headers, business_date, self.pos_branch_id.hid)
 
-        # test orders
-        test_orders = []
-        order1 = self.get_orders_by_hid(foodics_base_url, headers, '_14da1g65g')
-        if order1:
-            test_orders.append(order1)
-            print('order1', order1)
-        order2 = self.get_orders_by_hid(foodics_base_url, headers, '_a2g516g23')
-        if order2:
-            test_orders.append(order2)
-            print('order2', order2)
-
-        print('business_date', business_date)
-        print('branches', branches)
-        # print('orders', orders)
-
-        # if not orders:
-        #     raise ValidationError(_('No orders found.'))
-
-        if not test_orders:
-            raise ValidationError(_('No orders found.'))
+        if not orders:
+            return
+            # raise ValidationError(_('No orders found.'))
 
         if not self.current_session_id:
             self.current_session_id = self.env['pos.session'].create({
@@ -344,15 +325,9 @@ class PosConfigInherit(models.Model):
             })
 
         pos_orders = []
-        # for order in orders:
-        #     pos_order = self._prepare_api_order(order, self.current_session_id)
-        #     pos_orders.append(pos_order)
-
-        for order in test_orders:
+        for order in orders:
             pos_order = self._prepare_api_order(order, self.current_session_id)
             pos_orders.append(pos_order)
-
-        print('pos orders', pos_orders)
 
         created_order_ids = self.env['pos.order'].create_from_ui(pos_orders)
         self._update_orders_amount_all(created_order_ids)
