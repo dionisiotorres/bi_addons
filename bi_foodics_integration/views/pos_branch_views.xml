@@ -12,6 +12,7 @@
                             <group>
                                 <field name="name"/>
                                 <field name="hid"/>
+                                <field name="responsible_id"/>
                             </group>
                         </group>
                     </sheet>
@@ -26,6 +27,7 @@
                 <tree string="Branches">
                     <field name="name"/>
                     <field name="hid"/>
+                    <field name="responsible_id"/>
                 </tree>
             </field>
         </record>

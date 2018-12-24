@@ -13,6 +13,7 @@ class PosBranch(models.Model):
 
     name = fields.Char(string='Name', required=True)
     hid = fields.Char(string='HID', required=True, copy=False)
+    responsible_id = fields.Many2one('res.users', string='Responsible', required=True)
 
     @api.constrains('hid')
     def check_unique_hid(self):
@@ -254,9 +255,11 @@ class PosConfigInherit(models.Model):
     @api.model
     def _prepare_api_order(self, order, current_session):
         customer = False
-        user = False
-        if 'cashier' in order and order['cashier']['hid']:
-            user = self.get_user_by_hid(order['cashier']['hid'])
+        user = current_session.config_id.pos_branch_id and current_session.config_id.pos_branch_id.responsible_id
+
+        # to set cashier from api response
+        # if 'cashier' in order and order['cashier']['hid']:
+        #     user = self.get_user_by_hid(order['cashier']['hid'])
 
         if 'customer' in order and order['customer'] and order['customer']['hid']:
             customer = self.get_partner_by_hid(order['customer']['hid'])
@@ -331,3 +334,6 @@ class PosConfigInherit(models.Model):
 
         created_order_ids = self.env['pos.order'].create_from_ui(pos_orders)
         self._update_orders_amount_all(created_order_ids)
+
+        # close and validate session
+        self.current_session_id.action_pos_session_closing_control()
