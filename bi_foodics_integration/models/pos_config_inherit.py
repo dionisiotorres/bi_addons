@@ -135,12 +135,19 @@ class PosConfigInherit(models.Model):
         return order
 
     @api.model
-    def get_product_by_hid(self, hid):
-        product = self.env['product.product'].search([('hid', '=', hid)], limit=1)
+    def get_product_by_hid(self, hid, size_hid=False):
+        if size_hid:
+            domain = [('hid', '=', hid), ('size_hid', '=', size_hid)]
+        else:
+            domain = [('hid', '=', hid)]
+        product = self.env['product.product'].search(domain, limit=1)
         if product:
             return product
         else:
-            raise ValidationError(_('There is no product found with the hid %s')%(hid))
+            if size_hid:
+                raise ValidationError(_('There is no product found with the hid %s and size hid %s')%(hid, size_hid))
+            else:
+                raise ValidationError(_('There is no product found with the hid %s') % (hid))
 
     @api.model
     def get_payment_method_by_hid(self, hid):
@@ -203,7 +210,11 @@ class PosConfigInherit(models.Model):
     def _prepare_api_order_lines(self, lines, taxes):
         p_lines = []
         for line in lines:
-            product = self.get_product_by_hid(line['product_hid'])
+            if 'product_size_hid' in line and line['product_size_hid']:
+                product_size_hid = line['product_size_hid']
+            else:
+                product_size_hid = False
+            product = self.get_product_by_hid(line['product_hid'], product_size_hid)
             p_lines.append([0, 0, {
                     'discount': line['discount_amount'],
                     'pack_lot_ids': [],
