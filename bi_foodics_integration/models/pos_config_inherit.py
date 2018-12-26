@@ -340,8 +340,9 @@ class PosConfigInherit(models.Model):
 
         pos_orders = []
         for order in orders:
-            pos_order = self._prepare_api_order(order, self.current_session_id)
-            pos_orders.append(pos_order)
+            if 'payments' in order and order['payments']:
+                pos_order = self._prepare_api_order(order, self.current_session_id)
+                pos_orders.append(pos_order)
 
         created_order_ids = self.env['pos.order'].create_from_ui(pos_orders)
         self._update_orders_amount_all(created_order_ids)
