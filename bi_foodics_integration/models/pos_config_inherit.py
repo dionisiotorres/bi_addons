@@ -226,6 +226,23 @@ class PosConfigInherit(models.Model):
                     'tax_ids': [(6, 0, taxes)] if taxes else False
                 }
             ])
+
+            # add options
+            if 'options' in line and line['options']:
+                for option in line['options']:
+                    option_product = self.get_product_by_hid(option['hid'])
+                    p_lines.append([0, 0, {
+                        'discount': 0.0,
+                        'pack_lot_ids': [],
+                        'price_unit': 0.0,
+                        'product_id': option_product.id,
+                        'price_subtotal': 0.0,
+                        'price_subtotal_incl': 0.0,
+                        'qty': option['relationship_data']['quantity'],
+                        'tax_ids': False
+                        }
+                    ])
+
         return p_lines
 
     def _prepare_api_statements(self, lines, current_session):
