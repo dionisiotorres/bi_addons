@@ -27,6 +27,7 @@ class PosConfigInherit(models.Model):
     _inherit = 'pos.config'
 
     pos_branch_id = fields.Many2one('pos.branch', string='Branch')
+    delivery_product_id = fields.Many2one('product.product', string='Delivery Product')
 
 
     @api.model
@@ -207,7 +208,7 @@ class PosConfigInherit(models.Model):
         else:
             raise ValidationError(_('There is no statment found with the journal %s') % (journal.name))
 
-    def _prepare_api_order_lines(self, lines, taxes):
+    def _prepare_api_order_lines(self, order, current_session, lines, taxes):
         p_lines = []
         for line in lines:
             if 'product_size_hid' in line and line['product_size_hid']:
@@ -242,6 +243,22 @@ class PosConfigInherit(models.Model):
                         'tax_ids': False
                         }
                     ])
+
+        # add delivery service
+        if 'delivery_price' in order and order['delivery_price']:
+            delivery_product = self.current_session_id.config_id.delivery_product_id
+            if delivery_product:
+                p_lines.append([0, 0, {
+                        'discount': 0.0,
+                        'pack_lot_ids': [],
+                        'price_unit': order['delivery_price'],
+                        'product_id': delivery_product.id,
+                        'price_subtotal': order['delivery_price'],
+                        'price_subtotal_incl': order['delivery_price'],
+                        'qty': 1.0,
+                        'tax_ids': False
+                    }
+                ])
 
         return p_lines
 
@@ -313,7 +330,7 @@ class PosConfigInherit(models.Model):
                     'date_order': order['closed_at'],
                     'fiscal_position_id': False,
                     'pricelist_id': self.available_pricelist_ids[0].id,
-                    'lines': self._prepare_api_order_lines(order['products'], taxes),
+                    'lines': self._prepare_api_order_lines(order, current_session, order['products'], taxes),
                     'name': order['reference'],
                     'partner_id': customer.id if customer else False,
                     'pos_session_id': current_session.id,
