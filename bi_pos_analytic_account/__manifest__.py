@@ -3,7 +3,7 @@
     'name': "BI POS Analytic Account",
     'summary': "BI POS Analytic Account",
     'description': """ 
-        This module adds the analytic account to pos entries.
+        This module adds the analytic account to pos entries and set entry date to be the po date.
      """,
     'author': "BI Solutions Development Team",
     'category': 'Point Of Sale',
