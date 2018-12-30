@@ -321,7 +321,8 @@ class PosConfigInherit(models.Model):
                     'creation_date': order['closed_at'],
                     'statement_ids': self._prepare_api_statements(order['payments'], current_session),
                     'uid': order['reference'],
-                    'user_id': user.id if user else self.env.uid
+                    'user_id': user.id if user else self.env.uid,
+                    'note': order['notes']
                 },
             'id': order['reference'],
             'to_invoice': False
