@@ -62,10 +62,6 @@ class PosOrderInherit(models.Model):
                             'credit': line1['credit'] or 0.0,
                             'debit': line1['debit'] or 0.0,
                             'partner_id': line1['partner_id'],
-
-                            # added part to add analytic accounts
-                            'analytic_account_id': line1['analytic_account_id'],
-                            'analytic_tag_ids': line1['analytic_tag_ids'],
                         })
 
                         line2 = Product._convert_prepared_anglosaxon_line(line2, order.partner_id)
@@ -74,7 +70,11 @@ class PosOrderInherit(models.Model):
                             'account_id': line2['account_id'],
                             'credit': line2['credit'] or 0.0,
                             'debit': line2['debit'] or 0.0,
-                            'partner_id': line2['partner_id']
+                            'partner_id': line2['partner_id'],
+
+                            # added part to add analytic accounts
+                            'analytic_account_id': line1['analytic_account_id'],
+                            'analytic_tag_ids': line1['analytic_tag_ids'],
                         })
 
         for order in self.filtered(lambda o: not o.account_move or o.state == 'paid'):
