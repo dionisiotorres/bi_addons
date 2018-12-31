@@ -65,8 +65,8 @@
                                 <!--<field name="requested_by_employee_id" attrs="{'readonly': [('state', '!=','draft')]}" invisible="1"/>-->
                                 <field name="analytic_account_id" invisible="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
                                 <field name="source_stock_location_id"
-                                       attrs="{'readonly': [('state', 'not in',('draft','approve'))],'required':[('state','in',('approve','transferring'))]}"/>
-                                <field name="transfer_reason"/>
+                                       attrs="{'readonly': [('state', 'not in',('draft','approve'))]}" required="1"/>
+                                <field name="transfer_reason" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
                             </group>
                             <group>
                                 <!--<field name="requested_for_employee_id"-->
@@ -85,7 +85,7 @@
                                         <field name="state" invisible="1"/>
                                         <field name="product_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                                         <field name="qty" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
-                                        <field name="product_uom_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
+                                        <field name="product_uom_id" readonly="1"/>
                                         <field name="transferred_qty" invisible="1" attrs="{'readonly': [('state', 'not in', ['draft', 'approve'])]}"/>
                                         <field name="notes" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                                         <field name="transfer_created" invisible="1"/>
@@ -124,6 +124,41 @@
             <field name="name">Transfer Requests</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">transfer.request</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+        <record id="transfer_request_reason_form_view" model="ir.ui.view">
+            <field name="name">transfer.request.reason.form.view</field>
+            <field name="model">transfer.request.reason</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="transfer_request_reason_tree_view" model="ir.ui.view">
+            <field name="name">transfer.request.reason.tree.view</field>
+            <field name="model">transfer.request.reason</field>
+            <field name="arch" type="xml">
+                <tree string="Transfer Request Reasons">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="transfer_request_reason_action" model="ir.actions.act_window">
+            <field name="name">Transfer Request Reasons</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">transfer.request.reason</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
         </record>
