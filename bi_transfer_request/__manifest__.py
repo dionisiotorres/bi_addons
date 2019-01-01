@@ -15,6 +15,7 @@
         # wizard
         'wizard/transfer_products_wizard_view.xml',
         # views
+        'views/product_view.xml',
         'views/transfer_request_view.xml',
         'views/transfer_request_line_view.xml',
         'views/menu_item_view.xml',
