@@ -28,6 +28,7 @@ class PosConfigInherit(models.Model):
 
     pos_branch_id = fields.Many2one('pos.branch', string='Branch')
     delivery_product_id = fields.Many2one('product.product', string='Delivery Product')
+    default_partner_id = fields.Many2one('res.partner', string='Default Customer')
 
 
     @api.model
@@ -180,12 +181,15 @@ class PosConfigInherit(models.Model):
             raise ValidationError(_('There is no user found with the hid %s') % (hid))
 
     @api.model
-    def get_partner_by_hid(self, hid):
+    def get_partner_by_hid(self, hid, current_session):
         partner = self.env['res.partner'].search([('hid', '=', hid)], limit=1)
         if partner:
             return partner
         else:
-            raise ValidationError(_('There is no partner found with the hid %s') % (hid))
+            if current_session.config_id.default_partner_id:
+                return current_session.config_id.default_partner_id
+            else:
+                raise ValidationError(_('There is no partner found with the hid %s') % (hid))
 
     @api.model
     def get_tax_by_hid(self, hid):
@@ -307,7 +311,7 @@ class PosConfigInherit(models.Model):
         #     user = self.get_user_by_hid(order['cashier']['hid'])
 
         if 'customer' in order and order['customer'] and order['customer']['hid']:
-            customer = self.get_partner_by_hid(order['customer']['hid'])
+            customer = self.get_partner_by_hid(order['customer']['hid'], current_session)
 
         amount_paid = 0.0
         if 'payments' in order:
