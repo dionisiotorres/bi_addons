@@ -384,3 +384,11 @@ class PosConfigInherit(models.Model):
 
         # close and validate session
         self.current_session_id.action_pos_session_closing_control()
+
+
+    # This method is called be a cron job
+    @api.model
+    def _get_all_remote_pos_orders(self):
+        for pos in self.env['pos.config'].search([('current_session_id', '=', False),
+                                                  ('pos_session_username', '=', False)]):
+            pos.import_foodics_data(fields.Datetime.now().date())
