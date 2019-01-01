@@ -28,6 +28,9 @@
                 <xpath expr="//field[@name='line_ids']/tree" position="attributes">
                     <attribute name="editable">bottom</attribute>
                 </xpath>
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='product_uom_id']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
                 <xpath expr="//field[@name='line_ids']/tree/field[@name='product_uom_id']" position="after">
                     <field name="vendor_id" groups="purchase.group_purchase_user,purchase.group_purchase_manager"/>
                 </xpath>

@@ -13,6 +13,7 @@ class PosBranch(models.Model):
 
     name = fields.Char(string='Name', required=True)
     hid = fields.Char(string='HID', required=True, copy=False)
+    responsible_id = fields.Many2one('res.users', string='Responsible', required=True)
 
     @api.constrains('hid')
     def check_unique_hid(self):
@@ -26,6 +27,7 @@ class PosConfigInherit(models.Model):
     _inherit = 'pos.config'
 
     pos_branch_id = fields.Many2one('pos.branch', string='Branch')
+    delivery_product_id = fields.Many2one('product.product', string='Delivery Product')
 
 
     @api.model
@@ -134,12 +136,19 @@ class PosConfigInherit(models.Model):
         return order
 
     @api.model
-    def get_product_by_hid(self, hid):
-        product = self.env['product.product'].search([('hid', '=', hid)], limit=1)
+    def get_product_by_hid(self, hid, size_hid=False):
+        if size_hid:
+            domain = [('hid', '=', hid), ('size_hid', '=', size_hid)]
+        else:
+            domain = [('hid', '=', hid)]
+        product = self.env['product.product'].search(domain, limit=1)
         if product:
             return product
         else:
-            raise ValidationError(_('There is no product found with the hid %s')%(hid))
+            if size_hid:
+                raise ValidationError(_('There is no product found with the hid %s and size hid %s')%(hid, size_hid))
+            else:
+                raise ValidationError(_('There is no product found with the hid %s') % (hid))
 
     @api.model
     def get_payment_method_by_hid(self, hid):
@@ -199,10 +208,14 @@ class PosConfigInherit(models.Model):
         else:
             raise ValidationError(_('There is no statment found with the journal %s') % (journal.name))
 
-    def _prepare_api_order_lines(self, lines, taxes):
+    def _prepare_api_order_lines(self, order, current_session, lines, taxes):
         p_lines = []
         for line in lines:
-            product = self.get_product_by_hid(line['product_hid'])
+            if 'product_size_hid' in line and line['product_size_hid']:
+                product_size_hid = line['product_size_hid']
+            else:
+                product_size_hid = False
+            product = self.get_product_by_hid(line['product_hid'], product_size_hid)
             p_lines.append([0, 0, {
                     'discount': line['discount_amount'],
                     'pack_lot_ids': [],
@@ -214,6 +227,39 @@ class PosConfigInherit(models.Model):
                     'tax_ids': [(6, 0, taxes)] if taxes else False
                 }
             ])
+
+            # add options
+            if 'options' in line and line['options']:
+                for option in line['options']:
+                    option_product = self.get_product_by_hid(option['hid'])
+                    p_lines.append([0, 0, {
+                        'discount': 0.0,
+                        'pack_lot_ids': [],
+                        'price_unit': 0.0,
+                        'product_id': option_product.id,
+                        'price_subtotal': 0.0,
+                        'price_subtotal_incl': 0.0,
+                        'qty': option['relationship_data']['quantity'],
+                        'tax_ids': False
+                        }
+                    ])
+
+        # add delivery service
+        if 'delivery_price' in order and order['delivery_price']:
+            delivery_product = self.current_session_id.config_id.delivery_product_id
+            if delivery_product:
+                p_lines.append([0, 0, {
+                        'discount': 0.0,
+                        'pack_lot_ids': [],
+                        'price_unit': order['delivery_price'],
+                        'product_id': delivery_product.id,
+                        'price_subtotal': order['delivery_price'],
+                        'price_subtotal_incl': order['delivery_price'],
+                        'qty': 1.0,
+                        'tax_ids': False
+                    }
+                ])
+
         return p_lines
 
     def _prepare_api_statements(self, lines, current_session):
@@ -254,12 +300,14 @@ class PosConfigInherit(models.Model):
     @api.model
     def _prepare_api_order(self, order, current_session):
         customer = False
-        user = False
-        if 'cashier' in order and order['cashier']['hid']:
-            user = self.get_user_by_hid(order['cashier']['hid'])
+        user = current_session.config_id.pos_branch_id and current_session.config_id.pos_branch_id.responsible_id
+
+        # to set cashier from api response
+        # if 'cashier' in order and order['cashier']['hid']:
+        #     user = self.get_user_by_hid(order['cashier']['hid'])
 
         if 'customer' in order and order['customer'] and order['customer']['hid']:
-            customer = self.get_user_by_hid(order['customer']['hid'])
+            customer = self.get_partner_by_hid(order['customer']['hid'])
 
         amount_paid = 0.0
         if 'payments' in order:
@@ -282,7 +330,7 @@ class PosConfigInherit(models.Model):
                     'date_order': order['closed_at'],
                     'fiscal_position_id': False,
                     'pricelist_id': self.available_pricelist_ids[0].id,
-                    'lines': self._prepare_api_order_lines(order['products'], taxes),
+                    'lines': self._prepare_api_order_lines(order, current_session, order['products'], taxes),
                     'name': order['reference'],
                     'partner_id': customer.id if customer else False,
                     'pos_session_id': current_session.id,
@@ -290,14 +338,15 @@ class PosConfigInherit(models.Model):
                     'creation_date': order['closed_at'],
                     'statement_ids': self._prepare_api_statements(order['payments'], current_session),
                     'uid': order['reference'],
-                    'user_id': user.id if user else self.env.uid
+                    'user_id': user.id if user else self.env.uid,
+                    'note': order['notes']
                 },
             'id': order['reference'],
             'to_invoice': False
         }
 
     @api.multi
-    def import_foodics_data(self):
+    def import_foodics_data(self, date):
         self.ensure_one()
 
         foodics_base_url = self.env['ir.config_parameter'].sudo().get_param('bi_foodics_integration.foodics_base_url')
@@ -307,35 +356,16 @@ class PosConfigInherit(models.Model):
             raise ValidationError(_('Please configure Foodics base URL and secret.'))
 
         if not self.pos_branch_id:
-            raise ValidationError(_('Please set the branch of this pos.'))
+            raise ValidationError(_('Please set the branch in the pos.'))
 
-        business_date = datetime.now().strftime('%Y-%m-%d')
-        # business_date = '2018-10-14'
+        business_date = date.strftime('%Y-%m-%d')
 
         headers = self.get_headers(foodics_base_url, foodics_secret)
-        branches = self.get_branches(foodics_base_url, headers)
-        # orders = self.get_orders(foodics_base_url, headers, business_date, self.pos_branch_id.hid)
+        orders = self.get_orders(foodics_base_url, headers, business_date, self.pos_branch_id.hid)
 
-        # test orders
-        test_orders = []
-        order1 = self.get_orders_by_hid(foodics_base_url, headers, '_14da1g65g')
-        if order1:
-            test_orders.append(order1)
-            print('order1', order1)
-        order2 = self.get_orders_by_hid(foodics_base_url, headers, '_a2g516g23')
-        if order2:
-            test_orders.append(order2)
-            print('order2', order2)
-
-        print('business_date', business_date)
-        print('branches', branches)
-        # print('orders', orders)
-
-        # if not orders:
-        #     raise ValidationError(_('No orders found.'))
-
-        if not test_orders:
-            raise ValidationError(_('No orders found.'))
+        if not orders:
+            return
+            # raise ValidationError(_('No orders found.'))
 
         if not self.current_session_id:
             self.current_session_id = self.env['pos.session'].create({
@@ -344,15 +374,13 @@ class PosConfigInherit(models.Model):
             })
 
         pos_orders = []
-        # for order in orders:
-        #     pos_order = self._prepare_api_order(order, self.current_session_id)
-        #     pos_orders.append(pos_order)
-
-        for order in test_orders:
-            pos_order = self._prepare_api_order(order, self.current_session_id)
-            pos_orders.append(pos_order)
-
-        print('pos orders', pos_orders)
+        for order in orders:
+            if 'payments' in order and order['payments']:
+                pos_order = self._prepare_api_order(order, self.current_session_id)
+                pos_orders.append(pos_order)
 
         created_order_ids = self.env['pos.order'].create_from_ui(pos_orders)
         self._update_orders_amount_all(created_order_ids)
+
+        # close and validate session
+        self.current_session_id.action_pos_session_closing_control()

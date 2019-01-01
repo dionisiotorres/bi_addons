@@ -12,8 +12,8 @@ class TransferRequestLine(models.Model):
     transfer_created = fields.Boolean(string='Transfer Created')
     qty = fields.Float(string='Qty', required=True, default=1.0)
     notes = fields.Char(string='Notes')
-    product_uom_id = fields.Many2one('uom.uom', string='UoM',
-                                     required=True)
+    product_uom_id = fields.Many2one('uom.uom', string='UoM', related='product_id.uom_id',
+                                     store=True)
     state = fields.Selection(
         [('draft', 'Draft'), ('approve', 'Approve'), ('transferring', 'Transferring'), ('done', 'Done'),
          ('cancelled', 'Cancelled')], string='State', default='draft', related='transfer_request_id.state')

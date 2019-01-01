@@ -124,6 +124,7 @@ class PurchaseRequestLineInherit(models.Model):
     _inherit = "purchase.request.line"
 
     vendor_id = fields.Many2one('res.partner', string='Vendor', required=1, domain=[('supplier', '=', True)])
+    product_uom_id = fields.Many2one('uom.uom', 'Product Unit of Measure', related='product_id.uom_id', store=True)
 
     @api.onchange('product_id', 'product_qty')
     def _change_product(self):

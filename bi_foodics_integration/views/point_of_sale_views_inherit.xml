@@ -22,6 +22,20 @@
                             </div>
                         </div>
                     </div>
+                    <h2>Delivery</h2>
+                    <div class="row mt16 o_settings_container" id="pos_branch">
+                        <div class="col-12 col-lg-6 o_setting_box" id="branch">
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Delivery</span>
+                                <div class="text-muted">
+                                    Delivery Product
+                                </div>
+                                <div class="content-group mt16">
+                                    <field name="delivery_product_id" colspan="4" nolabel="1"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </xpath>
             </field>
         </record>
@@ -33,9 +47,10 @@
             <field name="inherit_id" ref="point_of_sale.view_pos_config_kanban"/>
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='open_session_cb']" position="after">
-                    <button t-if="!record.current_session_id.raw_value &amp;&amp; !record.pos_session_username.value" class="btn btn-primary" name="import_foodics_data" type="object">Import Foodics Data</button>
+                    <button t-if="!record.current_session_id.raw_value &amp;&amp; !record.pos_session_username.value" class="btn btn-primary" name="%(bi_foodics_integration.action_import_foodics_wizard)d" type="action">Import Foodics Data</button>
                 </xpath>
             </field>
         </record>
+
     </data>
 </odoo>
