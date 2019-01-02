@@ -383,7 +383,7 @@
 
 
     <menuitem id="parent_menu_purchase_request"
-              name="Purchase requests"
+              name="Purchase Requests"
               groups="group_purchase_request_user,group_purchase_request_manager"
     />
 
