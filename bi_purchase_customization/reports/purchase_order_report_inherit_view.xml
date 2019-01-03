@@ -16,7 +16,7 @@
                         <strong>Order Date:</strong>
                         <p t-field="o.date_order"/>
                     </div>
-                    <div t-if="o.address" class="col-3">
+                    <div t-if="o.picking_partner_id" class="col-3">
                         <strong>Deliver To:</strong>
                         <p t-field="o.picking_partner_id"/>
                     </div>
