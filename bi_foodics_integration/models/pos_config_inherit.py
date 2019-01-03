@@ -349,6 +349,12 @@ class PosConfigInherit(models.Model):
             'to_invoice': False
         }
 
+    # split list to n of lists
+    def chunks(self, l, n):
+        """Yield successive n-sized chunks from l."""
+        for i in range(0, len(l), n):
+            yield l[i:i + n]
+
     @api.multi
     def import_foodics_data(self, date):
         self.ensure_one()
@@ -365,29 +371,32 @@ class PosConfigInherit(models.Model):
         business_date = date.strftime('%Y-%m-%d')
 
         headers = self.get_headers(foodics_base_url, foodics_secret)
-        orders = self.get_orders(foodics_base_url, headers, business_date, self.pos_branch_id.hid)
+        orders_list = self.get_orders(foodics_base_url, headers, business_date, self.pos_branch_id.hid)
 
-        if not orders:
+        if not orders_list:
             return
             # raise ValidationError(_('No orders found.'))
 
-        if not self.current_session_id:
-            self.current_session_id = self.env['pos.session'].create({
-                'user_id': self.env.uid,
-                'config_id': self.id
-            })
+        orders_lists = self.chunks(orders_list, 10)
 
-        pos_orders = []
-        for order in orders:
-            if 'payments' in order and order['payments']:
-                pos_order = self._prepare_api_order(order, self.current_session_id)
-                pos_orders.append(pos_order)
+        for orders in  orders_lists:
+            if not self.current_session_id:
+                self.current_session_id = self.env['pos.session'].create({
+                    'user_id': self.env.uid,
+                    'config_id': self.id
+                })
 
-        created_order_ids = self.env['pos.order'].create_from_ui(pos_orders)
-        self._update_orders_amount_all(created_order_ids)
+            pos_orders = []
+            for order in orders:
+                if 'payments' in order and order['payments']:
+                    pos_order = self._prepare_api_order(order, self.current_session_id)
+                    pos_orders.append(pos_order)
 
-        # close and validate session
-        self.current_session_id.action_pos_session_closing_control()
+            created_order_ids = self.env['pos.order'].create_from_ui(pos_orders)
+            self._update_orders_amount_all(created_order_ids)
+
+            # close and validate session
+            self.current_session_id.action_pos_session_closing_control()
 
 
     # This method is called be a cron job

@@ -12,4 +12,5 @@ class PosSessionInherit(models.Model):
     @api.depends('start_at')
     def _get_session_st_date(self):
         for rec in self:
-            rec.st_date = rec.start_at.date()
+            if rec.start_at:
+                rec.st_date = rec.start_at.date()
