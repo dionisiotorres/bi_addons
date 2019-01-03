@@ -215,6 +215,9 @@ class PosConfigInherit(models.Model):
     def _prepare_api_order_lines(self, order, current_session, lines, taxes):
         p_lines = []
         for line in lines:
+            if 'void_reason' in line and line['void_reason']:
+                # skip void lines
+                continue
             if 'product_size_hid' in line and line['product_size_hid']:
                 product_size_hid = line['product_size_hid']
             else:
