@@ -249,7 +249,7 @@ class PurchaseRequestLine(models.Model):
                 name = '[%s] %s' % (name, self.product_id.code)
             if self.product_id.description_purchase:
                 name += '\n' + self.product_id.description_purchase
-            self.product_uom_id = self.product_id.uom_id.id
+            self.product_uom_id = self.product_id.uom_po_id.id
             self.product_qty = 1
             self.name = name
 
