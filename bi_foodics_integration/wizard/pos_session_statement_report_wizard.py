@@ -3,6 +3,12 @@
 from odoo import models, fields, api, _
 
 
+class AccountBankStatementInherit(models.Model):
+    _inherit = 'account.bank.statement'
+
+    pos_id = fields.Many2one('pos.config', related='pos_session_id.config_id', string='Point of sale', store=True)
+
+
 class PosSessionStatementReportWizard(models.TransientModel):
     _name = 'pos.session.statement.report.wizard'
 
