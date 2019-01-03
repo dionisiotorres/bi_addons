@@ -12,6 +12,7 @@
     'data': [
         'security/ir.model.access.csv',
         'wizard/import_foodics_wizard.xml',
+        'wizard/pos_session_statement_report_wizard.xml',
         'data/data.xml',
         'views/pos_res_config_settings_views.xml',
         'views/pos_branch_views.xml',

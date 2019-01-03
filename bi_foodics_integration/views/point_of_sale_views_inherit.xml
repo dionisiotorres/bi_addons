@@ -66,5 +66,16 @@
             </field>
         </record>
 
+        <record id="view_pos_session_form_inherit" model="ir.ui.view">
+            <field name="name">pos.session.form.view.inherit</field>
+            <field name="model">pos.session</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_session_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='start_at']" position="before">
+                    <field name="st_date"/>
+                </xpath>
+            </field>
+        </record>
+
     </data>
 </odoo>

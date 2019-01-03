@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="account_bank_statement_tree_view" model="ir.ui.view">
+        <field name="name">	account.bank.statement.tree.view</field>
+        <field name="model">account.bank.statement</field>
+        <field name="priority" eval="100"/>
+        <field name="arch" type="xml">
+            <tree string="Statements" create="false" delete="false" edit="false">
+                <field name="name" />
+                <field name="journal_id" />
+                <field name="balance_start" />
+                <field name="total_entry_encoding" />
+                <field name="balance_end_real" />
+                <field name="difference" />
+                <field name="currency_id" groups="base.group_multi_currency" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="pos_session_statement_wizard" model="ir.ui.view">
+        <field name="name">pos.session.statement.report.wizard</field>
+        <field name="model">pos.session.statement.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="POS Session Statements">
+                <group>
+                    <field name="date"/>
+                </group>
+                <footer>
+                    <button string='Open' name="open_session_statements" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_import_pos_session_statement_wizard" model="ir.actions.act_window">
+        <field name="name">POS Session Statements</field>
+        <field name="res_model">pos.session.statement.report.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="pos_session_statement_wizard"/>
+        <field name="target">new</field>
+    </record>
+
+
+    <menuitem name="Sessions statement report" id="pos_session_statement_report_menu" parent="point_of_sale.menu_point_rep"
+                  action="action_import_pos_session_statement_wizard" sequence="5"/>
+
+
+</odoo>
