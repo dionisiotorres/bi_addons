@@ -27,7 +27,7 @@ class MrpProduction(models.Model):
 
     product_uom_id = fields.Many2one(
         'uom.uom', 'Product Unit of Measure',
-        oldname='product_uom', readonly=True, required=True, related='product_id.uom_id', store=True)
+        oldname='product_uom', required=True, related='product_id.uom_id', store=True)
 
     def _generate_raw_move(self, bom_line, line_data):
         res = super(MrpProduction, self)._generate_raw_move(bom_line, line_data)

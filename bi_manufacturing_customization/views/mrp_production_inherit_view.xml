@@ -10,9 +10,6 @@
                     <field name="real_used_qty"/>
                     <field name="wested_qty"/>
                 </xpath>
-                <xpath expr="//field[@name='product_uom_id']" position="attributes">
-                    <attribute name="readonly">1</attribute>
-                </xpath>
                 <xpath expr="//field[@name='product_id']" position="attributes">
                     <attribute name="domain">[('manual_mo', '=', True)]</attribute>
                 </xpath>
@@ -30,7 +27,7 @@
             </field>
         </record>
 
-         <record id="product_normal_form_view_inherit" model="ir.ui.view">
+        <record id="product_normal_form_view_inherit" model="ir.ui.view">
             <field name="name">product.product.form.view.inherit</field>
             <field name="model">product.product</field>
             <field name="inherit_id" ref="product.product_normal_form_view"/>
