@@ -23,7 +23,10 @@ class PosSessionInherit(models.Model):
                 raise UserError(_("You have to set a Sale Journal for the POS:%s") % (session.config_id.name,))
 
             if all(o.date_order.date() == orders[0].date_order.date() for o in orders):
-                e_date = orders[0].date_order.date()
+                if len(orders):
+                    e_date = orders[0].date_order.date()
+                else:
+                    e_date = session.start_at
             else:
                 e_date = session.start_at
 

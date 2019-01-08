@@ -47,4 +47,31 @@
         view_mode="form"
         name="Import Foodics Data"/>
 
+
+    <record id="import_foodics_per_session_wizard" model="ir.ui.view">
+        <field name="name">import.foodics.per.session.wizard</field>
+        <field name="model">import.foodics.per.session.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Foodics Data">
+                <group>
+                    <field name="pos_id" invisible="1"/>
+                    <field name="date"/>
+                </group>
+                <footer>
+                    <button string='Import Data' name="import_foodics_data_per_session" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_import_foodics_per_session_wizard" model="ir.actions.act_window">
+        <field name="name">Import Foodics Data</field>
+        <field name="res_model">import.foodics.per.session.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="import_foodics_per_session_wizard"/>
+        <field name="target">new</field>
+    </record>
+
 </odoo>

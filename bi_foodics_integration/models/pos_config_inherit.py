@@ -401,6 +401,44 @@ class PosConfigInherit(models.Model):
             # close and validate session
             self.current_session_id.action_pos_session_closing_control()
 
+    @api.multi
+    def import_foodics_data_per_session(self, date):
+        self.ensure_one()
+
+        foodics_base_url = self.env['ir.config_parameter'].sudo().get_param(
+            'bi_foodics_integration.foodics_base_url')
+        foodics_secret = self.env['ir.config_parameter'].sudo().get_param('bi_foodics_integration.foodics_secret')
+
+        if not foodics_base_url or not foodics_secret:
+            raise ValidationError(_('Please configure Foodics base URL and secret.'))
+
+        if not self.pos_branch_id:
+            raise ValidationError(_('Please set the branch in the pos.'))
+
+        business_date = date.strftime('%Y-%m-%d')
+
+        headers = self.get_headers(foodics_base_url, foodics_secret)
+        orders_list = self.get_orders(foodics_base_url, headers, business_date, self.pos_branch_id.hid)
+
+        if not orders_list:
+            return
+
+        # for orders in orders_lists:
+        if not self.current_session_id:
+            self.current_session_id = self.env['pos.session'].create({
+                'user_id': self.env.uid,
+                'config_id': self.id
+            })
+
+        pos_orders = []
+        for order in orders_list:
+            if 'payments' in order and order['payments']:
+                pos_order = self._prepare_api_order(order, self.current_session_id)
+                pos_orders.append(pos_order)
+
+        created_order_ids = self.env['pos.order'].create_from_ui(pos_orders)
+        self._update_orders_amount_all(created_order_ids)
+
 
     # This method is called be a cron job
     @api.model
