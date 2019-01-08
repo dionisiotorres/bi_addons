@@ -25,7 +25,7 @@ class PosSessionStatementReportWizard(models.TransientModel):
         tree_view_ref = self.env.ref('bi_foodics_integration.account_bank_statement_tree_view', False)
 
         return  {
-            'domain': [('pos_session_id.st_date', '=', self.date)],
+            'domain': [('pos_session_id.st_date', '=', self.date), ('pos_session_id.state', 'not in', ['opened'])],
             'name': 'Statements',
             'res_model': 'account.bank.statement',
             'type': 'ir.actions.act_window',
