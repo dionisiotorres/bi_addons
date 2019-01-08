@@ -37,4 +37,4 @@ class ImportFoodicsPerSessionWizard(models.TransientModel):
     def import_foodics_data_per_session(self):
         for rec in self:
             if rec.pos_id:
-                rec.pos_id.import_foodics_data(rec.date)
+                rec.pos_id.import_foodics_data_per_session(rec.date)
