@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_foodics_api,access.foodics.api,model_foodics_api,,1,1,1,1
 access_pos_branch,access.pos.branch,model_pos_branch,,1,1,1,1
+access_api_import_exception,access.api.import.exception,model_api_import_exception,,1,1,1,1

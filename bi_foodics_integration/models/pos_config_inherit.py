@@ -5,6 +5,7 @@ from uuid import uuid4
 import json
 import requests
 from odoo import api, fields, models, _
+from odoo.tools import float_compare
 from odoo.exceptions import ValidationError
 
 
@@ -13,7 +14,7 @@ class PosBranch(models.Model):
 
     name = fields.Char(string='Name', required=True)
     hid = fields.Char(string='HID', required=True, copy=False)
-    responsible_id = fields.Many2one('res.users', string='Responsible', required=True)
+    responsible_id = fields.Many2one('res.users', string='Responsible', required=True, copy=False)
 
     @api.constrains('hid')
     def check_unique_hid(self):
@@ -22,6 +23,13 @@ class PosBranch(models.Model):
                 if self.env['pos.branch'].search_count([('hid', '=', rec.hid)]) > 1:
                     raise ValidationError(_('This HID already exists.'))
 
+    @api.constrains('responsible_id')
+    def check_unique_responsible_id(self):
+        for rec in self:
+            if rec.responsible_id:
+                if self.env['pos.branch'].search_count([('responsible_id', '=', rec.responsible_id.id)]) > 1:
+                    raise ValidationError(_('This responsible is assigned to another branch.'))
+
 
 class PosConfigInherit(models.Model):
     _inherit = 'pos.config'
@@ -29,6 +37,20 @@ class PosConfigInherit(models.Model):
     pos_branch_id = fields.Many2one('pos.branch', string='Branch')
     delivery_product_id = fields.Many2one('product.product', string='Delivery Product')
     default_partner_id = fields.Many2one('res.partner', string='Default Customer')
+    default_closing_time = fields.Float(string='Default Closing Time')
+
+    @api.constrains('pos_branch_id')
+    def check_unique_pos_branch_id(self):
+        for rec in self:
+            if rec.pos_branch_id:
+                if self.env['pos.config'].search_count([('pos_branch_id', '=', rec.pos_branch_id.id)]) > 1:
+                    raise ValidationError(_('This branch is assigned to another pos.'))
+
+    @api.constrains('default_closing_time')
+    def _check_float_closing_time(self):
+        for rec in self:
+            if float_compare(rec.default_closing_time, 0, 2) < 0:
+                raise ValidationError(_('Closing Time should be greater than or equal 0.0'))
 
 
     @api.model
@@ -371,6 +393,9 @@ class PosConfigInherit(models.Model):
         if not self.pos_branch_id:
             raise ValidationError(_('Please set the branch in the pos.'))
 
+        if not self.pos_branch_id.responsible_id:
+            raise ValidationError(_('Please set the responsible in the pos branch.'))
+
         business_date = date.strftime('%Y-%m-%d')
 
         headers = self.get_headers(foodics_base_url, foodics_secret)
@@ -385,7 +410,7 @@ class PosConfigInherit(models.Model):
         for orders in  orders_lists:
             if not self.current_session_id:
                 self.current_session_id = self.env['pos.session'].create({
-                    'user_id': self.env.uid,
+                    'user_id': self.pos_branch_id.responsible_id.id,
                     'config_id': self.id
                 })
 
@@ -415,6 +440,9 @@ class PosConfigInherit(models.Model):
         if not self.pos_branch_id:
             raise ValidationError(_('Please set the branch in the pos.'))
 
+        if not self.pos_branch_id.responsible_id:
+            raise ValidationError(_('Please set the responsible in the pos branch.'))
+
         business_date = date.strftime('%Y-%m-%d')
 
         headers = self.get_headers(foodics_base_url, foodics_secret)
@@ -426,7 +454,7 @@ class PosConfigInherit(models.Model):
         # for orders in orders_lists:
         if not self.current_session_id:
             self.current_session_id = self.env['pos.session'].create({
-                'user_id': self.env.uid,
+                'user_id': self.pos_branch_id.responsible_id.id,
                 'config_id': self.id
             })
 
@@ -443,6 +471,13 @@ class PosConfigInherit(models.Model):
     # This method is called be a cron job
     @api.model
     def _get_all_remote_pos_orders(self):
-        for pos in self.env['pos.config'].search([('current_session_id', '=', False),
-                                                  ('pos_session_username', '=', False)]):
-            pos.import_foodics_data(fields.Datetime.now().date())
+        for pos in self.env['pos.config'].search([]):
+            try:
+                pos.import_foodics_data_per_session(fields.Datetime.now().date())
+            except Exception as e:
+                self.env['api.import.exception'].create({
+                    'name': 'Exception',
+                    'description': e,
+                    'pos_id': pos.id,
+                    'session_id': pos.current_session_id.id if pos.current_session_id else False,
+                })

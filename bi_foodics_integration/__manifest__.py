@@ -22,6 +22,7 @@
         'views/res_partner_views_inherit.xml',
         'views/res_users_views_inherit.xml',
         'views/product_views_inherit.xml',
+        'views/api_import_exception_views.xml',
     ],
     'installable': True,
     'auto_install': False,

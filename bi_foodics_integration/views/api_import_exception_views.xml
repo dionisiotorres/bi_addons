@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <record id="api_import_exception_form_view" model="ir.ui.view">
+            <field name="name">api.import.exception.form.view</field>
+            <field name="model">api.import.exception</field>
+            <field name="arch" type="xml">
+                <form create="false" edit="false">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="session_id"/>
+                                <field name="pos_id"/>
+                                <field name="create_date"/>
+                                <field name="description"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="api_import_exception_tree_view" model="ir.ui.view">
+            <field name="name">api.import.exception.tree.view</field>
+            <field name="model">api.import.exception</field>
+            <field name="arch" type="xml">
+                <tree string="Exceptions" create="false" edit="false">
+                    <field name="name"/>
+                    <field name="session_id"/>
+                    <field name="pos_id"/>
+                    <field name="create_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="api_import_exception_action" model="ir.actions.act_window">
+            <field name="name">API Import Exceptions</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">api.import.exception</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem name="API Import Exceptions" id="api_import_exception_sub_menu" parent="point_of_sale.menu_point_config_product"
+                  action="api_import_exception_action" sequence="8"/>
+
+    </data>
+</odoo>
