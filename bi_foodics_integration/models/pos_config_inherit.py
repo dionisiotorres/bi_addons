@@ -6,6 +6,7 @@ import json
 import requests
 from odoo import api, fields, models, _
 from odoo.tools import float_compare
+from odoo.addons.resource.models.resource import float_to_time
 from odoo.exceptions import ValidationError
 
 
@@ -466,6 +467,9 @@ class PosConfigInherit(models.Model):
 
         created_order_ids = self.env['pos.order'].create_from_ui(pos_orders)
         self._update_orders_amount_all(created_order_ids)
+
+        if fields.Datetime.now().time() >= float_to_time(self.default_closing_time):
+            self.current_session_id.action_pos_session_closing_control()
 
 
     # This method is called be a cron job

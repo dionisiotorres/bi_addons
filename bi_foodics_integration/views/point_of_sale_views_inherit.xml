@@ -50,6 +50,20 @@
                             </div>
                         </div>
                     </div>
+                    <h2>Closing Time</h2>
+                    <div class="row mt16 o_settings_container" id="pos_branch">
+                        <div class="col-12 col-lg-6 o_setting_box" id="branch">
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Closing Time</span>
+                                <div class="text-muted">
+                                    Closing Time
+                                </div>
+                                <div class="content-group mt16">
+                                    <field name="default_closing_time" widget="float_time" colspan="4" nolabel="1"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </xpath>
             </field>
         </record>
