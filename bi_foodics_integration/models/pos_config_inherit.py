@@ -417,7 +417,8 @@ class PosConfigInherit(models.Model):
                 else:
                     self.current_session_id = self.env['pos.session'].create({
                         'user_id': self.pos_branch_id.responsible_id.id,
-                        'config_id': self.id
+                        'config_id': self.id,
+                        'start_at': date
                     })
 
             pos_orders = []
@@ -464,7 +465,8 @@ class PosConfigInherit(models.Model):
             else:
                 self.current_session_id = self.env['pos.session'].create({
                     'user_id': self.pos_branch_id.responsible_id.id,
-                    'config_id': self.id
+                    'config_id': self.id,
+                    'start_at': date
                 })
 
         pos_orders = []
