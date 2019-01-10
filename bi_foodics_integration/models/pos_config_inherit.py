@@ -458,6 +458,7 @@ class PosConfigInherit(models.Model):
                 'user_id': self.pos_branch_id.responsible_id.id,
                 'config_id': self.id
             })
+            self.current_session_id.action_pos_session_open()
 
         pos_orders = []
         for order in orders_list:
