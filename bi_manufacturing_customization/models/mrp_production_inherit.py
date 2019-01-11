@@ -45,8 +45,8 @@ class MrpProduction(models.Model):
 
     @api.onchange('bom_id', 'number_batches')
     def _onchange_bom_id(self):
-        self.product_qty = self.bom_id.batch_quantity * self.number_batches
-        self.product_qty_temp = self.bom_id.batch_quantity * self.number_batches
+        self.product_qty = self.bom_id.product_qty * self.number_batches
+        self.product_qty_temp = self.bom_id.product_qty * self.number_batches
         self.product_uom_id = self.bom_id.product_uom_id.id
 
     @api.onchange('product_id', 'picking_type_id', 'company_id')
@@ -59,8 +59,8 @@ class MrpProduction(models.Model):
             if bom.type == 'normal':
                 self.bom_id = bom.id
                 self.number_batches = 1
-                self.product_qty = self.bom_id.batch_quantity * self.number_batches
-                self.product_qty_temp = self.bom_id.batch_quantity * self.number_batches
+                self.product_qty = self.bom_id.product_qty * self.number_batches
+                self.product_qty_temp = self.bom_id.product_qty * self.number_batches
                 self.product_uom_id = self.bom_id.product_uom_id.id
             else:
                 self.bom_id = False
@@ -72,7 +72,7 @@ class MrpProduction(models.Model):
     @api.depends('bom_id')
     def _compute_batch_quantity(self):
         for rec in self:
-            rec.batch_quantity = rec.bom_id.batch_quantity
+            rec.batch_quantity = rec.bom_id.product_qty
 
     @api.model
     def create(self, values):
