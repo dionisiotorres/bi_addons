@@ -30,7 +30,7 @@ class MrpProduction(models.Model):
         'uom.uom', 'Product Unit of Measure',
         oldname='product_uom', required=True, related='product_id.uom_id', store=True)
     number_batches = fields.Integer(string="Number Of Batches", default=1)
-    batch_quantity = fields.Float(string="Batch Quantity", digits=dp.get_precision('Product Unit of Measure'), compute='_compute_batch_quantity', store=True)
+    batch_quantity = fields.Float(string="Batch Quantity", digits=dp.get_precision('Unit of Measure'), compute='_compute_batch_quantity', store=True)
     # temp field for quantity to handle onchange with readonly issue
     product_qty_temp = fields.Float(
         'Temp Quantity To Produce', digits=dp.get_precision('Product Unit of Measure'),
