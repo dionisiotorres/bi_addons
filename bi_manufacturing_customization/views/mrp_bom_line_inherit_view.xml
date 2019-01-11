@@ -10,6 +10,10 @@
                     <field name="real_used_qty"/>
                     <field name="wested_qty"/>
                 </xpath>
+                <xpath expr="//field[@name='routing_id']" position="before">
+                    <field name="batch_quantity"/>
+                </xpath>
+
             </field>
         </record>
     </data>
