@@ -1,12 +1,19 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
+from odoo.addons import decimal_precision as dp
 
 
 class MrpBomLine(models.Model):
     _inherit = 'mrp.bom.line'
 
-    real_used_qty = fields.Float(string="RUQ", default=1.0)
-    wested_qty = fields.Float(string="WQ", default=1.0)
+    real_used_qty = fields.Float(
+        'WQ', default=1.0,
+        digits=dp.get_precision('Product Unit of Measure'), required=True)
+
+    wested_qty = fields.Float(
+        'RUQ', default=1.0,
+        digits=dp.get_precision('Product Unit of Measure'), required=True)
+
     product_qty = fields.Float(compute='get_product_qty', string='Quantity', required=True, default=1.0)
 
     @api.depends('real_used_qty', 'wested_qty')
