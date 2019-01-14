@@ -22,13 +22,13 @@ class PosSessionInherit(models.Model):
             if not journal_id:
                 raise UserError(_("You have to set a Sale Journal for the POS:%s") % (session.config_id.name,))
 
-            if all(o.date_order.date() == orders[0].date_order.date() for o in orders):
-                if len(orders):
-                    e_date = orders[0].date_order.date()
-                else:
-                    e_date = session.start_at
+            # if all(o.date_order.date() == orders[0].date_order.date() for o in orders):
+            if len(orders):
+                e_date = orders[0].date_order.date()
             else:
                 e_date = session.start_at
+            # else:
+            #     e_date = session.start_at
 
             move = self.env['pos.order'].with_context(force_company=company_id)._create_account_move(e_date, session.name, int(journal_id), company_id)
             orders.with_context(force_company=company_id)._create_account_move_line(session, move)
