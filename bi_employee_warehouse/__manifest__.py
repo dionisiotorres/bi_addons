@@ -10,6 +10,7 @@
     'version': '0.1',
     'depends': ['hr', 'stock'],
     'data': [
+        'security/stock_security.xml',
         'views/hr_emplyee_views.xml',
         'views/res_user_views.xml',
     ],

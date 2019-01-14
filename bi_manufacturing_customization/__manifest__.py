@@ -8,7 +8,7 @@
     'author': "BI Solutions Development Team",
     'category': 'Manufacturing',
     'version': '0.1',
-    'depends': ['stock_account', 'mrp', 'product'],
+    'depends': ['base','stock_account', 'mrp', 'product'],
     'data': [
         'views/mrp_bom_line_inherit_view.xml',
         'views/mrp_production_inherit_view.xml',
