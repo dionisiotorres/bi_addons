@@ -39,8 +39,8 @@ class MrpProduction(models.Model):
 
     def _generate_raw_move(self, bom_line, line_data):
         res = super(MrpProduction, self)._generate_raw_move(bom_line, line_data)
-        res.write({'real_used_qty': bom_line.real_used_qty * self.product_qty,
-                   'wested_qty': bom_line.wested_qty * self.product_qty})
+        res.write({'real_used_qty': bom_line.real_used_qty * self.number_batches,
+                   'wested_qty': bom_line.wested_qty * self.number_batches})
         return res
 
     @api.onchange('bom_id', 'number_batches')
