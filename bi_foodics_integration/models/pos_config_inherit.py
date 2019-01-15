@@ -427,7 +427,7 @@ class PosConfigInherit(models.Model):
                     pos_order = self._prepare_api_order(order, self.current_session_id)
                     pos_orders.append(pos_order)
 
-            created_order_ids = self.env['pos.order'].create_from_ui(pos_orders)
+            created_order_ids = self.env['pos.order'].with_context(keep_dates=True , force_period_date=self.current_session_id.start_at).create_from_ui(pos_orders)
             self._update_orders_amount_all(created_order_ids)
 
             # close and validate session
@@ -475,7 +475,7 @@ class PosConfigInherit(models.Model):
                 pos_order = self._prepare_api_order(order, self.current_session_id)
                 pos_orders.append(pos_order)
 
-        created_order_ids = self.env['pos.order'].create_from_ui(pos_orders)
+        created_order_ids = self.env['pos.order'].with_context(keep_dates=True, force_period_date=self.current_session_id.start_at).create_from_ui(pos_orders)
         self._update_orders_amount_all(created_order_ids)
 
         if fields.Datetime.now().time() >= float_to_time(self.default_closing_time):
