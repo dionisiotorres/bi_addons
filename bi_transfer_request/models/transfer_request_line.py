@@ -24,11 +24,10 @@ class TransferRequestLine(models.Model):
     @api.multi
     @api.depends('product_id')
     def _compute_qty_onhand(self):
-        quant_obj = self.env['stock.quant']
         for rec in self:
-            if rec.product_id and rec.transfer_request_id.destination_stock_location_id:
-                quant_ids = quant_obj.search([('location_id','child_of',rec.transfer_request_id.destination_stock_location_id.id)])
-                rec.qty_onhand = sum(quant.quantity for quant in quant_ids)
+            if rec.product_id:
+                res = rec.product_id.with_context(with_user_warehouse=True,company_owned=True)._compute_quantities_dict(False,False,False)
+                rec.qty_onhand = res[rec.product_id.id]['qty_available']
 
     @api.constrains('transferred_qty')
     def check_transferred_qty(self):
