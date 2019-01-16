@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+from odoo.addons import decimal_precision as dp
 
 
 class TransferRequestLine(models.Model):
@@ -17,6 +18,17 @@ class TransferRequestLine(models.Model):
     state = fields.Selection(
         [('draft', 'Draft'), ('approve', 'Approve'), ('transferring', 'Transferring'), ('done', 'Done'),
          ('cancelled', 'Cancelled')], string='State', default='draft', related='transfer_request_id.state')
+
+    qty_onhand = fields.Float(string= 'Qty On Hand', digits=dp.get_precision('Product Unit of Measure'), compute='_compute_qty_onhand', store=True)
+
+    @api.multi
+    @api.depends('product_id')
+    def _compute_qty_onhand(self):
+        quant_obj = self.env['stock.quant']
+        for rec in self:
+            if rec.product_id and rec.transfer_request_id.destination_stock_location_id:
+                quant_ids = quant_obj.search([('location_id','child_of',rec.transfer_request_id.destination_stock_location_id.id)])
+                rec.qty_onhand = sum(quant.quantity for quant in quant_ids)
 
     @api.constrains('transferred_qty')
     def check_transferred_qty(self):

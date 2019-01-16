@@ -84,6 +84,7 @@
                                     <tree editable="bottom">
                                         <field name="state" invisible="1"/>
                                         <field name="product_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}" domain="[('prod_type', 'in', ['semi', 'raw'])]"/>
+                                        <field name="qty_onhand"/>
                                         <field name="qty" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                                         <field name="product_uom_id" readonly="1"/>
                                         <field name="transferred_qty" invisible="1" attrs="{'readonly': [('state', 'not in', ['draft', 'approve'])]}"/>

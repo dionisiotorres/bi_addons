@@ -9,6 +9,7 @@
                     <sheet>
                         <group>
                             <field name="product_id"/>
+                            <field name="qty_onhand"/>
                             <field name="qty"/>
                             <field name="product_uom_id"/>
                         </group>
@@ -28,6 +29,7 @@
             <field name="arch" type="xml">
                 <tree string="Transfer Request Line">
                     <field name="product_id"/>
+                    <field name="qty_onhand"/>
                     <field name="qty"/>
                     <field name="product_uom_id"/>
                     <field name="transferred_qty"/>
