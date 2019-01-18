@@ -8,7 +8,7 @@
     'author': "BI Solutions Development Team",
     'category': 'Purchase',
     'version': '0.1',
-    'depends': ['stock', 'purchase'],
+    'depends': ['stock', 'purchase', 'purchase_stock'],
     'data': [
         'views/purchase_order_inherit_view.xml',
         'reports/purchase_order_report_inherit_view.xml'
