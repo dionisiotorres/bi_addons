@@ -57,6 +57,8 @@ class StockPickingInherit(models.Model):
                     todo_moves |= new_move
                     # 'qty_done': ops.qty_done})
         todo_moves._action_done()
-        if not self._context.get('keep_dates', False):
+        if self._context.get('keep_dates', False) and self._context.get('force_period_date', False):
+            self.write({'date_done': self._context.get('force_period_date')})
+        else:
             self.write({'date_done': fields.Datetime.now()})
         return True

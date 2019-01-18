@@ -478,7 +478,7 @@ class PosConfigInherit(models.Model):
         created_order_ids = self.env['pos.order'].with_context(keep_dates=True, force_period_date=self.current_session_id.start_at).create_from_ui(pos_orders)
         self._update_orders_amount_all(created_order_ids)
 
-        if fields.Datetime.now().time() >= float_to_time(self.default_closing_time):
+        if fields.Datetime.now().time() >= float_to_time(self.default_closing_time) and fields.Datetime.now().date() != self.current_session_id.start_at.date():
             self.current_session_id.action_pos_session_closing_control()
 
 
