@@ -495,3 +495,5 @@ class PosConfigInherit(models.Model):
                     'pos_id': pos.id,
                     'session_id': pos.current_session_id.id if pos.current_session_id else False,
                 })
+
+            self._cr.commit()
