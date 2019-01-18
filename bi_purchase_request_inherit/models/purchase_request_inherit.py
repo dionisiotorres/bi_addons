@@ -2,6 +2,7 @@ from odoo import fields, models, api, _
 from odoo import exceptions
 from odoo.exceptions import ValidationError
 from datetime import datetime
+from odoo.addons import decimal_precision as dp
 
 
 class PurchaseRequestInherit(models.Model):
@@ -30,6 +31,15 @@ class PurchaseRequestInherit(models.Model):
                                   domain=lambda self: self.get_users_can_approved_purchase_request())
     picking_type_id = fields.Many2one('stock.picking.type',
                                       'Picking Type', default=_default_operation_type)
+    request_date = fields.Date('Request Date', compute='_get_request_date', store=True)
+
+    @api.multi
+    @api.depends('line_ids','line_ids.date_required')
+    def _get_request_date(self):
+        for rec in self:
+            for line in rec.line_ids:
+                rec.request_date = line.date_required
+                break
 
     @api.multi
     def description_tree_function(self):
@@ -38,10 +48,10 @@ class PurchaseRequestInherit(models.Model):
             rec.description_tree = n[:30] + '...'
 
     @api.multi
-    def button_approved(self):
+    def button_validated(self):
         for rec in self:
             rec.make_purchase_order()
-        res = super(PurchaseRequestInherit, self).button_approved()
+        res = super(PurchaseRequestInherit, self).button_validated()
         return res
 
     @api.model
@@ -125,6 +135,15 @@ class PurchaseRequestLineInherit(models.Model):
 
     vendor_id = fields.Many2one('res.partner', string='Vendor', required=1, domain=[('supplier', '=', True)])
     product_uom_id = fields.Many2one('uom.uom', 'Product Unit of Measure', related='product_id.uom_po_id', store=True)
+    qty_onhand = fields.Float(string= 'Qty On Hand', digits=dp.get_precision('Product Unit of Measure'), compute='_compute_qty_onhand', store=True)
+
+    @api.multi
+    @api.depends('product_id')
+    def _compute_qty_onhand(self):
+        for rec in self:
+            if rec.product_id:
+                res = rec.product_id.with_context(with_user_warehouse=True,company_owned=True)._compute_quantities_dict(False,False,False)
+                rec.qty_onhand = res[rec.product_id.id]['qty_available']
 
     @api.onchange('product_id', 'product_qty')
     def _change_product(self):

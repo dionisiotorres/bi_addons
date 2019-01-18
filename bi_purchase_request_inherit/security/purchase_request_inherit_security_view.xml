@@ -5,5 +5,9 @@
             <field name="name">Approve Purchase Requests</field>
             <field name="category_id" ref="base.module_category_hidden"/>
         </record>
+        <record id="purchase_request_validate" model="res.groups">
+            <field name="name">Validate Purchase Requests</field>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
     </data>
 </odoo>

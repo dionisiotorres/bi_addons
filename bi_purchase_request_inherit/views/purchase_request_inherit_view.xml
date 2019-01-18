@@ -37,11 +37,14 @@
                 <xpath expr="//field[@name='line_ids']/tree/field[@name='analytic_account_id']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='name']" position="after">
+                    <field name="qty_onhand"/>
+                </xpath>
                 <xpath expr="//button[@name='button_draft']" position="replace"/>
                 <xpath expr="//button[@name='button_done']" position="replace"/>
                 <xpath expr="//field[@name='state']" position="replace">
                     <field name="state" widget="statusbar"
-                           statusbar_visible="draft,to_approve,approved,rejected"
+                           statusbar_visible="draft,to_approve,approved,validated,rejected"
                            statusbar_colors='{"approved":"blue"}'/>
                 </xpath>
                 <xpath expr="//button[@name='button_approved']" position="replace">
@@ -51,6 +54,14 @@
                             type="object"
                             class="oe_highlight"
                             groups="bi_purchase_request_inherit.purchase_request_approve"/>
+                </xpath>
+                <xpath expr="//button[@name='button_validated']" position="replace">
+                    <button name="button_validated"
+                            states="approved"
+                            string="Validate"
+                            type="object"
+                            class="oe_highlight"
+                            groups="bi_purchase_request_inherit.purchase_request_validate"/>
                 </xpath>
 
             </field>
@@ -63,6 +74,9 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='date_start']" position="before">
                     <field name="description_tree"/>
+                </xpath>
+                <xpath expr="//field[@name='requested_by']" position="after">
+                    <field name="request_date"/>
                 </xpath>
             </field>
         </record>

@@ -9,6 +9,7 @@ _STATES = [
     ('draft', 'Draft'),
     ('to_approve', 'To be approved'),
     ('approved', 'Approved'),
+    ('validated', 'Validated'),
     ('rejected', 'Rejected'),
     ('done', 'Done')
 ]
@@ -44,7 +45,7 @@ class PurchaseRequest(models.Model):
     @api.depends('state')
     def _compute_is_editable(self):
         for rec in self:
-            if rec.state in ('to_approve', 'approved', 'rejected', 'done'):
+            if rec.state in ('to_approve', 'approved', 'validated', 'rejected', 'done'):
                 rec.is_editable = False
             else:
                 rec.is_editable = True
@@ -56,6 +57,8 @@ class PurchaseRequest(models.Model):
                 return 'purchase_request.mt_request_to_approve'
             elif 'state' in init_values and rec.state == 'approved':
                 return 'purchase_request.mt_request_approved'
+            elif 'state' in init_values and rec.state == 'validated':
+                return 'purchase_request.mt_request_validated'
             elif 'state' in init_values and rec.state == 'rejected':
                 return 'purchase_request.mt_request_rejected'
             elif 'state' in init_values and rec.state == 'done':
@@ -142,6 +145,10 @@ class PurchaseRequest(models.Model):
         return self.write({'state': 'approved'})
 
     @api.multi
+    def button_validated(self):
+        return self.write({'state': 'validated'})
+
+    @api.multi
     def button_rejected(self):
         self.mapped('line_ids').do_cancel()
         return self.write({'state': 'rejected'})
@@ -169,7 +176,7 @@ class PurchaseRequestLine(models.Model):
                  'analytic_account_id', 'date_required', 'specifications')
     def _compute_is_editable(self):
         for rec in self:
-            if rec.request_id.state in ('to_approve', 'approved', 'rejected',
+            if rec.request_id.state in ('to_approve', 'approved', 'validated', 'rejected',
                                         'done'):
                 rec.is_editable = False
             else:
