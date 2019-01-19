@@ -17,6 +17,15 @@ class PosOrderInherit(models.Model):
                     raise ValidationError(_('This HID already exists.'))
 
 
+    # inherit to set entry date to session start date
+    def _prepare_bank_statement_line_payment_values(self, data):
+        args = super(PosOrderInherit, self)._prepare_bank_statement_line_payment_values(data)
+        args.update({
+            'date': self.session_id.start_at.date()
+        })
+        return args
+
+
 class PosOrderLineInherit(models.Model):
     _inherit = 'pos.order.line'
 

@@ -427,7 +427,7 @@ class PosConfigInherit(models.Model):
                     pos_order = self._prepare_api_order(order, self.current_session_id)
                     pos_orders.append(pos_order)
 
-            created_order_ids = self.env['pos.order'].with_context(keep_dates=True , force_period_date=self.current_session_id.start_at).create_from_ui(pos_orders)
+            created_order_ids = self.env['pos.order'].with_context(keep_dates=True , force_period_date=date).create_from_ui(pos_orders)
             self._update_orders_amount_all(created_order_ids)
 
             # close and validate session
@@ -475,11 +475,16 @@ class PosConfigInherit(models.Model):
                 pos_order = self._prepare_api_order(order, self.current_session_id)
                 pos_orders.append(pos_order)
 
-        created_order_ids = self.env['pos.order'].with_context(keep_dates=True, force_period_date=self.current_session_id.start_at).create_from_ui(pos_orders)
+        created_order_ids = self.env['pos.order'].with_context(keep_dates=True, force_period_date=date).create_from_ui(pos_orders)
         self._update_orders_amount_all(created_order_ids)
 
-        if fields.Datetime.now().time() >= float_to_time(self.default_closing_time):
-            self.current_session_id.action_pos_session_closing_control()
+        if self.current_session_id and self.current_session_id.start_at:
+            current_opened_session = self.current_session_id
+        else:
+            current_opened_session = self.env['pos.session'].search([('config_id', '=', self.id), ('state', 'in', ['opened'])],
+                                                        limit=1)
+        if fields.Datetime.now().time() >= float_to_time(self.default_closing_time) and current_opened_session and current_opened_session.start_at and fields.Datetime.now().date() != current_opened_session.start_at.date():
+            current_opened_session.action_pos_session_closing_control()
 
 
     # This method is called be a cron job
@@ -495,3 +500,5 @@ class PosConfigInherit(models.Model):
                     'pos_id': pos.id,
                     'session_id': pos.current_session_id.id if pos.current_session_id else False,
                 })
+
+            self._cr.commit()

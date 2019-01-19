@@ -15,7 +15,7 @@ class PosOrderInherit(models.Model):
             return line.order_id.analytic_account_id.id
         return res
 
-    # overwrite to add the analytic account to stock entry and to set entry date to be order date
+    # overwrite to add the analytic account to stock entry
     def _create_account_move_line(self, session=None, move=None):
         def _flatten_tax_and_children(taxes, group_done=None):
             children = self.env['account.tax']
@@ -88,9 +88,8 @@ class PosOrderInherit(models.Model):
                 journal_id = self.env['ir.config_parameter'].sudo().get_param(
                     'pos.closing.journal_id_%s' % current_company.id, default=order.sale_journal.id)
 
-                # added part to change entry date to be order date
                 move = self._create_account_move(
-                    order.date_order.date(), order.name, int(journal_id), order.company_id.id)
+                    order.session_id.start_at, order.name, int(journal_id), order.company_id.id)
 
             def insert_data(data_type, values):
                 # if have_to_group_by:
