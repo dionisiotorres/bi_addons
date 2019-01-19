@@ -137,7 +137,7 @@ class TransferRequest(models.Model):
     def create_transfer_for_products(self):
         picking_line_vals = []
         source_warehouse = self.source_stock_location_id.get_warehouse()
-        internal_picking_type = self.env['stock.picking.type'].search(
+        internal_picking_type = self.env['stock.picking.type'].sudo().search(
             [('code', '=', 'internal'), ('warehouse_id', '=', source_warehouse.id)], limit=1)
         if not internal_picking_type:
             raise ValidationError(_('Please configure internal transfer.'))
@@ -169,7 +169,7 @@ class TransferRequest(models.Model):
                 'transfer_request_id': self.id
 
             }
-            created_picking = self.env['stock.picking'].create(picking_vals)
+            created_picking = self.env['stock.picking'].sudo().create(picking_vals)
             if created_picking:
                 created_picking.action_confirm()
                 for line in self.transfer_request_line_ids:
