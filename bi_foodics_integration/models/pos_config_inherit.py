@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-from uuid import uuid4
 import json
 import requests
+import pytz
+from dateutil.relativedelta import relativedelta
 from odoo import api, fields, models, _
 from odoo.tools import float_compare
 from odoo.addons.resource.models.resource import float_to_time
@@ -434,8 +435,10 @@ class PosConfigInherit(models.Model):
             self.current_session_id.action_pos_session_closing_control()
 
     @api.multi
-    def import_foodics_data_per_session(self, date):
+    def import_foodics_data_per_session(self, session_date):
         self.ensure_one()
+
+        date = session_date.date()
 
         foodics_base_url = self.env['ir.config_parameter'].sudo().get_param(
             'bi_foodics_integration.foodics_base_url')
@@ -466,7 +469,7 @@ class PosConfigInherit(models.Model):
                 self.current_session_id = self.env['pos.session'].create({
                     'user_id': self.pos_branch_id.responsible_id.id,
                     'config_id': self.id,
-                    'start_at': date
+                    'start_at': session_date
                 })
 
         pos_orders = []
@@ -483,8 +486,18 @@ class PosConfigInherit(models.Model):
         else:
             current_opened_session = self.env['pos.session'].search([('config_id', '=', self.id), ('state', 'in', ['opened'])],
                                                         limit=1)
-        if fields.Datetime.now().time() >= float_to_time(self.default_closing_time) and current_opened_session and current_opened_session.start_at and fields.Datetime.now().date() != current_opened_session.start_at.date():
-            current_opened_session.action_pos_session_closing_control()
+
+        if  current_opened_session and current_opened_session.start_at:
+            # now user timezone
+            now_utc = datetime.now(pytz.UTC)
+            now_user = now_utc.astimezone(pytz.timezone(self.env.user.tz or 'UTC'))
+            now_user = now_user.replace(tzinfo=None)
+
+            session_closing_hour = float_to_time(self.default_closing_time)
+            session_closing_date = datetime.combine((current_opened_session.start_at.date() + relativedelta(days=1)), session_closing_hour)
+
+            if now_user >= session_closing_date:
+                current_opened_session.action_pos_session_closing_control()
 
 
     # This method is called be a cron job
@@ -492,7 +505,12 @@ class PosConfigInherit(models.Model):
     def _get_all_remote_pos_orders(self):
         for pos in self.env['pos.config'].search([]):
             try:
-                pos.import_foodics_data_per_session(fields.Datetime.now().date())
+                # now user timezone
+                now_utc = datetime.now(pytz.UTC)
+                now_user = now_utc.astimezone(pytz.timezone(self.env.user.tz or 'UTC'))
+                now_user = now_user.replace(tzinfo=None)
+
+                pos.import_foodics_data_per_session(now_user)
             except Exception as e:
                 self.env['api.import.exception'].create({
                     'name': 'Exception',
