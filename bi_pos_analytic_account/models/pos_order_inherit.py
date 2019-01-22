@@ -62,6 +62,9 @@ class PosOrderInherit(models.Model):
                             'credit': line1['credit'] or 0.0,
                             'debit': line1['debit'] or 0.0,
                             'partner_id': line1['partner_id'],
+
+                            'analytic_account_id': line1['analytic_account_id'],
+                            'analytic_tag_ids': line1['analytic_tag_ids'],
                         })
 
                         line2 = Product._convert_prepared_anglosaxon_line(line2, order.partner_id)
