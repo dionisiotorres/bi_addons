@@ -107,5 +107,16 @@
                 </xpath>
             </field>
         </record>
+
+        <record id="purchase_request_line_form_inherit" model="ir.ui.view">
+            <field name="name">purchase.request.line.form.inherit</field>
+            <field name="model">purchase.request.line</field>
+            <field name="inherit_id" ref="purchase_request.purchase_request_line_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='procurement_id']" position="after">
+                    <field name="note"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>
