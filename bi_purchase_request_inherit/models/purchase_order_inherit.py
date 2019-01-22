@@ -6,6 +6,15 @@ class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
     note = fields.Char(string='Note')
+    purchase_request_line_id = fields.Many2one('purchase.request', string='Purchase Request',
+                                               compute='get_purchase_request')
+
+    @api.multi
+    def get_purchase_request(self):
+        for purchase_order_line in self:
+            if purchase_order_line.purchase_request_lines:
+                purchase_order_line.purchase_request_line_id = purchase_order_line.purchase_request_lines[
+                    0].request_id.id
 
 
 class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
