@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from odoo import fields, models, api, _
 from odoo import exceptions
 from odoo.exceptions import ValidationError
@@ -18,7 +19,8 @@ class PurchaseRequestInherit(models.Model):
 
     def get_users_can_approved_purchase_request(self):
         all_users = self.env['res.users'].search([])
-        users = [user.id for user in all_users if user.has_group('bi_purchase_request_inherit.purchase_request_approve')]
+        users = [user.id for user in all_users if
+                 user.has_group('bi_purchase_request_inherit.purchase_request_approve')]
         return [('id', 'in', users)]
 
     tag_ids = fields.Many2many(comodel_name='purchase.requests.tags', string='Tags')
@@ -34,7 +36,7 @@ class PurchaseRequestInherit(models.Model):
     request_date = fields.Date('Request Date', compute='_get_request_date', store=True)
 
     @api.multi
-    @api.depends('line_ids','line_ids.date_required')
+    @api.depends('line_ids', 'line_ids.date_required')
     def _get_request_date(self):
         for rec in self:
             for line in rec.line_ids:
@@ -133,16 +135,21 @@ class PurchaseRequestInherit(models.Model):
 class PurchaseRequestLineInherit(models.Model):
     _inherit = "purchase.request.line"
 
+    date_required = fields.Date(string='Delivery Date', required=True,
+                                track_visibility='onchange', default=False)
     vendor_id = fields.Many2one('res.partner', string='Vendor', required=1, domain=[('supplier', '=', True)])
     product_uom_id = fields.Many2one('uom.uom', 'Product Unit of Measure', related='product_id.uom_po_id', store=True)
-    qty_onhand = fields.Float(string= 'Qty On Hand', digits=dp.get_precision('Product Unit of Measure'), compute='_compute_qty_onhand', store=True)
+    qty_onhand = fields.Float(string='Qty On Hand', digits=dp.get_precision('Product Unit of Measure'),
+                              compute='_compute_qty_onhand', store=True)
+    note = fields.Char(string='Note')
 
     @api.multi
     @api.depends('product_id')
     def _compute_qty_onhand(self):
         for rec in self:
             if rec.product_id:
-                res = rec.product_id.with_context(with_user_warehouse=True,company_owned=True)._compute_quantities_dict(False,False,False)
+                res = rec.product_id.with_context(with_user_warehouse=True,
+                                                  company_owned=True)._compute_quantities_dict(False, False, False)
                 rec.qty_onhand = res[rec.product_id.id]['qty_available']
 
     @api.onchange('product_id', 'product_qty')
@@ -206,6 +213,7 @@ class PurchaseRequestLineInherit(models.Model):
             'product_uom': product.uom_po_id.id,
             'price_unit': 0.0,
             'product_qty': qty,
+            'note': item.note,
             # 'product_qty': qty,
             'account_analytic_id': item.analytic_account_id.id,
             'purchase_request_lines': [(4, item.id)],
