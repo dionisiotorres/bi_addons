@@ -164,14 +164,10 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
             'product_uom': product.uom_po_id.id,
             'price_unit': 0.0,
             'product_qty': qty,
-            # 'product_qty': qty,
             'account_analytic_id': item.line_id.analytic_account_id.id,
             'purchase_request_lines': [(4, item.line_id.id)],
             'date_planned': datetime.combine(item.line_id.date_required, datetime.min.time())
         }
-        # procurement dose not exist in odoo11
-        # if item.line_id.procurement_id:
-        #     vals['procurement_ids'] = [(4, item.line_id.procurement_id.id)]
         self._execute_purchase_line_onchange(vals)
         return vals
 

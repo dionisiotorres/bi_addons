@@ -6,13 +6,10 @@
             <field name="model">purchase.request</field>
             <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
             <field name="arch" type="xml">
-                <!--<xpath expr="//field[@name='description']" position="after">-->
-                    <!--<field name="tag_ids" widget="many2many_tags"/>-->
-                    <!--<field name="requested_by_employee_id"/>-->
-                    <!--<field name="requested_for_employee_id"/>-->
-                    <!--<field name="department_id"/>-->
-                    <!--<field name="hall_id"/>-->
-                <!--</xpath>-->
+                <xpath expr="//field[@name='date_start']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                    <attribute name="string">Creation Date</attribute>
+                </xpath>
                 <xpath expr="//field[@name='description']" position="replace"/>
                 <xpath expr="//field[@name='origin']" position="attributes">
                     <attribute name="readonly">1</attribute>
@@ -25,9 +22,15 @@
                 <xpath expr="//field[@name='requested_by']" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </xpath>
+
                 <xpath expr="//field[@name='line_ids']/tree" position="attributes">
                     <attribute name="editable">bottom</attribute>
                 </xpath>
+                <xpath expr="//field[@name='line_ids']" position="attributes">
+                    <attribute name="attrs">{'readonly':[('state','not in',('draft','to_approve'))]}</attribute>
+                </xpath>
+
+
                 <xpath expr="//field[@name='line_ids']/tree/field[@name='product_uom_id']" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </xpath>
@@ -39,6 +42,9 @@
                 </xpath>
                 <xpath expr="//field[@name='line_ids']/tree/field[@name='name']" position="after">
                     <field name="qty_onhand"/>
+                </xpath>
+                <xpath expr="//field[@name='line_ids']/tree/field[@name='purchase_state']" position="after">
+                    <field name="note"/>
                 </xpath>
                 <xpath expr="//button[@name='button_draft']" position="replace"/>
                 <xpath expr="//button[@name='button_done']" position="replace"/>
@@ -55,6 +61,14 @@
                             class="oe_highlight"
                             groups="bi_purchase_request_inherit.purchase_request_approve"/>
                 </xpath>
+                <xpath expr="//button[@name='button_rejected']" position="replace">
+                    <button name="button_rejected"
+                            states="to_approve,approved"
+                            string="Reject"
+                            class="oe_highlight"
+                            type="object"
+                            groups="purchase_request.group_purchase_request_manager"/>
+                </xpath>
                 <xpath expr="//button[@name='button_validated']" position="replace">
                     <button name="button_validated"
                             states="approved"
@@ -63,6 +77,7 @@
                             class="oe_highlight"
                             groups="bi_purchase_request_inherit.purchase_request_validate"/>
                 </xpath>
+
 
             </field>
         </record>
@@ -89,6 +104,17 @@
                 <xpath expr="//field[@name='picking_type_id']" position="after">
                     <field name="description"/>
                     <field name="tag_ids"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="purchase_request_line_form_inherit" model="ir.ui.view">
+            <field name="name">purchase.request.line.form.inherit</field>
+            <field name="model">purchase.request.line</field>
+            <field name="inherit_id" ref="purchase_request.purchase_request_line_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='procurement_id']" position="after">
+                    <field name="note"/>
                 </xpath>
             </field>
         </record>

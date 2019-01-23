@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
 {
-    'name': 'Purchase Request Inherit',
+    'name': 'Bi Purchase Request Inherit',
+    'summary': 'Bi Purchase Request Inherit',
     'version': '1.0',
 
     'website': 'https://www.centione.com',
@@ -8,6 +10,10 @@
         'security/purchase_request_inherit_security_view.xml',
         'security/ir.model.access.csv',
         'views/purchase_request_inherit_view.xml',
+        'views/purchase_order_inherit_view.xml',
 
-    ]
+    ],
+    'installable': True,
+    'auto_install': False,
+    'sequence': 1
 }
