@@ -216,3 +216,9 @@ class PosOrderInherit(models.Model):
             move.sudo().write({'line_ids': all_lines})
             move.sudo().post()
         return True
+
+    def create_picking(self):
+        if self.config_id.analytic_account_id:
+            return super(PosOrderInherit, self.with_context(pos_analytic_account_id=self.config_id.analytic_account_id.id)).create_picking()
+        else:
+            return super(PosOrderInherit, self).create_picking()
