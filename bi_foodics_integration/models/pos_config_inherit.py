@@ -8,6 +8,9 @@ from dateutil.relativedelta import relativedelta
 from odoo import api, fields, models, _
 from odoo.tools import float_compare
 from odoo.addons.resource.models.resource import float_to_time
+from odoo.addons.base.models.res_partner import _tz_get
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT as DATETIME_FORMAT
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DATE_FORMAT
 from odoo.exceptions import ValidationError
 
 
@@ -40,6 +43,10 @@ class PosConfigInherit(models.Model):
     delivery_product_id = fields.Many2one('product.product', string='Delivery Product')
     default_partner_id = fields.Many2one('res.partner', string='Default Customer')
     default_closing_time = fields.Float(string='Default Closing Time')
+    api_tz = fields.Selection(
+        _tz_get, string='API Timezone',
+        default=lambda self: self._context.get('tz') or self.env.user.tz or 'UTC',
+        help="This field is used in order to define in which timezone the resources will work.")
 
     @api.constrains('pos_branch_id')
     def check_unique_pos_branch_id(self):
@@ -351,6 +358,15 @@ class PosConfigInherit(models.Model):
                 tax = self.get_tax_by_hid(tx['hid'])
                 taxes.append(tax.id)
 
+        if current_session.config_id.api_tz:
+            local = pytz.timezone(current_session.config_id.api_tz)
+            naive = datetime.strptime(order['closed_at'], "%Y-%m-%d %H:%M:%S")
+            local_dt = local.localize(naive, is_dst=None)
+            utc_dt = local_dt.astimezone(pytz.utc)
+            close_date = utc_dt.strftime(DATETIME_FORMAT)
+        else:
+            close_date = order['closed_at']
+
         return {
             'data':
                 {
@@ -358,7 +374,7 @@ class PosConfigInherit(models.Model):
                     'amount_return': 0,
                     'amount_tax': order['total_tax'],
                     'amount_total': order['final_price'],
-                    'date_order': order['closed_at'],
+                    'date_order': close_date,
                     'fiscal_position_id': False,
                     'pricelist_id': self.available_pricelist_ids[0].id,
                     'lines': self._prepare_api_order_lines(order, current_session, order['products'], taxes),
@@ -366,7 +382,7 @@ class PosConfigInherit(models.Model):
                     'partner_id': customer.id if customer else False,
                     'pos_session_id': current_session.id,
                     'sequence_number': order['number'],
-                    'creation_date': order['closed_at'],
+                    'creation_date': close_date,
                     'statement_ids': self._prepare_api_statements(order['payments'], current_session),
                     'uid': order['reference'],
                     'user_id': user.id if user else self.env.uid,
@@ -435,10 +451,8 @@ class PosConfigInherit(models.Model):
             self.current_session_id.action_pos_session_closing_control()
 
     @api.multi
-    def import_foodics_data_per_session(self, session_date):
+    def import_foodics_data_per_session(self, date):
         self.ensure_one()
-
-        date = session_date.date()
 
         foodics_base_url = self.env['ir.config_parameter'].sudo().get_param(
             'bi_foodics_integration.foodics_base_url')
@@ -469,7 +483,7 @@ class PosConfigInherit(models.Model):
                 self.current_session_id = self.env['pos.session'].create({
                     'user_id': self.pos_branch_id.responsible_id.id,
                     'config_id': self.id,
-                    'start_at': session_date
+                    'start_at': date
                 })
 
         pos_orders = []
