@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
+from datetime import timedelta
 import json
 import requests
 import pytz
@@ -515,11 +516,11 @@ class PosConfigInherit(models.Model):
                 utc_dt = utc_dt.strftime(DATETIME_FORMAT)
                 current_opened_session.expected_closing_at = utc_dt
 
-            if now_utc >= current_opened_session.expected_closing_at:
+            if now_utc >= current_opened_session.expected_closing_at or self._context.get('imediate_close', False):
                 current_opened_session.action_pos_session_closing_control()
 
 
-    # This method is called be a cron job
+    # This method is called by a cron job
     @api.model
     def _get_all_remote_pos_orders(self):
         for pos in self.env['pos.config'].search([]):
@@ -537,3 +538,26 @@ class PosConfigInherit(models.Model):
                 })
 
             self._cr.commit()
+
+    # This method is called by a cron job
+    @api.model
+    def _get_all_remote_pos_orders_for_jan(self):
+        start_date = "2019-01-01"
+        stop_date = "2019-01-31"
+
+        start = datetime.strptime(start_date, "%Y-%m-%d")
+        stop = datetime.strptime(stop_date, "%Y-%m-%d")
+        while start <= stop:
+            for pos in self.env['pos.config'].search([]):
+                try:
+                    pos.with_context(imediate_close=True).import_foodics_data_per_session(start.date())
+                except Exception as e:
+                    self.env['api.import.exception'].create({
+                        'name': 'Exception',
+                        'description': e,
+                        'pos_id': pos.id,
+                        'session_id': pos.current_session_id.id if pos.current_session_id else False,
+                    })
+
+                self._cr.commit()
+            start = start + timedelta(days=1)  # increase day one by one
