@@ -548,6 +548,8 @@ class PosConfigInherit(models.Model):
         start = datetime.strptime(start_date, "%Y-%m-%d")
         stop = datetime.strptime(stop_date, "%Y-%m-%d")
         while start <= stop:
+            if start.date() > datetime.now().date():
+                break
             for pos in self.env['pos.config'].search([]):
                 try:
                     pos.with_context(imediate_close=True).import_foodics_data_per_session(start.date())
