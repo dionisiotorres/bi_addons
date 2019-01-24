@@ -102,6 +102,9 @@
                 <xpath expr="//field[@name='start_at']" position="before">
                     <field name="st_date"/>
                 </xpath>
+                <xpath expr="//field[@name='start_at']" position="after">
+                    <field name="expected_closing_at"/>
+                </xpath>
                 <xpath expr="//button[@name='action_pos_session_validate']" position="after">
                     <button class="btn btn-primary" context="{'default_pos_id': config_id}" name="%(bi_foodics_integration.action_import_foodics_per_session_wizard)d" type="action" string="Import Foodics Data" attrs="{'invisible': [('state', 'not in', ['opened'])]}"/>
                 </xpath>

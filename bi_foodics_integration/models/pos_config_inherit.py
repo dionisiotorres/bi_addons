@@ -502,15 +502,20 @@ class PosConfigInherit(models.Model):
                                                         limit=1)
 
         if  current_opened_session and current_opened_session.start_at:
-            # now user timezone
             now_utc = datetime.now(pytz.UTC)
-            now_user = now_utc.astimezone(pytz.timezone(self.env.user.tz or 'UTC'))
-            now_user = now_user.replace(tzinfo=None)
+            now_utc = now_utc.replace(tzinfo=None)
 
             session_closing_hour = float_to_time(self.default_closing_time)
             session_closing_date = datetime.combine((current_opened_session.start_at.date() + relativedelta(days=1)), session_closing_hour)
 
-            if now_user >= session_closing_date:
+            if not current_opened_session.expected_closing_at:
+                local = pytz.timezone(self.env.user.tz or 'UTC')
+                local_dt = local.localize(session_closing_date, is_dst=None)
+                utc_dt = local_dt.astimezone(pytz.utc)
+                utc_dt = utc_dt.strftime(DATETIME_FORMAT)
+                current_opened_session.expected_closing_at = utc_dt
+
+            if now_utc >= current_opened_session.expected_closing_at:
                 current_opened_session.action_pos_session_closing_control()
 
 
@@ -519,12 +524,10 @@ class PosConfigInherit(models.Model):
     def _get_all_remote_pos_orders(self):
         for pos in self.env['pos.config'].search([]):
             try:
-                # now user timezone
                 now_utc = datetime.now(pytz.UTC)
-                now_user = now_utc.astimezone(pytz.timezone(self.env.user.tz or 'UTC'))
-                now_user = now_user.replace(tzinfo=None)
+                now_utc = now_utc.replace(tzinfo=None)
 
-                pos.import_foodics_data_per_session(now_user)
+                pos.import_foodics_data_per_session(now_utc)
             except Exception as e:
                 self.env['api.import.exception'].create({
                     'name': 'Exception',
