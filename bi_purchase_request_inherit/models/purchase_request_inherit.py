@@ -65,7 +65,7 @@ class PurchaseRequestInherit(models.Model):
 
                         # add requested by to purchase request followers
                         if rec.requested_by.id != self._uid:
-                            partner_follower_object = self.env['mail.followers'].search(
+                            partner_follower_object = self.env['mail.followers'].sudo().search(
                                 [('res_id', '=', purchase_order.id),
                                  ('partner_id', '=', rec.requested_by.partner_id.id)])
                             reg = {
@@ -74,7 +74,7 @@ class PurchaseRequestInherit(models.Model):
                                 'partner_id': rec.requested_by.partner_id.id,
                             }
                             if not partner_follower_object:
-                                follower_id = mail_followers_object.create(reg)
+                                follower_id = mail_followers_object.sudo().create(reg)
 
         res = super(PurchaseRequestInherit, self).button_validated()
         return res
