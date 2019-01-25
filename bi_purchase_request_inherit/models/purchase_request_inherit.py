@@ -33,7 +33,7 @@ class PurchaseRequestInherit(models.Model):
                                   domain=lambda self: self.get_users_can_approved_purchase_request())
     picking_type_id = fields.Many2one('stock.picking.type',
                                       'Picking Type', default=_default_operation_type)
-    request_date = fields.Date('Request Date', compute='_get_request_date', store=True)
+    request_date = fields.Date('Delivery Date', compute='_get_request_date', store=True)
 
     @api.multi
     @api.depends('line_ids', 'line_ids.date_required')
