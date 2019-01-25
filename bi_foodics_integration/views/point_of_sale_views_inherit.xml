@@ -50,6 +50,20 @@
                             </div>
                         </div>
                     </div>
+                    <h2>API Timezone</h2>
+                    <div class="row mt16 o_settings_container" id="pos_branch">
+                        <div class="col-12 col-lg-6 o_setting_box" id="branch">
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">API Timezone</span>
+                                <div class="text-muted">
+                                    API Timezone
+                                </div>
+                                <div class="content-group mt16">
+                                    <field name="api_tz" colspan="4" nolabel="1"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <h2>Closing Time</h2>
                     <div class="row mt16 o_settings_container" id="pos_branch">
                         <div class="col-12 col-lg-6 o_setting_box" id="branch">
@@ -87,6 +101,9 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='start_at']" position="before">
                     <field name="st_date"/>
+                </xpath>
+                <xpath expr="//field[@name='start_at']" position="after">
+                    <field name="expected_closing_at"/>
                 </xpath>
                 <xpath expr="//button[@name='action_pos_session_validate']" position="after">
                     <button class="btn btn-primary" context="{'default_pos_id': config_id}" name="%(bi_foodics_integration.action_import_foodics_per_session_wizard)d" type="action" string="Import Foodics Data" attrs="{'invisible': [('state', 'not in', ['opened'])]}"/>
