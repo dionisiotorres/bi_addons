@@ -359,7 +359,7 @@ class PosConfigInherit(models.Model):
                 tax = self.get_tax_by_hid(tx['hid'])
                 taxes.append(tax.id)
 
-        if current_session.config_id.api_tz:
+        if current_session.config_id.api_tz and order['closed_at']:
             local = pytz.timezone(current_session.config_id.api_tz)
             naive = datetime.strptime(order['closed_at'], "%Y-%m-%d %H:%M:%S")
             local_dt = local.localize(naive, is_dst=None)
