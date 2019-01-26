@@ -36,6 +36,13 @@ class PurchaseRequestInherit(models.Model):
     request_date = fields.Date('Delivery Date', compute='_get_request_date', store=True)
 
     @api.multi
+    def unlink(self):
+        for rec in self:
+            if rec.state:
+                raise ValidationError(_('You cannot delete purchase request.'))
+        return super(PurchaseRequestInherit, self).unlink()
+
+    @api.multi
     @api.depends('line_ids', 'line_ids.date_required')
     def _get_request_date(self):
         for rec in self:
