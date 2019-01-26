@@ -33,7 +33,14 @@ class PurchaseRequestInherit(models.Model):
                                   domain=lambda self: self.get_users_can_approved_purchase_request())
     picking_type_id = fields.Many2one('stock.picking.type',
                                       'Picking Type', default=_default_operation_type)
-    request_date = fields.Date('Request Date', compute='_get_request_date', store=True)
+    request_date = fields.Date('Delivery Date', compute='_get_request_date', store=True)
+
+    @api.multi
+    def unlink(self):
+        for rec in self:
+            if rec.state:
+                raise ValidationError(_('You cannot delete purchase request.'))
+        return super(PurchaseRequestInherit, self).unlink()
 
     @api.multi
     @api.depends('line_ids', 'line_ids.date_required')
@@ -52,7 +59,30 @@ class PurchaseRequestInherit(models.Model):
     @api.multi
     def button_validated(self):
         for rec in self:
-            rec.make_purchase_order()
+            created_po = rec.make_purchase_order()
+            mail_followers_object = self.env['mail.followers']
+            if created_po:
+                if 'domain' in created_po:
+                    purchase_orders = self.env['purchase.order'].browse(created_po['domain'][0][-1])
+                    for purchase_order in purchase_orders:
+                        if purchase_order.origin and rec.name not in purchase_order.origin:
+                            purchase_order.origin = purchase_order.origin + ' , ' + rec.name
+                        else:
+                            purchase_order.origin = rec.name
+
+                        # add requested by to purchase request followers
+                        if rec.requested_by.id != self._uid:
+                            partner_follower_object = self.env['mail.followers'].sudo().search(
+                                [('res_id', '=', purchase_order.id),
+                                 ('partner_id', '=', rec.requested_by.partner_id.id)])
+                            reg = {
+                                'res_id': purchase_order.id,
+                                'res_model': 'purchase.order',
+                                'partner_id': rec.requested_by.partner_id.id,
+                            }
+                            if not partner_follower_object:
+                                follower_id = mail_followers_object.sudo().create(reg)
+
         res = super(PurchaseRequestInherit, self).button_validated()
         return res
 
@@ -105,6 +135,7 @@ class PurchaseRequestInherit(models.Model):
                 new_pr_line=new_pr_line)
             po_line.product_qty = new_qty
             po_line._onchange_quantity()
+            po_line.note = item.note
 
             po_line.date_planned = datetime.combine(item.date_required, datetime.min.time())
             res.append(purchase.id)
