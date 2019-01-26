@@ -476,16 +476,16 @@ class PosConfigInherit(models.Model):
         if not orders_list:
             return
 
-        if not self.current_session_id:
-            opened_session = self.env['pos.session'].search([('config_id', '=', self.id), ('state', 'in', ['opened'])], limit=1)
-            if opened_session:
-                self.current_session_id = opened_session
-            else:
-                self.current_session_id = self.env['pos.session'].create({
-                    'user_id': self.pos_branch_id.responsible_id.id,
-                    'config_id': self.id,
-                    'start_at': date
-                })
+        # if not self.current_session_id:
+        opened_session = self.env['pos.session'].search([('config_id', '=', self.id), ('state', 'in', ['opened'])], limit=1)
+        if opened_session:
+            self.current_session_id = opened_session
+        else:
+            self.current_session_id = self.env['pos.session'].create({
+                'user_id': self.pos_branch_id.responsible_id.id,
+                'config_id': self.id,
+                'start_at': date
+            })
 
         pos_orders = []
         for order in orders_list:
@@ -496,10 +496,10 @@ class PosConfigInherit(models.Model):
         created_order_ids = self.env['pos.order'].with_context(keep_dates=True, force_period_date=date).create_from_ui(pos_orders)
         self._update_orders_amount_all(created_order_ids)
 
-        if self.current_session_id and self.current_session_id.start_at:
-            current_opened_session = self.current_session_id
-        else:
-            current_opened_session = self.env['pos.session'].search([('config_id', '=', self.id), ('state', 'in', ['opened'])],
+        # if self.current_session_id and self.current_session_id.start_at:
+        #     current_opened_session = self.current_session_id
+        # else:
+        current_opened_session = self.env['pos.session'].search([('config_id', '=', self.id), ('state', 'in', ['opened'])],
                                                         limit=1)
 
         if  current_opened_session and current_opened_session.start_at:
