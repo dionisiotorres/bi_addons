@@ -49,10 +49,10 @@ class PurchaseRequestInherit(models.Model):
         for order in self:
             if 'state' in values and values['state'] == 'approved':
                 if 'line_ids' in values and not user.has_group('bi_purchase_request_inherit.purchase_request_validate'):
-                    raise ValidationError(_("You are not allowed to validate purchase request to change lines."))
+                    raise ValidationError(_("You are not allowed to edit on purchase request lines after approved."))
             elif 'state' not in values and order.state == 'approved':
                 if 'line_ids' in values and not user.has_group('bi_purchase_request_inherit.purchase_request_validate'):
-                    raise ValidationError(_("You are not allowed to validate purchase request to change lines."))
+                    raise ValidationError(_("You are not allowed to edit on purchase request lines after approved."))
         return res
 
     @api.multi
