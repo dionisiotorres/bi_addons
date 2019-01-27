@@ -14,6 +14,9 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT as DATETIME_FORMAT
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DATE_FORMAT
 from odoo.exceptions import ValidationError
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class PosBranch(models.Model):
     _name = 'pos.branch'
@@ -474,6 +477,7 @@ class PosConfigInherit(models.Model):
         orders_list = self.get_orders(foodics_base_url, headers, business_date, self.pos_branch_id.hid)
 
         if not orders_list:
+            logger.warning('no orders found!')
             return
 
         # if not self.current_session_id:
@@ -486,6 +490,8 @@ class PosConfigInherit(models.Model):
                 'config_id': self.id,
                 'start_at': date
             })
+
+        logger.warning('opened session id %s' %(self.current_session_id))
 
         pos_orders = []
         for order in orders_list:
@@ -516,7 +522,10 @@ class PosConfigInherit(models.Model):
                 utc_dt = utc_dt.strftime(DATETIME_FORMAT)
                 current_opened_session.expected_closing_at = utc_dt
 
+            logger.warning('dates compare %s, %s' % (now_utc, current_opened_session.expected_closing_at))
+
             if now_utc >= current_opened_session.expected_closing_at or self._context.get('imediate_close', False):
+                logger.warning('Session closing')
                 current_opened_session.action_pos_session_closing_control()
 
 
