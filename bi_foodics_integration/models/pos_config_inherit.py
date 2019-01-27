@@ -243,7 +243,7 @@ class PosConfigInherit(models.Model):
                 statment = st
                 break
         if statment:
-            return statment
+            return statment.id
         else:
             raise ValidationError(_('There is no statment found with the journal %s') % (journal.name))
 
