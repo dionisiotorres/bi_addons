@@ -43,6 +43,19 @@ class PurchaseRequestInherit(models.Model):
         return super(PurchaseRequestInherit, self).unlink()
 
     @api.multi
+    def write(self, values):
+        user = self.env['res.users'].search([('id', '=', self._uid)])
+        res = super(PurchaseRequestInherit, self).write(values)
+        for order in self:
+            if 'state' in values and values['state'] == 'approved':
+                if 'line_ids' in values and not user.has_group('bi_purchase_request_inherit.purchase_request_validate'):
+                    raise ValidationError(_("You are not allowed to validate purchase request to change lines."))
+            elif 'state' not in values and order.state == 'approved':
+                if 'line_ids' in values and not user.has_group('bi_purchase_request_inherit.purchase_request_validate'):
+                    raise ValidationError(_("You are not allowed to validate purchase request to change lines."))
+        return res
+
+    @api.multi
     @api.depends('line_ids', 'line_ids.date_required')
     def _get_request_date(self):
         for rec in self:
