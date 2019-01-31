@@ -65,9 +65,15 @@
             <field name="name">End Of Service</field>
             <field name="category_id" ref="hr_payroll.COMP"/>
             <field name="amount_select">code</field>
-            <field name="amount_python_compute">result = contract.other_fixed_allowances_amount</field>
             <field name="sequence" eval="230"/>
             <field name="note">End Of Service</field>
+            <field name="condition_select">none</field>
+            <field name="amount_python_compute">
+if contract.number_of_serviced_years &lt;= 5:
+    result =  (0.5*contract.wage/12)
+elif contract.number_of_serviced_years &gt; 5:
+    result =  (contract.wage/12)
+            </field>
         </record>
 
 
