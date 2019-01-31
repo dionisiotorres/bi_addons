@@ -3,7 +3,7 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
 
-class HrEmployee(models.Model):
+class HrContract(models.Model):
     _inherit = 'hr.contract'
 
     register_date = fields.Date(string='Start Date')
@@ -18,6 +18,9 @@ class HrEmployee(models.Model):
     petrol_amount = fields.Float(string='Petrol Amount', )
     out_source_amount = fields.Float(string='Out Source Fees', )
     other_fixed_allowances_amount = fields.Float(string='Other Fixed Allowances', )
+    tickets_amount = fields.Monetary(string='Tickets', )
+    medical_insurance = fields.Monetary(string='Medical Insurance', )
+    visa_fees = fields.Monetary(string='Visa Fees', )
 
     @api.multi
     @api.constrains('transportation', )

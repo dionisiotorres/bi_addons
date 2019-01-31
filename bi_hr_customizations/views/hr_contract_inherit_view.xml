@@ -25,6 +25,9 @@
                     <field name="petrol_amount"/>
                     <field name="out_source_amount"/>
                     <field name="other_fixed_allowances_amount"/>
+                    <field name="tickets_amount"/>
+                    <field name="medical_insurance"/>
+                    <field name="visa_fees"/>
                 </xpath>
             </field>
         </record>
