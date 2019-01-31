@@ -29,6 +29,13 @@
                     <field name="medical_insurance"/>
                     <field name="visa_fees"/>
                 </xpath>
+
+                <xpath expr="//group[@name='main_info']" position="inside">
+                    <group name="eos_info" string="EOS">
+                        <field name="number_of_serviced_days"/>
+                        <field name="number_of_serviced_years"/>
+                    </group>
+                </xpath>
             </field>
         </record>
     </data>

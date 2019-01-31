@@ -21,6 +21,20 @@ class HrContract(models.Model):
     tickets_amount = fields.Monetary(string='Tickets', )
     medical_insurance = fields.Monetary(string='Medical Insurance', )
     visa_fees = fields.Monetary(string='Visa Fees', )
+    number_of_serviced_days = fields.Float(string='Number Of Serviced Days', compute='get_serviced_info',
+                                           digits=(16, 3))
+    number_of_serviced_years = fields.Float(string='Number Of Serviced Years', compute='get_serviced_info',
+                                            digits=(16, 3))
+
+    @api.multi
+    @api.depends('date_start')
+    def get_serviced_info(self):
+        for rec in self:
+            if rec.date_start:
+                today = fields.datetime.now().date()
+                start_date = fields.Datetime.from_string(rec.date_start).date()
+                rec.number_of_serviced_days = (today - start_date).days
+                rec.number_of_serviced_years = rec.number_of_serviced_days / 365
 
     @api.multi
     @api.constrains('transportation', )

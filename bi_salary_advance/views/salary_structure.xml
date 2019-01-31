@@ -19,14 +19,13 @@
         </record>
 
         <!-- hr contract -->
-        <record model="ir.ui.view" id="model_hr_contract">
+        <record model="ir.ui.view" id="hr_contract_view_form_inherit_salary_advance">
             <field name="name">hr.contract</field>
             <field name="model">hr.contract</field>
             <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='advantages']" position="after">
                     <field name="max_percent"/>
-                    <!--<field name="advance_date"/>-->
                 </xpath>
             </field>
         </record>

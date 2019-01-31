@@ -60,6 +60,16 @@
             <field name="note">Other Fixed Allowances</field>
         </record>
 
+        <record id="hr_salary_rule_eos" model="hr.salary.rule">
+            <field name="code">EOS</field>
+            <field name="name">End Of Service</field>
+            <field name="category_id" ref="hr_payroll.COMP"/>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = contract.other_fixed_allowances_amount</field>
+            <field name="sequence" eval="230"/>
+            <field name="note">End Of Service</field>
+        </record>
+
 
     </data>
 </odoo>
