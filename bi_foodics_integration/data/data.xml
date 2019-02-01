@@ -14,6 +14,19 @@
             <field name="active">0</field>
         </record>
 
+        <!-- Cron that check opened session closing date  -->
+        <record id="ir_cron_foodics_api_session_closing" model="ir.cron">
+            <field name="name">Foodics API: POS session closing</field>
+            <field name="model_id" ref="model_pos_config"/>
+            <field name="state">code</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="code">model._check_all_opened_sessions()</field>
+            <field name="interval_number">20</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="active">0</field>
+        </record>
+
         <!-- Cron that process the API imported orders in Jan -->
         <record id="ir_cron_foodics_api_jan" model="ir.cron">
             <field name="name">Foodics API: POS Orders for month Jan</field>

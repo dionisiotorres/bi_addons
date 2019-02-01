@@ -478,7 +478,7 @@ class PosConfigInherit(models.Model):
 
         if not orders_list:
             logger.warning('no orders found!')
-            return
+            raise ValidationError(_('no orders found!'))
 
         # if not self.current_session_id:
         opened_session = self.env['pos.session'].search([('config_id', '=', self.id), ('state', 'in', ['opened'])], limit=1)
@@ -509,8 +509,8 @@ class PosConfigInherit(models.Model):
                                                         limit=1)
 
         if  current_opened_session and current_opened_session.start_at:
-            now_utc = datetime.now(pytz.UTC)
-            now_utc = now_utc.replace(tzinfo=None)
+            # now_utc = datetime.now(pytz.UTC)
+            # now_utc = now_utc.replace(tzinfo=None)
 
             session_closing_hour = float_to_time(self.default_closing_time)
             session_closing_date = datetime.combine((current_opened_session.start_at.date() + relativedelta(days=1)), session_closing_hour)
@@ -522,9 +522,9 @@ class PosConfigInherit(models.Model):
                 utc_dt = utc_dt.strftime(DATETIME_FORMAT)
                 current_opened_session.expected_closing_at = utc_dt
 
-            logger.warning('dates compare %s, %s' % (now_utc, current_opened_session.expected_closing_at))
+            # logger.warning('dates compare %s, %s' % (now_utc, current_opened_session.expected_closing_at))
 
-            if now_utc >= current_opened_session.expected_closing_at or self._context.get('imediate_close', False):
+            if self._context.get('imediate_close', False):
                 logger.warning('Session closing')
                 current_opened_session.action_pos_session_closing_control()
 
@@ -572,3 +572,25 @@ class PosConfigInherit(models.Model):
 
                 self._cr.commit()
             start = start + timedelta(days=1)  # increase day one by one
+
+
+    # This method is called by a cron job
+    @api.model
+    def _check_all_opened_sessions(self):
+        for session in self.env['pos.session'].search([('state', 'in', ['opened'])]):
+            if session.expected_closing_at:
+                try:
+                    now_utc = datetime.now(pytz.UTC)
+                    now_utc = now_utc.replace(tzinfo=None)
+                    logger.warning('dates compare %s, %s' % (now_utc, session.expected_closing_at))
+                    if now_utc >= session.expected_closing_at:
+                        logger.warning('Session closing')
+                        session.action_pos_session_closing_control()
+                except Exception as e:
+                    self.env['api.import.exception'].create({
+                        'name': 'Exception',
+                        'description': e,
+                        'pos_id': session.config_id.id,
+                        'session_id': session.id,
+                    })
+                self._cr.commit()
