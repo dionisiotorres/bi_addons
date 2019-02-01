@@ -25,6 +25,16 @@
                     <field name="petrol_amount"/>
                     <field name="out_source_amount"/>
                     <field name="other_fixed_allowances_amount"/>
+                    <field name="tickets_amount"/>
+                    <field name="medical_insurance"/>
+                    <field name="visa_fees"/>
+                </xpath>
+
+                <xpath expr="//group[@name='main_info']" position="inside">
+                    <group name="eos_info" string="EOS">
+                        <field name="number_of_serviced_days"/>
+                        <field name="number_of_serviced_years"/>
+                    </group>
                 </xpath>
             </field>
         </record>

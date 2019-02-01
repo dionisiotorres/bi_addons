@@ -27,7 +27,7 @@
                     <attribute name="editable">bottom</attribute>
                 </xpath>
                 <xpath expr="//field[@name='line_ids']" position="attributes">
-                    <attribute name="attrs">{'readonly':[('state','not in',('draft','to_approve'))]}</attribute>
+                    <attribute name="attrs">{'readonly':[('state','not in',('draft','to_approve','approved'))]}</attribute>
                 </xpath>
 
 
