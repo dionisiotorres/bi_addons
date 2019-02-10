@@ -34,8 +34,8 @@
         <record id="transfer_request_manager_rule" model="ir.rule">
             <field name="name">Transfer Request Manager</field>
             <field name="model_id" ref="bi_transfer_request.model_transfer_request"/>
-            <field name="domain_force">[]</field>
-            <field name="groups" eval="[(4, ref('bi_transfer_request.transfer_request_user_group'))]"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('bi_transfer_request.transfer_request_manager_group'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
