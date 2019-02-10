@@ -2,3 +2,7 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_transfer_request,access.transfer.request,model_transfer_request,,1,1,1,1
 access_transfer_request_line,access.transfer.request.line,model_transfer_request_line,,1,1,1,1
 access_transfer_request_reason,access.transfer.request.reason,model_transfer_request_reason,,1,1,1,1
+access_transfer_request_user,access.transfer.request.ser,model_transfer_request,bi_transfer_request.transfer_request_user_group,1,1,1,0
+access_transfer_request_line_user,access.transfer.request.line.user,model_transfer_request_line,bi_transfer_request.transfer_request_user_group,1,1,1,0
+access_transfer_request_manager,access.transfer.request.manager,model_transfer_request,bi_transfer_request.transfer_request_manager_group,1,1,1,1
+access_transfer_request_line_manager,access.transfer.request.line.manager,model_transfer_request_line,bi_transfer_request.transfer_request_manager_group,1,1,1,1
