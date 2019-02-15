@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!--Report-->
+    <template id="report_journal_entry_document">
+        <t t-call="web.external_layout">
+            <t t-set="o" t-value="doc.with_context({'lang': 'en_US'})"/>
+            <div class="page">
+                <center>
+                    <h3>
+                        <b style="font-family: Times New Roman;">JOURNAL ENTRY</b>
+                        <br/><br/>
+                    </h3>
+                </center>
+                <h4>
+                    <b>NO.</b>
+                    <span t-field="o.name"/>
+                </h4>
+                <div class="col-xs-8">
+                    <h5>
+                        <strong>Journal:</strong>
+                        <span t-field="o.journal_id"/>
+                    </h5>
+                </div>
+                <div class="col-xs-4">
+                    <h5>
+                        <strong>Date:</strong>
+                        <span t-field="o.date"/>
+                    </h5>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <h5>
+                    <strong>Reference:</strong>
+                    <span t-field="o.ref"/>
+                </h5>
+                <br/>
+                <br/>
+                <br/>
+
+            </div>
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Account</th>
+                        <th>Partner</th>
+                        <th>Label</th>
+                        <th groups="analytic.group_analytic_accounting">
+                            Analytic Account
+                        </th>
+                        <th>Analytic Tags</th>
+                        <th>Due Date</th>
+                        <th>Amount Currency</th>
+                        <th>Currency</th>
+                        <th>Debit</th>
+                        <th>Credit</th>
+                    </tr>
+                </thead>
+                <tbody class="invoice_tbody">
+                    <tr t-foreach="o.line_ids" t-as="l">
+                        <td>
+                            <span t-field="l.account_id"/>
+                        </td>
+                        <td>
+                            <span t-field="l.partner_id"/>
+                        </td>
+                        <td>
+                            <span t-field="l.name"/>
+                        </td>
+                        <td>
+                            <span t-field="l.analytic_account_id"/>
+                        </td>
+                        <td>
+                            <span t-field="l.analytic_tag_ids"/>
+                        </td>
+                         <td>
+                            <span t-field="l.date_maturity"/>
+                        </td>
+                        <td>
+                            <span t-field="l.amount_currency"/>
+                        </td>
+                        <td>
+                            <span t-field="l.currency_id"/>
+                        </td>
+                        <td>
+                            <span t-field="l.debit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                        </td>
+                        <td>
+                            <span t-field="l.credit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                        </td>
+                    </tr>
+                    <tr/>
+                    <tr class="border-black">
+                        <td colspan="8"/>
+                        <!--<td groups="analytic.group_analytic_accounting"/>-->
+                        <td>
+                            <span t-field="o.amount"/>
+                        </td>
+                        <td>
+                            <span t-field="o.amount"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p t-field="o.narration"/>
+            <br/>
+            <br/>
+            <br/>
+                <div class="col-xs-6 pull-left">
+                    <strong>
+                        <u>Accountant :</u>
+                    </strong>
+                </div>
+                <div class="col-xs-6 pull-right">
+                    <strong>
+                        <u>Accounting Manager :</u>
+                    </strong>
+                </div>
+        </t>
+    </template>
+    <!--TEMPLATE [JOURNAL ENTRY REPORT]-->
+    <template id="report_journal_entry">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="bi_print_journal_entries.report_journal_entry_document"/>
+            </t>
+        </t>
+    </template>
+
+    <report id="action_report_journal_entry"
+            model="account.move"
+            string="Journal Entries"
+            report_type="qweb-pdf"
+            name="bi_print_journal_entries.report_journal_entry"
+            file="bi_print_journal_entries.report_journal_entry"
+            attachment_use="True"
+    />
+    <!--FORM JOURNAL ENTRY-->
+    <record id="view_move_form_inherit" model="ir.ui.view">
+        <field name="name">account.move.report.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <button name="action_post" position="after">
+                <button name="print_journal_entry" string="Print" type="object" help="Print in Pdf"/>
+            </button>
+        </field>
+
+    </record>
+
+</odoo>
