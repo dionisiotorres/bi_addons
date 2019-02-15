@@ -7,5 +7,5 @@ class StockPickingInherit(models.Model):
     _inherit = 'stock.picking'
 
     @api.multi
-    def button_validate(self):
-        return super(StockPickingInherit,self.sudo()).button_validate()
+    def action_done(self):
+        return super(StockPickingInherit,self.sudo()).action_done()
