@@ -7,6 +7,7 @@ class StockMoveInherit(models.Model):
 
     push_rule = fields.Boolean(string='Push Rule?')
 
+    # preventing move merge with old pickings
     def _assign_picking(self):
         """ Try to assign the moves to an existing picking that has not been
         reserved yet and has the same procurement group, locations and picking
@@ -41,3 +42,14 @@ class StockMoveInherit(models.Model):
             if recompute:
                 move.recompute()
         return True
+
+    #pass analytic account to picking entry
+    def _generate_valuation_lines_data(self, partner_id, qty, debit_value, credit_value, debit_account_id,
+                                       credit_account_id):
+        res = super(StockMoveInherit, self)._generate_valuation_lines_data(partner_id, qty, debit_value, credit_value, debit_account_id,
+                                       credit_account_id)
+        if res.get('debit_line_vals', False) and self.picking_id and self.picking_id.sale_id and self.picking_id.sale_id.analytic_account_id:
+            res['debit_line_vals'].update({
+                'analytic_account_id': self.picking_id.sale_id.analytic_account_id.id,
+            })
+        return res
