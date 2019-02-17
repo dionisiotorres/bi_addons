@@ -15,6 +15,7 @@
         'views/stock_scrap_inherit_view.xml',
         'views/stock_quant_inherit_view.xml',
         'views/product_inherit_view.xml',
+        'views/stock_quantity_history_inherit.xml',
     ],
     'installable': True,
     'auto_install': False,
