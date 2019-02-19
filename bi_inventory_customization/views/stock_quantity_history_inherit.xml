@@ -10,5 +10,16 @@
             </field>
         </field>
     </record>
+
+    <record id="view_stock_acc_quantity_history_inherit" model="ir.ui.view">
+        <field name="name">Inventory Report Inherit</field>
+        <field name="model">stock.quantity.history</field>
+        <field name="inherit_id" ref="stock_account.view_stock_quantity_history"/>
+        <field name="arch" type="xml">
+            <field name="date" position="after">
+                <field name="location_id" attrs="{'invisible': [('compute_at_date', '=', 0)]}"/>
+            </field>
+        </field>
+    </record>
 </odoo>
 
