@@ -12,3 +12,12 @@ class ProductTemplateInherit(models.Model):
     def _compue_total_cost(self):
         for rec in self:
             rec.total_cost_price = rec.standard_price * rec.qty_available
+
+
+class ProductProductInherit(models.Model):
+    _inherit = "product.product"
+
+    def _get_domain_locations(self):
+        if self.env.context.get('compute_report'):
+            return super(ProductProductInherit, self.with_context(company_owned=False))._get_domain_locations()
+        return super(ProductProductInherit, self)._get_domain_locations()
