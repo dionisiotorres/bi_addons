@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- item card without cost -->
+    <record id="view_item_card_without_cost_tree" model="ir.ui.view">
+        <field name="name">item.card.without.cost.tree</field>
+        <field name="model">stock.move.line</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="state == 'cancel'" decoration-danger="(state not in ('cancel','done'))"
+                  string="Item Card" create="0" default_order="product_id,date,id">
+                <field name="date"/>
+                <field name="reference" string="Reference"/>
+                <field name="product_id"/>
+                <field name="product_uom_id" options="{'no_open': True, 'no_create': True}" string="Unit of Measure"
+                       groups="uom.group_uom"/>
+                <field name="location_id"/>
+                <field name="location_dest_id"/>
+                <field name="opening_balance"/>
+                <field name="qty_in"/>
+                <field name="qty_out"/>
+                <field name="balance"/>
+                <field name="state" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- item card with cost -->
+    <record id="view_item_card_with_cost_tree" model="ir.ui.view">
+        <field name="name">item.card.with.cost.tree</field>
+        <field name="model">stock.move.line</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="state == 'cancel'" decoration-danger="(state not in ('cancel','done'))"
+                  string="Item Card" create="0" default_order="product_id,date,id">
+                <field name="date"/>
+                <field name="reference" string="Reference"/>
+                <field name="product_id"/>
+                <field name="location_id"/>
+                <field name="location_dest_id"/>
+                <field name="product_uom_id" options="{'no_open': True, 'no_create': True}" string="Unit of Measure"
+                       groups="uom.group_uom"/>
+                <field name="opening_balance"/>
+                <field name="qty_in"/>
+                <field name="cost_price_in"/>
+                <field name="qty_out"/>
+                <field name="cost_price_out"/>
+                <field name="balance"/>
+                <field name="balance_cost"/>
+                <field name="state" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

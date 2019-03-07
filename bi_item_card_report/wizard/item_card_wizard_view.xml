@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_item_card_wizard" model="ir.ui.view">
+            <field name="name">item.card.wizard.form</field>
+            <field name="model">item.card.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Item Card Wizard">
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="report_view" widget="radio"/>
+                            <field name="show_cost"/>
+                        </group>
+                        <group>
+                            <field name="date_to"/>
+                            <field name="product_id" attrs="{'required':[('report_view','=','detailed')], 'invisible':[('report_view','=','total')]}"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button string='View' name="view_report" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_item_card_wizard" model="ir.actions.act_window">
+            <field name="name">Item Card Wizard</field>
+            <field name="res_model">item.card.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_item_card_wizard"/>
+            <field name="target">new</field>
+        </record>
+        <menuitem action="action_item_card_wizard" id="menu_item_card_wizard" parent="stock.menu_warehouse_report"
+                  sequence="200" name="Item Card"/>
+
+
+    </data>
+</odoo>
