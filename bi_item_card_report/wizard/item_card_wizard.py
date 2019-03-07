@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.tools.safe_eval import safe_eval
 from odoo.exceptions import UserError
 
 
@@ -18,6 +17,12 @@ class ItemCardWizard(models.TransientModel):
                                    default='detailed', string='Report View', required=True,
                                    help='Choose how you want to view the report(detailed for viewing transactions - total for viewing without transactions)')
     show_cost = fields.Boolean(string='Show Cost', help='Show Cost Columns')
+
+    @api.constrains('date_from','date_to')
+    def _constrain_dates(self):
+        for rec in self:
+            if rec.date_from > rec.date_to:
+                raise UserError(_('Date From Must Be Greater Than Date To!'))
 
     @api.multi
     def view_report(self):
