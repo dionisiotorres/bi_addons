@@ -33,11 +33,16 @@ class ItemCardWizard(models.TransientModel):
 
         without_cost_tree_view_id = self.env.ref('bi_item_card_report.view_item_card_without_cost_tree').id
         cost_tree_view_id = self.env.ref('bi_item_card_report.view_item_card_with_cost_tree').id
+        without_cost_pivot_view_id = self.env.ref('bi_item_card_report.view_item_card_without_cost_pivot').id
+        cost_pivot_view_id = self.env.ref('bi_item_card_report.view_item_card_with_cost_pivot').id
 
         if self.show_cost:
             tree_view_id = cost_tree_view_id
+            pivot_view_id = cost_pivot_view_id
         else:
             tree_view_id = without_cost_tree_view_id
+            pivot_view_id = without_cost_pivot_view_id
+
         if self.report_view == 'detailed':
             default_product_group = False
         else:
@@ -46,8 +51,8 @@ class ItemCardWizard(models.TransientModel):
         # moves until date.
         action = {
             'type': 'ir.actions.act_window',
-            'views': [(tree_view_id, 'tree')],
-            'view_mode': 'tree',
+            'views': [(tree_view_id, 'tree'),(pivot_view_id, 'pivot')],
+            'view_mode': 'tree,pivot',
             'name': _('Item Card'),
             'res_model': 'stock.move.line',
             'domain': domain,
