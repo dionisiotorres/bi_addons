@@ -39,7 +39,11 @@ class StockMoveLineInherit(models.Model):
                 domain.append(('product_id', '=', self._context.get('product_id')))
             line_id = self.env['stock.move.line'].search(domain, limit=1, order='date')
         product_cost_value = {}
-        for rec in self.env['stock.move.line'].search(domain, order='product_id,date,id'):
+        if self._context.get('group_by_location'):
+            ord = 'location_id,product_id,date,id'
+        else:
+            ord = 'product_id,date,id'
+        for rec in self.env['stock.move.line'].search(domain, order=ord):
             if rec.product_id.id not in product_cost_value.keys():
                 product_cost_value[rec.product_id.id] = [0.0,0.0]
 

@@ -16,6 +16,7 @@
                         <group>
                             <field name="date_to"/>
                             <field name="product_id" attrs="{'required':[('report_view','=','detailed')], 'invisible':[('report_view','=','total')]}"/>
+                            <field name="group_by_location"/>
                         </group>
                     </group>
                     <footer>

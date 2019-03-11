@@ -17,6 +17,7 @@ class ItemCardWizard(models.TransientModel):
                                    default='detailed', string='Report View', required=True,
                                    help='Choose how you want to view the report(detailed for viewing transactions - total for viewing without transactions)')
     show_cost = fields.Boolean(string='Show Cost', help='Show Cost Columns')
+    group_by_location = fields.Boolean(string='Group By Location')
 
     @api.constrains('date_from','date_to')
     def _constrain_dates(self):
@@ -32,21 +33,48 @@ class ItemCardWizard(models.TransientModel):
             domain += [('product_id', '=', self.product_id.id)]
 
         without_cost_tree_view_id = self.env.ref('bi_item_card_report.view_item_card_without_cost_tree').id
+        without_cost_location_tree_view_id = self.env.ref('bi_item_card_report.view_item_card_without_cost_loc_tree').id
+
         cost_tree_view_id = self.env.ref('bi_item_card_report.view_item_card_with_cost_tree').id
+        cost_location_tree_view_id = self.env.ref('bi_item_card_report.view_item_card_with_cost_loc_tree').id
+
         without_cost_pivot_view_id = self.env.ref('bi_item_card_report.view_item_card_without_cost_pivot').id
+        without_cost_location_pivot_view_id = self.env.ref('bi_item_card_report.view_item_card_without_cost_loc_pivot').id
+
         cost_pivot_view_id = self.env.ref('bi_item_card_report.view_item_card_with_cost_pivot').id
+        cost_location_pivot_view_id = self.env.ref('bi_item_card_report.view_item_card_with_cost_loc_pivot').id
 
         if self.show_cost:
-            tree_view_id = cost_tree_view_id
-            pivot_view_id = cost_pivot_view_id
+            if self.group_by_location:
+                tree_view_id = cost_location_tree_view_id
+                pivot_view_id = cost_location_pivot_view_id
+
+            else:
+                tree_view_id = cost_tree_view_id
+                pivot_view_id = cost_pivot_view_id
         else:
-            tree_view_id = without_cost_tree_view_id
-            pivot_view_id = without_cost_pivot_view_id
+            if self.group_by_location:
+                tree_view_id = without_cost_location_tree_view_id
+                pivot_view_id = without_cost_location_pivot_view_id
+
+            else:
+                tree_view_id = without_cost_tree_view_id
+                pivot_view_id = without_cost_pivot_view_id
 
         if self.report_view == 'detailed':
             default_product_group = False
+            if self.group_by_location:
+                default_location_group = True
+            else:
+                default_location_group = False
+
         else:
             default_product_group = True
+            if self.group_by_location:
+                default_location_group = True
+            else:
+                default_location_group = False
+
         # We pass `to_date` in the context so that `qty_available` will be computed across
         # moves until date.
         action = {
@@ -58,7 +86,7 @@ class ItemCardWizard(models.TransientModel):
             'domain': domain,
             'context': dict(self.env.context, date_from=self.date_from, date_to=self.date_to,
                             product_id=self.product_id.id or False, report_view=self.report_view,
-                            show_cost=self.show_cost, search_default_groupby_product_id=default_product_group),
+                            show_cost=self.show_cost,group_by_location=self.group_by_location, search_default_groupby_location_id=default_location_group, search_default_groupby_product_id=default_product_group),
         }
         return action
 
@@ -66,3 +94,4 @@ class ItemCardWizard(models.TransientModel):
     def onchange_report_view(self):
         self.product_id = False
         self.show_cost = False
+        self.group_by_location = False
