@@ -44,6 +44,28 @@
             </tree>
         </field>
     </record>
+    <record id="view_item_card_without_cost_wh_tree" model="ir.ui.view">
+        <field name="name">item.card.without.cost.wh.tree</field>
+        <field name="model">stock.move.line</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="state == 'cancel'" decoration-danger="(state not in ('cancel','done'))"
+                  string="Item Card" create="0" default_order="warehouse_id,product_id,date,id">
+                <field name="date"/>
+                <field name="warehouse_id" invisible="1"/>
+                <field name="reference" string="Reference"/>
+                <field name="product_id"/>
+                <field name="product_uom_id" options="{'no_open': True, 'no_create': True}" string="Unit of Measure"
+                       groups="uom.group_uom"/>
+                <field name="location_id"/>
+                <field name="location_dest_id"/>
+                <field name="opening_balance"/>
+                <field name="qty_in"/>
+                <field name="qty_out"/>
+                <field name="balance"/>
+                <field name="state" invisible="1"/>
+            </tree>
+        </field>
+    </record>
 
     <!-- item card with cost -->
     <record id="view_item_card_with_cost_tree" model="ir.ui.view">
@@ -94,6 +116,31 @@
             </tree>
         </field>
     </record>
+    <record id="view_item_card_with_cost_wh_tree" model="ir.ui.view">
+        <field name="name">item.card.with.cost.wh.tree</field>
+        <field name="model">stock.move.line</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="state == 'cancel'" decoration-danger="(state not in ('cancel','done'))"
+                  string="Item Card" create="0" default_order="warehouse_id,product_id,date,id">
+                <field name="date"/>
+                <field name="warehouse_id" invisible="1"/>
+                <field name="reference" string="Reference"/>
+                <field name="product_id"/>
+                <field name="location_id"/>
+                <field name="location_dest_id"/>
+                <field name="product_uom_id" options="{'no_open': True, 'no_create': True}" string="Unit of Measure"
+                       groups="uom.group_uom"/>
+                <field name="opening_balance"/>
+                <field name="qty_in"/>
+                <field name="cost_price_in"/>
+                <field name="qty_out"/>
+                <field name="cost_price_out"/>
+                <field name="balance"/>
+                <field name="balance_cost"/>
+                <field name="state" invisible="1"/>
+            </tree>
+        </field>
+    </record>
 
     <!--pivot views-->
     <record id="view_item_card_without_cost_pivot" model="ir.ui.view">
@@ -115,6 +162,20 @@
         <field name="arch" type="xml">
             <pivot string="Item Card">
                 <field name="location_id" type="row"/>
+                <field name="product_id" type="row"/>
+                <field name="date" type="col"/>
+                <field name="qty_in" type="measure"/>
+                <field name="qty_out" type="measure"/>
+                <field name="balance" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="view_item_card_without_cost_wh_pivot" model="ir.ui.view">
+        <field name="name">item.card.with.cost.wh.pivot</field>
+        <field name="model">stock.move.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Item Card">
+                <field name="warehouse_id" type="row"/>
                 <field name="product_id" type="row"/>
                 <field name="date" type="col"/>
                 <field name="qty_in" type="measure"/>
@@ -157,6 +218,23 @@
             </pivot>
         </field>
     </record>
+    <record id="view_item_card_with_cost_wh_pivot" model="ir.ui.view">
+        <field name="name">item.card.without.cost.wh.pivot</field>
+        <field name="model">stock.move.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Item Card">
+                <field name="warehouse_id" type="row"/>
+                <field name="product_id" type="row"/>
+                <field name="date" type="col"/>
+                <field name="qty_in" type="measure"/>
+                <field name="cost_price_in" type="measure"/>
+                <field name="qty_out" type="measure"/>
+                <field name="cost_price_out" type="measure"/>
+                <field name="balance" type="measure"/>
+                <field name="balance_cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
 
 
     <record id="stock_move_line_view_search_inherit" model="ir.ui.view">
@@ -165,6 +243,7 @@
         <field name="inherit_id" ref="stock.stock_move_line_view_search"/>
         <field name="arch" type="xml">
             <xpath expr="//search/group" position="inside">
+                <filter string="Warehouse" name="groupby_warehouse_id" domain="[]" context="{'group_by': 'warehouse_id'}"/>
                 <filter string="Location" name="groupby_location_id" domain="[]" context="{'group_by': 'location_id'}"/>
             </xpath>
         </field>

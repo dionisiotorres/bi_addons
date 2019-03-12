@@ -16,8 +16,13 @@
                         <group>
                             <field name="date_to"/>
                             <field name="product_id" attrs="{'required':[('report_view','=','detailed')], 'invisible':[('report_view','=','total')]}"/>
-                            <field name="group_by_location"/>
+                            <field name="group_by_type" attrs="{'invisible':[('report_view','=','total')]}"/>
                         </group>
+                    </group>
+                    <group>
+                        <field name="filter_by"/>
+                        <field name="warehouse_ids" attrs="{'required':[('filter_by','=','warehouse')], 'invisible':[('filter_by','!=','warehouse')]}" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="location_ids" attrs="{'required':[('filter_by','=','location')], 'invisible':[('filter_by','!=','location')]}" widget="many2many_tags" options="{'no_create': True}"/>
                     </group>
                     <footer>
                         <button string='View' name="view_report" type="object" class="btn-primary"/>

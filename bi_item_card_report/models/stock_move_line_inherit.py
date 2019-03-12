@@ -23,6 +23,14 @@ class StockMoveLineInherit(models.Model):
     balance_cost = fields.Float('Balance Cost', default=0.0, digits=dp.get_precision('Product Unit of Measure'),
                                 copy=False, compute='_compute_balance')
 
+    warehouse_id = fields.Many2one('stock.warehouse', compute= '_get_warehouse', store=True)
+
+    @api.depends('location_id')
+    def _get_warehouse(self):
+        for rec in self:
+            if rec.location_id:
+                rec.warehouse_id = rec.location_id.get_warehouse().id
+
     def _check_move_locations(self, src_location_type, dest_location_type):
         if src_location_type in InternalLocations and dest_location_type in InternalLocations:
             return False
@@ -37,10 +45,20 @@ class StockMoveLineInherit(models.Model):
                       ('date', '<=', self._context.get('date_to')), ('state', '=', 'done')]
             if self._context.get('product_id', False):
                 domain.append(('product_id', '=', self._context.get('product_id')))
+
+            if self._context.get('filter_by', False) and self._context.get('filter_by', False) == 'warehouse' and self._context.get('warehouse_locations', False):
+                domain += ['|', ('location_id', 'in', self._context.get('warehouse_locations')), ('location_dest_id', 'in', self._context.get('warehouse_locations'))]
+
+            if self._context.get('filter_by', False) and self._context.get('filter_by', False) == 'location' and self._context.get('location_ids', False):
+                domain += ['|', ('location_id', 'in', self._context.get('location_ids')),
+                           ('location_dest_id', 'in', self._context.get('location_ids'))]
+
             line_id = self.env['stock.move.line'].search(domain, limit=1, order='date')
         product_cost_value = {}
-        if self._context.get('group_by_location'):
+        if self._context.get('group_by_type') and self._context.get('group_by_type') == 'location':
             ord = 'location_id,product_id,date,id'
+        elif self._context.get('group_by_type') and self._context.get('group_by_type') == 'warehouse':
+            ord = 'warehouse_id,product_id,date,id'
         else:
             ord = 'product_id,date,id'
         for rec in self.env['stock.move.line'].search(domain, order=ord):
