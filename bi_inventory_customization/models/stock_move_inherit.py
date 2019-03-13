@@ -2,11 +2,15 @@
 from odoo import api, fields, models, _
 
 
+class StockPickingInherit(models.Model):
+    _inherit = "stock.picking"
+    source_picking_id = fields.Many2one('stock.picking', string='Source Picking')
+
 class StockMoveInherit(models.Model):
     _inherit = "stock.move"
 
     push_rule = fields.Boolean(string='Push Rule?')
-
+    source_picking_id = fields.Many2one('stock.picking', string='Source Picking')
     # preventing move merge with old pickings
     def _assign_picking(self):
         """ Try to assign the moves to an existing picking that has not been
@@ -16,8 +20,15 @@ class StockMoveInherit(models.Model):
         Picking = self.env['stock.picking']
         for move in self:
             recompute = False
-            if move.push_rule:
-                picking = False
+            if move.push_rule and move.source_picking_id:
+                picking = self.env['stock.picking'].search([
+                    ('source_picking_id', '=', move.source_picking_id.id),
+                    ('group_id', '=', move.group_id.id),
+                    ('location_id', '=', move.location_id.id),
+                    ('location_dest_id', '=', move.location_dest_id.id),
+                    ('picking_type_id', '=', move.picking_type_id.id),
+                    ('printed', '=', False),
+                    ('state', 'in', ['draft', 'confirmed', 'waiting', 'partially_available', 'assigned'])], limit=1)
             else:
                 picking = move._search_picking_for_assignation()
             if picking:
@@ -32,6 +43,8 @@ class StockMoveInherit(models.Model):
             else:
                 recompute = True
                 picking = Picking.create(move._get_new_picking_values())
+                if move.push_rule and move.source_picking_id:
+                    picking.write({'source_picking_id':move.source_picking_id.id})
             move.write({'picking_id': picking.id})
             move._assign_picking_post_process(new=recompute)
             # If this method is called in batch by a write on a one2many and

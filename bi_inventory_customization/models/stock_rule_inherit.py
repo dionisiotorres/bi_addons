@@ -9,5 +9,5 @@ class StockRuleInherit(models.Model):
 
     def _push_prepare_move_copy_values(self, move_to_copy, new_date):
         res = super(StockRuleInherit, self)._push_prepare_move_copy_values(move_to_copy, new_date)
-        res.update({'push_rule': True})
+        res.update({'push_rule': True, 'source_picking_id':move_to_copy.picking_id.id if move_to_copy.picking_id else False})
         return res
