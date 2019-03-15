@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="accounting_dept_group" model="res.groups">
+            <field name="name">Accounting Department </field>
+        </record>
+
+
+        <record id="finance_dept_group" model="res.groups">
+            <field name="name">Finance Department </field>
+        </record>
+    </data>
+</odoo>

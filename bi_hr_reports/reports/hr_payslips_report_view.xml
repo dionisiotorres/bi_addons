@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report id="hr_payslips_report_xls"
+                model="payslip.employee.wizard.report"
+                string="Employees Payslip Report (XLS)"
+                report_type="xlsx"
+                name="bi_hr_reports.hr_payslips_report_xls"
+                file="bi_hr_reports.hr_payslips_report_xls"
+                attachment_use="False"
+                menu="False"/>
+
+    </data>
+</odoo>
