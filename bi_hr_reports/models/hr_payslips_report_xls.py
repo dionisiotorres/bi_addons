@@ -29,7 +29,8 @@ class EmployeesPayslipReportXls(models.AbstractModel):
         worksheet.write(row_no, col_no, 'From To : ', f1)
         worksheet.write(row_no, col_no + 1, str(wizard.date_to), )
         row_no += 1
-        worksheet.write(row_no, col_no, 'Report Date: ', f1)
+        worksheet.write(row_no, col_no, 'Departments : ', f1)
+        worksheet.merge_range('B5:Z5', ", ".join(str(x) for x in wizard.department_ids.mapped('name')))
         row_no += 3
 
         # Header Of Table Data
@@ -85,4 +86,4 @@ class EmployeesPayslipReportXls(models.AbstractModel):
             total_rule_amount = sum(lines.total for lines in lines_objs)
             worksheet.write(footer_row + 2, col_no, total_rule_amount, green)
             col_no += 1
-        worksheet.write(footer_row + 2, 3, "Total", red)
+        worksheet.write(footer_row + 2, 4, "Total", red)
