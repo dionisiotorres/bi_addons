@@ -18,8 +18,20 @@ class PayslipWizardReport(models.TransientModel):
     state = fields.Selection(
         [('done_and_draft', 'Draft,Done'), ('done', 'Done'), ('draft', 'Draft'), ('verify', 'Waiting')],
         string="State", default='done_and_draft')
-    rules_ids = fields.Many2many('hr.salary.rule', string="Rules")
     salary_struct_ids = fields.Many2many('hr.payroll.structure', string='Salary Structures')
+    rules_ids = fields.Many2many('hr.salary.rule', string="Rules")
+
+    @api.onchange('salary_struct_ids')
+    def get_rules_ids(self):
+        rules_ids = []
+        if self.salary_struct_ids:
+            for struct in self.salary_struct_ids:
+                for rule in struct.rule_ids:
+                    if rule.id not in rules_ids:
+                        rules_ids.append(rule.id)
+            self.rules_ids = rules_ids
+        else:
+            self.rules_ids = False
 
     @api.onchange('date_from')
     def get_date_to(self):
