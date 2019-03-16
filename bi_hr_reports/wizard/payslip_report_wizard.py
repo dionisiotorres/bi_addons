@@ -12,12 +12,13 @@ class PayslipWizardReport(models.TransientModel):
     company_id = fields.Many2one('res.company', string='Company', required=True,
                                  default=lambda self: self.env.user.company_id.id)
 
-    date_now = fields.Datetime(string='Report Date', default=lambda self: fields.datetime.now(), readonly=1)
     date_from = fields.Date(string='Date From', )
     date_to = fields.Date(string='Date To', )
     department_ids = fields.Many2many('hr.department', string="Departments", required=True)
-    state = fields.Selection([('draft', 'Draft'), ('verify', 'Waiting'), ('done', 'Done')], string="State",
+    state = fields.Selection([('done', 'Done'), ('verify', 'Waiting'), ('draft', 'Draft'), ], string="State",
                              default='done')
+    select_rules = fields.Boolean('Select Rules')
+    rules_ids = fields.Many2many('hr.salary.rule', string="Rules")
 
     @api.onchange('date_from')
     def get_date_to(self):
@@ -31,16 +32,23 @@ class PayslipWizardReport(models.TransientModel):
     @api.onchange('company_id')
     def get_department_ids(self):
         for val in self:
+            val.rules_ids = False
             if val.company_id:
-                department_lst = []
+
                 department_ids = self.env['hr.department'].search(
                     ['|', ('company_id', '=', val.company_id.id), ('company_id', '=', False)])
-                for department in department_ids:
-                    department_lst.append(department.id)
-                val.department_ids = department_lst
+                rules_ids = self.env['hr.salary.rule'].search(
+                    ['|', ('company_id', '=', val.company_id.id), ('company_id', '=', False)])
+
+                val.department_ids = department_ids.ids
             else:
                 val.department_ids = False
-        return {'domain': {'department_ids': [('id', 'in', department_lst)]}}
+
+        return {
+            'domain': {
+                'department_ids': [('id', 'in', department_ids.ids)],
+                'rules_ids': [('id', 'in', rules_ids.ids)]
+            }}
 
     @api.multi
     def get_payroll_data(self):

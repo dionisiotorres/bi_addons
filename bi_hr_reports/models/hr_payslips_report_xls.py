@@ -30,7 +30,6 @@ class EmployeesPayslipReportXls(models.AbstractModel):
         worksheet.write(row_no, col_no + 1, str(wizard.date_to), )
         row_no += 1
         worksheet.write(row_no, col_no, 'Report Date: ', f1)
-        worksheet.write(row_no, col_no + 1, str(wizard.date_now), )
         row_no += 3
 
         # Header Of Table Data
@@ -45,8 +44,10 @@ class EmployeesPayslipReportXls(models.AbstractModel):
         worksheet.write(row_no, col_no, "Salary Structure", f1)
         col_no += 1
         # End Of Header Table Data
-        rules_objs = self.env['hr.salary.rule'].search([('appears_on_payslip', '=', True), ('active', '=', True)],
-                                                       order='sequence asc')
+        rules_domain = [('appears_on_payslip', '=', True), ('active', '=', True)]
+        if wizard.select_rules:
+            rules_domain = [('id', 'in', wizard.rules_ids.ids)]
+        rules_objs = self.env['hr.salary.rule'].search(rules_domain, order='sequence asc')
 
         payslip_objs = self.env['hr.payslip'].search(
             [('state', '=', wizard.state), ('date_from', '>=', wizard.date_from), ('date_to', '<=', wizard.date_to),
