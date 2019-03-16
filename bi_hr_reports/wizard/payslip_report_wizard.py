@@ -15,10 +15,11 @@ class PayslipWizardReport(models.TransientModel):
     date_from = fields.Date(string='Date From', )
     date_to = fields.Date(string='Date To', )
     department_ids = fields.Many2many('hr.department', string="Departments", required=True)
-    state = fields.Selection([('done', 'Done'), ('verify', 'Waiting'), ('draft', 'Draft'), ], string="State",
-                             default='done')
-    select_rules = fields.Boolean('Select Rules')
+    state = fields.Selection(
+        [('done_and_draft', 'Draft,Done'), ('done', 'Done'), ('draft', 'Draft'), ('verify', 'Waiting')],
+        string="State", default='done_and_draft')
     rules_ids = fields.Many2many('hr.salary.rule', string="Rules")
+    salary_struct_ids = fields.Many2many('hr.payroll.structure', string='Salary Structures')
 
     @api.onchange('date_from')
     def get_date_to(self):
@@ -33,11 +34,14 @@ class PayslipWizardReport(models.TransientModel):
     def get_department_ids(self):
         for val in self:
             val.rules_ids = False
+            val.salary_struct_ids = False
             if val.company_id:
 
                 department_ids = self.env['hr.department'].search(
                     ['|', ('company_id', '=', val.company_id.id), ('company_id', '=', False)])
                 rules_ids = self.env['hr.salary.rule'].search(
+                    ['|', ('company_id', '=', val.company_id.id), ('company_id', '=', False)])
+                struct_ids = self.env['hr.payroll.structure'].search(
                     ['|', ('company_id', '=', val.company_id.id), ('company_id', '=', False)])
 
                 val.department_ids = department_ids.ids
@@ -47,7 +51,8 @@ class PayslipWizardReport(models.TransientModel):
         return {
             'domain': {
                 'department_ids': [('id', 'in', department_ids.ids)],
-                'rules_ids': [('id', 'in', rules_ids.ids)]
+                'rules_ids': [('id', 'in', rules_ids.ids)],
+                'salary_struct_ids': [('id', 'in', struct_ids.ids)]
             }}
 
     @api.multi
@@ -58,11 +63,21 @@ class PayslipWizardReport(models.TransientModel):
             'model': 'hr.payslip',
             'form': data
         }
-        payslip_objs = self.env['hr.payslip'].search([('state', '=', self.state), ('date_from', '>=', self.date_from),
-                                                      ('date_to', '<=', self.date_to),
-                                                      ('company_id', '=', self.company_id.id), '|',
-                                                      ('employee_id.department_id.id', 'in', self.department_ids.ids),
-                                                      ('employee_id.department_id', '=', False)])
+        domain = [('date_from', '>=', self.date_from), ('date_to', '<=', self.date_to),
+                  ('company_id', '=', self.company_id.id), '|',
+                  ('employee_id.department_id.id', 'in', self.department_ids.ids),
+                  ('employee_id.department_id', '=', False)]
+
+        if self.salary_struct_ids:
+            domain.append(('struct_id', 'in', self.salary_struct_ids.ids))
+
+        # TODO State domain
+        if self.state == 'done_and_draft':
+            domain.append(('state', 'in', ['draft', 'done']))
+        else:
+            domain.append(('state', '=', self.state))
+
+        payslip_objs = self.env['hr.payslip'].search(domain)
 
         if not payslip_objs:
             raise ValidationError(_("Did not found record depends on your selection !!"))
