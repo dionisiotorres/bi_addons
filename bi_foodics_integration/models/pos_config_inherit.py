@@ -13,6 +13,7 @@ from odoo.addons.base.models.res_partner import _tz_get
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT as DATETIME_FORMAT
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DATE_FORMAT
 from odoo.exceptions import ValidationError
+from odoo.tools.profiler import profile
 
 import logging
 logger = logging.getLogger(__name__)
@@ -322,16 +323,17 @@ class PosConfigInherit(models.Model):
 
     @api.model
     def _update_orders_amount_all(self, order_ids):
-        orders = self.env['pos.order'].browse(order_ids)
-        for order in orders:
+        # orders = self.env['pos.order'].browse(order_ids)
+        for order in order_ids:
             self._update_order_lines_amount_all(order.lines)
             currency = order.pricelist_id.currency_id
-            order.amount_paid = sum(payment.amount for payment in order.statement_ids)
-            order.amount_return = sum(payment.amount < 0 and payment.amount or 0 for payment in order.statement_ids)
-            order.amount_tax = currency.round(
+            amount_paid = sum(payment.amount for payment in order.statement_ids)
+            amount_return = sum(payment.amount < 0 and payment.amount or 0 for payment in order.statement_ids)
+            amount_tax = currency.round(
                 sum(order._amount_line_tax(line, order.fiscal_position_id) for line in order.lines))
             amount_untaxed = currency.round(sum(line.price_subtotal for line in order.lines))
-            order.amount_total = order.amount_tax + amount_untaxed
+            amount_total = amount_tax + amount_untaxed
+            order.write({'amount_paid':amount_paid, 'amount_return':amount_return, 'amount_tax':amount_tax, 'amount_total':amount_total})
 
     @api.model
     def _update_order_lines_amount_all(self, lines):
@@ -402,6 +404,7 @@ class PosConfigInherit(models.Model):
         for i in range(0, len(l), n):
             yield l[i:i + n]
 
+    # @profile
     @api.multi
     def import_foodics_data(self, date):
         self.ensure_one()
@@ -429,7 +432,7 @@ class PosConfigInherit(models.Model):
 
         orders_lists = self.chunks(orders_list, 10)
 
-        for orders in  orders_lists:
+        for orders in orders_lists:
             if not self.current_session_id:
                 opened_session = self.env['pos.session'].search(
                     [('config_id', '=', self.id), ('state', 'in', ['opened'])], limit=1)
@@ -448,11 +451,13 @@ class PosConfigInherit(models.Model):
                     pos_order = self._prepare_api_order(order, self.current_session_id)
                     pos_orders.append(pos_order)
 
-            created_order_ids = self.env['pos.order'].with_context(keep_dates=True , force_period_date=date).create_from_ui(pos_orders)
-            self._update_orders_amount_all(created_order_ids)
-
-            # close and validate session
-            self.current_session_id.action_pos_session_closing_control()
+            created_order_ids = self.env['pos.order'].with_context(keep_dates=True , force_period_date=date).create_from_ui_new(pos_orders)
+            new_order_ids = self.env['pos.order'].browse(created_order_ids)
+            self._update_orders_amount_all(new_order_ids)
+            new_order_ids.create_picking()
+            #
+            # # close and validate session
+            # self.current_session_id.action_pos_session_closing_control()
 
     @api.multi
     def import_foodics_data_per_session(self, date):
@@ -499,8 +504,12 @@ class PosConfigInherit(models.Model):
                 pos_order = self._prepare_api_order(order, self.current_session_id)
                 pos_orders.append(pos_order)
 
-        created_order_ids = self.env['pos.order'].with_context(keep_dates=True, force_period_date=date).create_from_ui(pos_orders)
-        self._update_orders_amount_all(created_order_ids)
+        created_order_ids = self.env['pos.order'].with_context(keep_dates=True, force_period_date=date).create_from_ui_new(pos_orders)
+        new_order_ids = self.env['pos.order'].browse(created_order_ids)
+        self._update_orders_amount_all(new_order_ids)
+        new_order_ids.create_picking()
+
+        # self._update_orders_amount_all(created_order_ids)
 
         # if self.current_session_id and self.current_session_id.start_at:
         #     current_opened_session = self.current_session_id
