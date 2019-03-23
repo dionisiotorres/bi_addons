@@ -142,7 +142,8 @@ class EmployeesPayslipReportXls(models.AbstractModel):
             worksheet.write(footer_row + 2, 5, "Total", red)
 
         elif wizard.group_by == 'salary_categories':
-            rules_categ_objs = self.env['hr.salary.rule.category'].search([], order='sequence asc')
+            rules_categ_objs = self.env['hr.salary.rule.category'].search([('view_in_report', '=', True)],
+                                                                          order='sequence asc')
             for category in rules_categ_objs:
                 rule_row = 8
                 lines_domain = [('salary_rule_id.category_id', '=', category.id),
