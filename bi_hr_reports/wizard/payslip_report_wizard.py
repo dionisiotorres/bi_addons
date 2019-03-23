@@ -23,6 +23,7 @@ class PayslipWizardReport(models.TransientModel):
                                 string="Group By", required=True, default='salary_categories')
     rules_ids = fields.Many2many('hr.salary.rule', string="Rules")
     categories_ids = fields.Many2many('hr.salary.rule.category', string="Categories")
+    analytic_account_ids = fields.Many2many('account.analytic.account', string="Analytic Account")
 
     @api.onchange('categories_ids', 'group_by')
     def onchange_categories_ids(self):
@@ -80,6 +81,7 @@ class PayslipWizardReport(models.TransientModel):
         for val in self:
             val.rules_ids = False
             val.salary_struct_ids = False
+            val.analytic_account_ids = False
             if val.company_id:
 
                 department_ids = self.env['hr.department'].search(
@@ -88,8 +90,8 @@ class PayslipWizardReport(models.TransientModel):
                     ['|', ('company_id', '=', val.company_id.id), ('company_id', '=', False)])
                 struct_ids = self.env['hr.payroll.structure'].search(
                     ['|', ('company_id', '=', val.company_id.id), ('company_id', '=', False)])
-
-                # val.department_ids = department_ids.ids
+                analytic_account_ids = self.env['account.analytic.account'].search(
+                    ['|', ('company_id', '=', val.company_id.id), ('company_id', '=', False)])
             else:
                 val.department_ids = False
 
@@ -97,7 +99,8 @@ class PayslipWizardReport(models.TransientModel):
             'domain': {
                 'department_ids': [('id', 'in', department_ids.ids)],
                 'rules_ids': [('id', 'in', rules_ids.ids)],
-                'salary_struct_ids': [('id', 'in', struct_ids.ids)]
+                'salary_struct_ids': [('id', 'in', struct_ids.ids)],
+                'analytic_account_ids': [('id', 'in', analytic_account_ids.ids)]
             }}
 
     @api.multi
@@ -117,7 +120,9 @@ class PayslipWizardReport(models.TransientModel):
         if self.salary_struct_ids:
             domain.append(('struct_id', 'in', self.salary_struct_ids.ids))
 
-        # TODO State domain
+        if self.analytic_account_ids:
+            domain.append(('contract_id.analytic_account_id', 'in', self.analytic_account_ids.ids))
+
         if self.state == 'done_and_draft':
             domain.append(('state', 'in', ['draft', 'done']))
         else:

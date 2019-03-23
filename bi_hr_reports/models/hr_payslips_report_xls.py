@@ -37,6 +37,13 @@ class EmployeesPayslipReportXls(models.AbstractModel):
             worksheet.merge_range('B5:Z5', ", ".join(str(x) for x in wizard.department_ids.mapped('name')))
         else:
             worksheet.merge_range('B5:Z5', "All Departments")
+        row_no += 1
+
+        worksheet.write(row_no, col_no, 'Analytic  Accounts : ', f1)
+        if wizard.analytic_account_ids:
+            worksheet.merge_range('B6:Z6', ", ".join(str(x) for x in wizard.analytic_account_ids.mapped('name')))
+        else:
+            worksheet.merge_range('B6:Z6', "All Analytic Accounts")
 
         row_no += 3
 
@@ -51,6 +58,9 @@ class EmployeesPayslipReportXls(models.AbstractModel):
         col_no += 1
         worksheet.write(row_no, col_no, "Salary Structure", f1)
         col_no += 1
+        worksheet.write(row_no, col_no, "Analytic Account", f1)
+        col_no += 1
+
         # End Of Header Table Data
         rules_domain = [('appears_on_payslip', '=', True), ('active', '=', True)]
 
@@ -64,6 +74,9 @@ class EmployeesPayslipReportXls(models.AbstractModel):
 
         if wizard.department_ids:
             payslip_domain.append(('employee_id.department_id', 'in', wizard.department_ids.ids))
+
+        if wizard.analytic_account_ids:
+            payslip_domain.append(('contract_id.analytic_account_id', 'in', wizard.analytic_account_ids.ids))
 
         if wizard.salary_struct_ids:
             payslip_domain.append(('struct_id', 'in', wizard.salary_struct_ids.ids))
@@ -81,13 +94,16 @@ class EmployeesPayslipReportXls(models.AbstractModel):
 
         if wizard.group_by == 'salary_rules':
             for rule in rules_objs:
-                rule_row = 7
+                rule_row = 8
                 lines_domain = [('salary_rule_id', '=', rule.id), ('slip_id.date_from', '>=', wizard.date_from),
                                 ('slip_id.company_id', '>=', wizard.company_id.id),
                                 ('slip_id.date_to', '<=', wizard.date_to)]
 
                 if wizard.salary_struct_ids:
                     lines_domain.append(('slip_id.struct_id', 'in', wizard.salary_struct_ids.ids))
+
+                if wizard.analytic_account_ids:
+                    lines_domain.append(('contract_id.analytic_account_id', 'in', wizard.analytic_account_ids.ids))
 
                 if wizard.department_ids:
                     lines_domain.append(('slip_id.employee_id.department_id', 'in', wizard.department_ids.ids))
@@ -109,6 +125,7 @@ class EmployeesPayslipReportXls(models.AbstractModel):
                     worksheet.write(rule_row, 2, payslip.employee_id.department_id.name or ' ')
                     worksheet.write(rule_row, 3, str(payslip.number or ' ') + " / " + str(payslip.state.capitalize()))
                     worksheet.write(rule_row, 4, payslip.struct_id.name)
+                    worksheet.write(rule_row, 5, payslip.contract_id.analytic_account_id.name or ' ')
 
                     for line in payslip.line_ids:
                         if line.salary_rule_id.id == rule.id:
@@ -122,16 +139,19 @@ class EmployeesPayslipReportXls(models.AbstractModel):
                 worksheet.write(footer_row + 2, col_no, total_rule_amount, blue)
                 col_no += 1
 
-            worksheet.write(footer_row + 2, 4, "Total", red)
+            worksheet.write(footer_row + 2, 5, "Total", red)
 
         elif wizard.group_by == 'salary_categories':
-            rules_categ_objs = self.env['hr.salary.rule.category'].search([], order='name asc')
+            rules_categ_objs = self.env['hr.salary.rule.category'].search([], order='sequence asc')
             for category in rules_categ_objs:
-                rule_row = 7
+                rule_row = 8
                 lines_domain = [('salary_rule_id.category_id', '=', category.id),
                                 ('slip_id.date_from', '>=', wizard.date_from),
                                 ('slip_id.company_id', '>=', wizard.company_id.id),
                                 ('slip_id.date_to', '<=', wizard.date_to)]
+
+                if wizard.analytic_account_ids:
+                    lines_domain.append(('contract_id.analytic_account_id', 'in', wizard.analytic_account_ids.ids))
 
                 if wizard.department_ids:
                     lines_domain.append(('slip_id.employee_id.department_id', 'in', wizard.department_ids.ids))
@@ -155,6 +175,7 @@ class EmployeesPayslipReportXls(models.AbstractModel):
                     worksheet.write(rule_row, 2, payslip.employee_id.department_id.name or ' ')
                     worksheet.write(rule_row, 3, str(payslip.number or ' ') + " / " + str(payslip.state.capitalize()))
                     worksheet.write(rule_row, 4, payslip.struct_id.name)
+                    worksheet.write(rule_row, 5, payslip.contract_id.analytic_account_id.name or ' ')
 
                     total_categ = 0.0
                     for line in payslip.line_ids:
@@ -169,4 +190,4 @@ class EmployeesPayslipReportXls(models.AbstractModel):
                 total_rule_categ_amount = sum(lines.total for lines in lines_objs)
                 worksheet.write(footer_row + 2, col_no, total_rule_categ_amount, blue)
                 col_no += 1
-            worksheet.write(footer_row + 2, 4, "Total", red)
+            worksheet.write(footer_row + 2, 5, "Total", red)
