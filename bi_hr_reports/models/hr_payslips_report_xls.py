@@ -10,7 +10,7 @@ class EmployeesPayslipReportXls(models.AbstractModel):
 
     @api.model
     def generate_xlsx_report(self, workbook, data, wizard):
-        worksheet = workbook.add_worksheet("Payslip Generic Report XLS")
+        worksheet = workbook.add_worksheet("PaySlip Report")
         row_no = 0
         col_no = 0
 
@@ -32,7 +32,12 @@ class EmployeesPayslipReportXls(models.AbstractModel):
         worksheet.write(row_no, col_no + 1, str(wizard.date_to), )
         row_no += 1
         worksheet.write(row_no, col_no, 'Departments : ', f1)
-        worksheet.merge_range('B5:Z5', ", ".join(str(x) for x in wizard.department_ids.mapped('name')))
+
+        if wizard.department_ids:
+            worksheet.merge_range('B5:Z5', ", ".join(str(x) for x in wizard.department_ids.mapped('name')))
+        else:
+            worksheet.merge_range('B5:Z5', "All Departments")
+
         row_no += 3
 
         # Header Of Table Data
@@ -55,9 +60,10 @@ class EmployeesPayslipReportXls(models.AbstractModel):
         rules_objs = self.env['hr.salary.rule'].search(rules_domain, order='sequence asc')
 
         payslip_domain = [('date_from', '>=', wizard.date_from), ('date_to', '<=', wizard.date_to),
-                          ('company_id', '=', wizard.company_id.id), '|',
-                          ('employee_id.department_id.id', 'in', wizard.department_ids.ids),
-                          ('employee_id.department_id', '=', False)]
+                          ('company_id', '=', wizard.company_id.id)]
+
+        if wizard.department_ids:
+            payslip_domain.append(('employee_id.department_id', 'in', wizard.department_ids.ids))
 
         if wizard.salary_struct_ids:
             payslip_domain.append(('struct_id', 'in', wizard.salary_struct_ids.ids))
@@ -65,49 +71,102 @@ class EmployeesPayslipReportXls(models.AbstractModel):
         # TODO State domain
         if wizard.state == 'done_and_draft':
             payslip_domain.append(('state', 'in', ['draft', 'done']))
+
         else:
             payslip_domain.append(('state', '=', wizard.state))
 
-        payslip_objs = self.env['hr.payslip'].search(payslip_domain)
+        payslip_objs = self.env['hr.payslip'].search(payslip_domain, order='employee_id asc')
 
         footer_row = 0
-        for rule in rules_objs:
-            rule_row = 7
-            lines_domain = [('salary_rule_id', '=', rule.id), ('slip_id.date_from', '>=', wizard.date_from),
-                            ('slip_id.company_id', '>=', wizard.company_id.id),
-                            ('slip_id.date_to', '<=', wizard.date_to)]
 
-            if wizard.salary_struct_ids:
-                lines_domain.append(('slip_id.struct_id', 'in', wizard.salary_struct_ids.ids))
+        if wizard.group_by == 'salary_rules':
+            for rule in rules_objs:
+                rule_row = 7
+                lines_domain = [('salary_rule_id', '=', rule.id), ('slip_id.date_from', '>=', wizard.date_from),
+                                ('slip_id.company_id', '>=', wizard.company_id.id),
+                                ('slip_id.date_to', '<=', wizard.date_to)]
 
-            if wizard.state == 'done_and_draft':
-                lines_domain.append(('slip_id.state', 'in', ['draft', 'done']))
-            else:
-                lines_domain.append(('slip_id.state', '=', wizard.state))
+                if wizard.salary_struct_ids:
+                    lines_domain.append(('slip_id.struct_id', 'in', wizard.salary_struct_ids.ids))
 
-            lines_objs = self.env['hr.payslip.line'].search(lines_domain)
+                if wizard.department_ids:
+                    lines_domain.append(('slip_id.employee_id.department_id', 'in', wizard.department_ids.ids))
 
-            worksheet.write(rule_row, col_no, rule.name, blue)
+                if wizard.state == 'done_and_draft':
+                    lines_domain.append(('slip_id.state', 'in', ['draft', 'done']))
+                else:
+                    lines_domain.append(('slip_id.state', '=', wizard.state))
 
-            for payslip in payslip_objs:
-                rule_row += 1
-                worksheet.write(rule_row, 0, payslip.employee_id.bank_account_id.acc_number or " " + " - " + str(
-                    payslip.employee_id.bank_account_id.bank_id.name or ' '))
-                worksheet.write(rule_row, 1, payslip.employee_id.name)
-                worksheet.write(rule_row, 2, payslip.employee_id.department_id.name or ' ')
-                worksheet.write(rule_row, 3, str(payslip.number or ' ') + " / " + str(payslip.state.capitalize()))
-                worksheet.write(rule_row, 4, payslip.struct_id.name)
+                lines_objs = self.env['hr.payslip.line'].search(lines_domain)
 
-                for line in payslip.line_ids:
-                    if line.salary_rule_id.id == rule.id:
-                        worksheet.write(rule_row, col_no, line.total)
+                worksheet.write(rule_row, col_no, rule.name, green)
 
-            if footer_row < rule_row:
-                footer_row = rule_row
+                for payslip in payslip_objs:
+                    rule_row += 1
+                    worksheet.write(rule_row, 0, payslip.employee_id.bank_account_id.acc_number or " " + " - " + str(
+                        payslip.employee_id.bank_account_id.bank_id.name or ' '))
+                    worksheet.write(rule_row, 1, payslip.employee_id.name)
+                    worksheet.write(rule_row, 2, payslip.employee_id.department_id.name or ' ')
+                    worksheet.write(rule_row, 3, str(payslip.number or ' ') + " / " + str(payslip.state.capitalize()))
+                    worksheet.write(rule_row, 4, payslip.struct_id.name)
 
-            # TODO SUM Per Salary Rule
-            total_rule_amount = sum(lines.total for lines in lines_objs)
-            worksheet.write(footer_row + 2, col_no, total_rule_amount, green)
-            col_no += 1
+                    for line in payslip.line_ids:
+                        if line.salary_rule_id.id == rule.id:
+                            worksheet.write(rule_row, col_no, line.total)
 
-        worksheet.write(footer_row + 2, 4, "Total", red)
+                if footer_row < rule_row:
+                    footer_row = rule_row
+
+                # TODO SUM Per Salary Rule
+                total_rule_amount = sum(lines.total for lines in lines_objs)
+                worksheet.write(footer_row + 2, col_no, total_rule_amount, blue)
+                col_no += 1
+
+            worksheet.write(footer_row + 2, 4, "Total", red)
+
+        elif wizard.group_by == 'salary_categories':
+            rules_categ_objs = self.env['hr.salary.rule.category'].search([], order='name asc')
+            for category in rules_categ_objs:
+                rule_row = 7
+                lines_domain = [('salary_rule_id.category_id', '=', category.id),
+                                ('slip_id.date_from', '>=', wizard.date_from),
+                                ('slip_id.company_id', '>=', wizard.company_id.id),
+                                ('slip_id.date_to', '<=', wizard.date_to)]
+
+                if wizard.department_ids:
+                    lines_domain.append(('slip_id.employee_id.department_id', 'in', wizard.department_ids.ids))
+
+                if wizard.salary_struct_ids:
+                    lines_domain.append(('slip_id.struct_id', 'in', wizard.salary_struct_ids.ids))
+
+                if wizard.state == 'done_and_draft':
+                    lines_domain.append(('slip_id.state', 'in', ['draft', 'done']))
+                else:
+                    lines_domain.append(('slip_id.state', '=', wizard.state))
+
+                lines_objs = self.env['hr.payslip.line'].search(lines_domain)
+                worksheet.write(rule_row, col_no, category.name, green)
+
+                for payslip in payslip_objs:
+                    rule_row += 1
+                    worksheet.write(rule_row, 0, payslip.employee_id.bank_account_id.acc_number or " " + " - " + str(
+                        payslip.employee_id.bank_account_id.bank_id.name or ' '))
+                    worksheet.write(rule_row, 1, payslip.employee_id.name)
+                    worksheet.write(rule_row, 2, payslip.employee_id.department_id.name or ' ')
+                    worksheet.write(rule_row, 3, str(payslip.number or ' ') + " / " + str(payslip.state.capitalize()))
+                    worksheet.write(rule_row, 4, payslip.struct_id.name)
+
+                    total_categ = 0.0
+                    for line in payslip.line_ids:
+                        if line.salary_rule_id.category_id.id == category.id:
+                            total_categ += line.total
+                    worksheet.write(rule_row, col_no, total_categ)
+
+                if footer_row < rule_row:
+                    footer_row = rule_row
+
+                # TODO SUM Per Salary Rules Category
+                total_rule_categ_amount = sum(lines.total for lines in lines_objs)
+                worksheet.write(footer_row + 2, col_no, total_rule_categ_amount, blue)
+                col_no += 1
+            worksheet.write(footer_row + 2, 4, "Total", red)
