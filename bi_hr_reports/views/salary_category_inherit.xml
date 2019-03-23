@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='parent_id']" position="after">
                     <field name="sequence"/>
+                    <field name="view_in_report"/>
                 </xpath>
             </field>
         </record>

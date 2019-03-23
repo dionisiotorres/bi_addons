@@ -51,7 +51,7 @@ class PayslipWizardReport(models.TransientModel):
         if self.salary_struct_ids and (self.group_by == 'salary_categories'):
             for struct in self.salary_struct_ids:
                 for rule in struct.rule_ids:
-                    if rule.category_id.id not in categories_ids:
+                    if (rule.category_id.id not in categories_ids) and rule.category_id.view_in_report:
                         categories_ids.append(rule.category_id.id)
             self.categories_ids = categories_ids
             return {
@@ -63,7 +63,7 @@ class PayslipWizardReport(models.TransientModel):
             self.categories_ids = False
             return {
                 'domain': {
-                    'categories_ids': [],
+                    'categories_ids': [('view_in_report', '=', True)],
                     'rules_ids': [],
                 }}
 
@@ -82,6 +82,7 @@ class PayslipWizardReport(models.TransientModel):
             val.rules_ids = False
             val.salary_struct_ids = False
             val.analytic_account_ids = False
+            val.categories_ids = False
             if val.company_id:
 
                 department_ids = self.env['hr.department'].search(
@@ -92,6 +93,7 @@ class PayslipWizardReport(models.TransientModel):
                     ['|', ('company_id', '=', val.company_id.id), ('company_id', '=', False)])
                 analytic_account_ids = self.env['account.analytic.account'].search(
                     ['|', ('company_id', '=', val.company_id.id), ('company_id', '=', False)])
+                categories_ids = self.env['hr.salary.rule.category'].search([('view_in_report', '=', True)])
             else:
                 val.department_ids = False
 
@@ -100,7 +102,8 @@ class PayslipWizardReport(models.TransientModel):
                 'department_ids': [('id', 'in', department_ids.ids)],
                 'rules_ids': [('id', 'in', rules_ids.ids)],
                 'salary_struct_ids': [('id', 'in', struct_ids.ids)],
-                'analytic_account_ids': [('id', 'in', analytic_account_ids.ids)]
+                'analytic_account_ids': [('id', 'in', analytic_account_ids.ids)],
+                'categories_ids': [('id', 'in', categories_ids.ids)]
             }}
 
     @api.multi
