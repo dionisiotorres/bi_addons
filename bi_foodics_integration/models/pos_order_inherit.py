@@ -75,8 +75,6 @@ class PosOrderInherit(models.Model):
             })
         return order
 
-
-    @profile
     @api.model
     def create_from_ui_new(self, orders):
         # Keep only new orders
