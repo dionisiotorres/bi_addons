@@ -14,24 +14,58 @@ class PayslipWizardReport(models.TransientModel):
 
     date_from = fields.Date(string='Date From', )
     date_to = fields.Date(string='Date To', )
-    department_ids = fields.Many2many('hr.department', string="Departments", required=True)
+    department_ids = fields.Many2many('hr.department', string="Departments")
     state = fields.Selection(
         [('done_and_draft', 'Draft,Done'), ('done', 'Done'), ('draft', 'Draft'), ('verify', 'Waiting')],
         string="State", default='done_and_draft')
     salary_struct_ids = fields.Many2many('hr.payroll.structure', string='Salary Structures')
+    group_by = fields.Selection([('salary_rules', 'Salary Rules'), ('salary_categories', 'Salary Categories')],
+                                string="Group By", required=True, default='salary_categories')
     rules_ids = fields.Many2many('hr.salary.rule', string="Rules")
+    categories_ids = fields.Many2many('hr.salary.rule.category', string="Categories")
+    analytic_account_ids = fields.Many2many('account.analytic.account', string="Analytic Account")
 
-    @api.onchange('salary_struct_ids')
+    @api.onchange('categories_ids', 'group_by')
+    def onchange_categories_ids(self):
+        if self.categories_ids and (self.group_by == 'salary_categories'):
+            self.rules_ids = self.env['hr.salary.rule'].search([('category_id', 'in', self.categories_ids.ids)])
+        if not self.categories_ids:
+            self.rules_ids = False
+
+    @api.onchange('salary_struct_ids', 'group_by')
     def get_rules_ids(self):
         rules_ids = []
-        if self.salary_struct_ids:
+        categories_ids = []
+
+        if self.salary_struct_ids and (self.group_by == 'salary_rules'):
             for struct in self.salary_struct_ids:
                 for rule in struct.rule_ids:
                     if rule.id not in rules_ids:
                         rules_ids.append(rule.id)
             self.rules_ids = rules_ids
+            return {
+                'domain': {
+                    'rules_ids': [('id', 'in', rules_ids)],
+                }}
+
+        if self.salary_struct_ids and (self.group_by == 'salary_categories'):
+            for struct in self.salary_struct_ids:
+                for rule in struct.rule_ids:
+                    if (rule.category_id.id not in categories_ids) and rule.category_id.view_in_report:
+                        categories_ids.append(rule.category_id.id)
+            self.categories_ids = categories_ids
+            return {
+                'domain': {
+                    'categories_ids': [('id', 'in', categories_ids)],
+                }}
         else:
             self.rules_ids = False
+            self.categories_ids = False
+            return {
+                'domain': {
+                    'categories_ids': [('view_in_report', '=', True)],
+                    'rules_ids': [],
+                }}
 
     @api.onchange('date_from')
     def get_date_to(self):
@@ -47,6 +81,8 @@ class PayslipWizardReport(models.TransientModel):
         for val in self:
             val.rules_ids = False
             val.salary_struct_ids = False
+            val.analytic_account_ids = False
+            val.categories_ids = False
             if val.company_id:
 
                 department_ids = self.env['hr.department'].search(
@@ -55,8 +91,9 @@ class PayslipWizardReport(models.TransientModel):
                     ['|', ('company_id', '=', val.company_id.id), ('company_id', '=', False)])
                 struct_ids = self.env['hr.payroll.structure'].search(
                     ['|', ('company_id', '=', val.company_id.id), ('company_id', '=', False)])
-
-                val.department_ids = department_ids.ids
+                analytic_account_ids = self.env['account.analytic.account'].search(
+                    ['|', ('company_id', '=', val.company_id.id), ('company_id', '=', False)])
+                categories_ids = self.env['hr.salary.rule.category'].search([('view_in_report', '=', True)])
             else:
                 val.department_ids = False
 
@@ -64,7 +101,9 @@ class PayslipWizardReport(models.TransientModel):
             'domain': {
                 'department_ids': [('id', 'in', department_ids.ids)],
                 'rules_ids': [('id', 'in', rules_ids.ids)],
-                'salary_struct_ids': [('id', 'in', struct_ids.ids)]
+                'salary_struct_ids': [('id', 'in', struct_ids.ids)],
+                'analytic_account_ids': [('id', 'in', analytic_account_ids.ids)],
+                'categories_ids': [('id', 'in', categories_ids.ids)]
             }}
 
     @api.multi
@@ -76,14 +115,17 @@ class PayslipWizardReport(models.TransientModel):
             'form': data
         }
         domain = [('date_from', '>=', self.date_from), ('date_to', '<=', self.date_to),
-                  ('company_id', '=', self.company_id.id), '|',
-                  ('employee_id.department_id.id', 'in', self.department_ids.ids),
-                  ('employee_id.department_id', '=', False)]
+                  ('company_id', '=', self.company_id.id)]
+
+        if self.department_ids:
+            domain.append(('employee_id.department_id', 'in', self.department_ids.ids))
 
         if self.salary_struct_ids:
             domain.append(('struct_id', 'in', self.salary_struct_ids.ids))
 
-        # TODO State domain
+        if self.analytic_account_ids:
+            domain.append(('contract_id.analytic_account_id', 'in', self.analytic_account_ids.ids))
+
         if self.state == 'done_and_draft':
             domain.append(('state', 'in', ['draft', 'done']))
         else:
