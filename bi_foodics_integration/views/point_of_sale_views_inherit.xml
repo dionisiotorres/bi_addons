@@ -109,6 +109,10 @@
                     <button class="btn btn-primary" context="{'default_pos_id': config_id}" name="validate_pickings" type="object" string="Validate Pickings" attrs="{'invisible':[('picking_count', '=', 0)]}"/>
                     <button class="btn btn-primary" context="{'default_pos_id': config_id}" name="%(bi_foodics_integration.action_import_foodics_per_session_wizard)d" type="action" string="Import Foodics Data" attrs="{'invisible': [('state', 'not in', ['opened'])]}"/>
                 </xpath>
+                <xpath expr="//field[@name='picking_count']" position="attributes">
+                    <attribute name="string">Pickings</attribute>
+                </xpath>
+
             </field>
         </record>
 

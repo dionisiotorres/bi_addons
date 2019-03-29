@@ -14,10 +14,10 @@ _logger = logging.getLogger(__name__)
 from xmlrpc import client as xmlrpclib
 
 uid = 2 # The Odoo user
-password = '12'# The password of the Odoo user
+password = 'BI@$olutions'# The password of the Odoo user
 db = 'itemcard' # The Odoo database
 
-models_rpc = xmlrpclib.ServerProxy('http://151.236.220.220/xmlrpc/2/object')
+models_rpc = xmlrpclib.ServerProxy('http://151.236.220.220:8069/xmlrpc/2/object')
 
 
 class PosOrderInherit(models.Model):
