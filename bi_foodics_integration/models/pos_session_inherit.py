@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 
 
 class PosSessionInherit(models.Model):
@@ -16,3 +17,15 @@ class PosSessionInherit(models.Model):
         for rec in self:
             if rec.start_at:
                 rec.st_date = rec.start_at.date()
+
+    @api.multi
+    def validate_pickings(self):
+        self.ensure_one()
+        self.order_ids.validate_picking_foodics()
+
+    @api.multi
+    def action_pos_session_closing_control(self):
+        for rec in self:
+            if rec.picking_count:
+                raise ValidationError('Validate Pickings First.')
+        return super(PosSessionInherit, self).action_pos_session_closing_control()

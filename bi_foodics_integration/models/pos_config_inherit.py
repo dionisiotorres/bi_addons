@@ -404,7 +404,6 @@ class PosConfigInherit(models.Model):
         for i in range(0, len(l), n):
             yield l[i:i + n]
 
-    # @profile
     @api.multi
     def import_foodics_data(self, date):
         self.ensure_one()
@@ -451,10 +450,10 @@ class PosConfigInherit(models.Model):
                     pos_order = self._prepare_api_order(order, self.current_session_id)
                     pos_orders.append(pos_order)
 
-            created_order_ids = self.env['pos.order'].with_context(keep_dates=True , force_period_date=date).create_from_ui_new(pos_orders)
+            created_order_ids = self.env['pos.order'].with_context(keep_dates=True , force_period_date=date).create_from_ui_foodics(pos_orders)
             new_order_ids = self.env['pos.order'].browse(created_order_ids)
             self._update_orders_amount_all(new_order_ids)
-            new_order_ids.create_picking()
+            # new_order_ids.create_picking_new()
             #
             # # close and validate session
             # self.current_session_id.action_pos_session_closing_control()
@@ -504,10 +503,10 @@ class PosConfigInherit(models.Model):
                 pos_order = self._prepare_api_order(order, self.current_session_id)
                 pos_orders.append(pos_order)
 
-        created_order_ids = self.env['pos.order'].with_context(keep_dates=True, force_period_date=date).create_from_ui_new(pos_orders)
+        created_order_ids = self.env['pos.order'].with_context(keep_dates=True, force_period_date=date).create_from_ui_foodics(pos_orders)
         new_order_ids = self.env['pos.order'].browse(created_order_ids)
         self._update_orders_amount_all(new_order_ids)
-        new_order_ids.create_picking()
+        # new_order_ids.create_picking()
 
         # self._update_orders_amount_all(created_order_ids)
 
@@ -517,25 +516,25 @@ class PosConfigInherit(models.Model):
         current_opened_session = self.env['pos.session'].search([('config_id', '=', self.id), ('state', 'in', ['opened'])],
                                                         limit=1)
 
-        if  current_opened_session and current_opened_session.start_at:
-            # now_utc = datetime.now(pytz.UTC)
-            # now_utc = now_utc.replace(tzinfo=None)
-
-            session_closing_hour = float_to_time(self.default_closing_time)
-            session_closing_date = datetime.combine((current_opened_session.start_at.date() + relativedelta(days=1)), session_closing_hour)
-
-            if not current_opened_session.expected_closing_at:
-                local = pytz.timezone(self.env.user.tz or 'UTC')
-                local_dt = local.localize(session_closing_date, is_dst=None)
-                utc_dt = local_dt.astimezone(pytz.utc)
-                utc_dt = utc_dt.strftime(DATETIME_FORMAT)
-                current_opened_session.expected_closing_at = utc_dt
-
-            # logger.warning('dates compare %s, %s' % (now_utc, current_opened_session.expected_closing_at))
-
-            if self._context.get('imediate_close', False):
-                logger.warning('Session closing')
-                current_opened_session.action_pos_session_closing_control()
+        # if  current_opened_session and current_opened_session.start_at:
+        #     # now_utc = datetime.now(pytz.UTC)
+        #     # now_utc = now_utc.replace(tzinfo=None)
+        #
+        #     session_closing_hour = float_to_time(self.default_closing_time)
+        #     session_closing_date = datetime.combine((current_opened_session.start_at.date() + relativedelta(days=1)), session_closing_hour)
+        #
+        #     if not current_opened_session.expected_closing_at:
+        #         local = pytz.timezone(self.env.user.tz or 'UTC')
+        #         local_dt = local.localize(session_closing_date, is_dst=None)
+        #         utc_dt = local_dt.astimezone(pytz.utc)
+        #         utc_dt = utc_dt.strftime(DATETIME_FORMAT)
+        #         current_opened_session.expected_closing_at = utc_dt
+        #
+        #     # logger.warning('dates compare %s, %s' % (now_utc, current_opened_session.expected_closing_at))
+        #
+        #     if self._context.get('imediate_close', False):
+        #         logger.warning('Session closing')
+        #         current_opened_session.action_pos_session_closing_control()
 
 
     # This method is called by a cron job

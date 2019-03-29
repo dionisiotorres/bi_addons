@@ -218,7 +218,8 @@ class PosOrderInherit(models.Model):
         return True
 
     def create_picking(self):
-        if self.config_id.analytic_account_id:
-            return super(PosOrderInherit, self.with_context(pos_analytic_account_id=self.config_id.analytic_account_id.id)).create_picking()
-        else:
-            return super(PosOrderInherit, self).create_picking()
+        analytic_account_id = False
+        for order in self:
+            analytic_account_id = order.config_id.analytic_account_id.id if order.config_id.analytic_account_id else False
+            break
+        return super(PosOrderInherit, self.with_context(pos_analytic_account_id=analytic_account_id)).create_picking()
