@@ -24,7 +24,7 @@
                 <field name="item_standard_price"/>
                 <field name="item_value"/>
                 <field name="item_total_cost"/>
-                <field name="xl_item_total_cost"/>
+                <field name="xl_item_total_cost" invisible="1"/>
                 <field name="transaction_type"/>
                 <field name="prod_opening_balance"/>
                 <field name="prod_ending_balance"/>
