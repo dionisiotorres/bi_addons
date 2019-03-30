@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report id="total_move_report_xls"
+                model="stock.move.report.wizard"
+                string="Total Move Report (XLS)"
+                report_type="xlsx"
+                name="bi_stock_move_reports.total_move_report_xls"
+                file="Total Moves Report (XLS)"
+                attachment_use="False"
+                menu="False"/>
+    </data>
+</odoo>

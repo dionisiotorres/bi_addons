@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_stock_move_tree_inherit" model="ir.ui.view">
+        <field name="name">stock.move.tree.inherit</field>
+        <field name="model">stock.move</field>
+        <field name="inherit_id" ref="stock.view_move_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='picking_type_id']" position="attributes">
+                <attribute name="invisible">0</attribute>
+            </xpath>
+            <xpath expr="//field[@name='picking_type_id']" position="attributes">
+                <attribute name="invisible">0</attribute>
+            </xpath>
+            <xpath expr="//field[@name='picking_type_id']" position="after">
+                <field name="picking_code"/>
+                <field name="warehouse_id"/>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="quantity_done"/>
+                <field name="value"/>
+                <field name="in_out_flag"/>
+                <field name="xl_in_out_flag" invisible="1"/>
+                <field name="item_standard_price"/>
+                <field name="item_value"/>
+                <field name="item_total_cost"/>
+                <field name="xl_item_total_cost"/>
+                <field name="transaction_type"/>
+                <field name="prod_opening_balance"/>
+                <field name="prod_ending_balance"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
