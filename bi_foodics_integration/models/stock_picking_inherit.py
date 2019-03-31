@@ -33,8 +33,8 @@ class StockPickingInherit(models.Model):
         # So we remove the move lines created when confirmed to set quantity done to the new reserved ones.
         package_level_done = self.mapped('package_level_ids').filtered(lambda pl: pl.is_done and pl.state == 'confirmed')
         package_level_done.write({'is_done': False})
-        moves._action_assign()
-        package_level_done.write({'is_done': True})
+        # moves._action_assign()
+        # package_level_done.write({'is_done': True})
         return True
 
 
@@ -46,8 +46,8 @@ class StockPickingInherit(models.Model):
             .filtered(lambda move: move.state == 'draft')\
             ._action_confirm_foodics()
         # call `_action_assign` on every confirmed move which location_id bypasses the reservation
-        self.filtered(lambda picking: picking.location_id.usage in ('supplier', 'inventory', 'production') and picking.state == 'confirmed')\
-            .mapped('move_lines')._action_assign()
+        # self.filtered(lambda picking: picking.location_id.usage in ('supplier', 'inventory', 'production') and picking.state == 'confirmed')\
+        #     .mapped('move_lines')._action_assign()
         return True
 
 class StockMoveInherit(models.Model):

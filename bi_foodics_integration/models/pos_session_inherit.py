@@ -29,10 +29,18 @@ class PosSessionInherit(models.Model):
             picking_id = order.picking_id
             _logger.warning('POS Order: %s', count)
             picking_id.action_assign_foodics()
-            wrong_lots = order.set_pack_operation_lot(picking_id)
-            if not wrong_lots:
-                picking_id.action_done()
+            picking_id.extra_force_assign()
+            self.env['stock.immediate.transfer'].create(
+                {'pick_ids': [(4, picking_id.id)]}).process()
+
+            # wrong_lots = order.set_pack_operation_lot(picking_id)
+            # if not wrong_lots:
+            #     picking_id.action_done()
             count += 1
+
+        # self.env['stock.immediate.transfer'].create(
+        #     {'pick_ids': [(4, picking.id)]}).process()
+
         return True
 
     @api.multi
