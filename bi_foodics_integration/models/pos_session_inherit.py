@@ -2,6 +2,9 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class PosSessionInherit(models.Model):
@@ -21,7 +24,16 @@ class PosSessionInherit(models.Model):
     @api.multi
     def validate_pickings(self):
         self.ensure_one()
-        self.order_ids.validate_picking_foodics()
+        count = 1
+        for order in self.order_ids.filtered(lambda l: l.picking_id.state not in ['done','cancel']):
+            picking_id = order.picking_id
+            _logger.warning('POS Order: %s', count)
+            picking_id.action_assign_foodics()
+            wrong_lots = order.set_pack_operation_lot(picking_id)
+            if not wrong_lots:
+                picking_id.action_done()
+            count += 1
+        return True
 
     @api.multi
     def action_pos_session_closing_control(self):

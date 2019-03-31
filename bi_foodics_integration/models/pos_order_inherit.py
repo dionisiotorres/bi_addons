@@ -10,16 +10,6 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-
-from xmlrpc import client as xmlrpclib
-
-uid = 2 # The Odoo user
-password = 'BI@$olutions'# The password of the Odoo user
-db = 'itemcard' # The Odoo database
-
-models_rpc = xmlrpclib.ServerProxy('http://151.236.220.220:8069/xmlrpc/2/object')
-
-
 class PosOrderInherit(models.Model):
     _inherit = 'pos.order'
 
@@ -194,30 +184,9 @@ class PosOrderInherit(models.Model):
                     return_picking = Picking.create(return_vals)
                     return_picking.message_post(body=message)
 
-
             # prefer associating the regular order picking, not the return
             order.write({'picking_id': order_picking.id or return_picking.id})
         return True
-
-    # making standard method not public to call with xmlrpc
-    def force_picking_done_foodics(self):
-        """Force picking in order to be set as done."""
-        self.ensure_one()
-        picking_id = self.picking_id
-        picking_id.action_assign()
-        wrong_lots = self.set_pack_operation_lot(picking_id)
-        if not wrong_lots:
-            picking_id.action_done()
-        return True
-
-    def validate_picking_foodics(self):
-        """Validating Pickings."""
-        for order in self.filtered(lambda l: l.picking_id.state not in ['done']):
-            picking_id = order.picking_id
-            if picking_id:
-                models_rpc.execute_kw(db, uid, password,
-                                  'pos.order', 'force_picking_done_foodics',
-                                  [[order.id]])
 
 class PosOrderLineInherit(models.Model):
     _inherit = 'pos.order.line'
