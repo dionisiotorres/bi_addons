@@ -40,6 +40,7 @@ class StockMoveLineInherit(models.Model):
 
     @api.multi
     def _compute_balance(self):
+        domain = []
         if self._context.get('date_from') and self._context.get('date_to'):
             domain = [('date', '>=', self._context.get('date_from')),
                       ('date', '<=', self._context.get('date_to')), ('state', '=', 'done')]
