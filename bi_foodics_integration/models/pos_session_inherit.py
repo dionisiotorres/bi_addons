@@ -24,10 +24,10 @@ class PosSessionInherit(models.Model):
     @api.multi
     def validate_pickings(self):
         self.ensure_one()
-        count = 1
+        # count = 1
         for order in self.order_ids.filtered(lambda l: l.picking_id.state not in ['done','cancel']):
             picking_id = order.picking_id
-            _logger.warning('POS Order: %s', count)
+            # _logger.warning('POS Order: %s', count)
             picking_id.action_assign_foodics()
             picking_id.extra_force_assign()
             self.env['stock.immediate.transfer'].create(
@@ -36,16 +36,13 @@ class PosSessionInherit(models.Model):
             # wrong_lots = order.set_pack_operation_lot(picking_id)
             # if not wrong_lots:
             #     picking_id.action_done()
-            count += 1
-
-        # self.env['stock.immediate.transfer'].create(
-        #     {'pick_ids': [(4, picking.id)]}).process()
-
+            # count += 1
         return True
 
-    @api.multi
-    def action_pos_session_closing_control(self):
-        for rec in self:
-            if rec.picking_count:
-                raise ValidationError('Validate Pickings First.')
-        return super(PosSessionInherit, self).action_pos_session_closing_control()
+    # prevent closing session if pickings are not done
+    # @api.multi
+    # def action_pos_session_closing_control(self):
+    #     for rec in self:
+    #         if rec.picking_count:
+    #             raise ValidationError('Validate Pickings First.')
+    #     return super(PosSessionInherit, self).action_pos_session_closing_control()

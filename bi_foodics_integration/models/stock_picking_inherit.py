@@ -50,6 +50,16 @@ class StockPickingInherit(models.Model):
         #     .mapped('move_lines')._action_assign()
         return True
 
+    # server action method to validate pickings
+    @api.multi
+    def action_validate_picking_foodics(self):
+        for picking_id in self:
+            picking_id.action_assign_foodics()
+            picking_id.extra_force_assign()
+            self.env['stock.immediate.transfer'].create(
+                {'pick_ids': [(4, picking_id.id)]}).process()
+
+
 class StockMoveInherit(models.Model):
     _inherit = 'stock.move'
 

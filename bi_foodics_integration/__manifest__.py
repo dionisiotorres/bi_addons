@@ -23,6 +23,7 @@
         'views/res_users_views_inherit.xml',
         'views/product_views_inherit.xml',
         'views/api_import_exception_views.xml',
+        'views/stock_picking_views.xml',
     ],
     'installable': True,
     'auto_install': False,
