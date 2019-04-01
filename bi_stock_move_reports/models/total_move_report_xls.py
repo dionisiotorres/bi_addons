@@ -261,8 +261,8 @@ class TotalMoveReportXls(models.AbstractModel):
                 worksheet.write(move_row, 12, line['open_balance'])
                 worksheet.write(move_row, 13, line['end_balance'])
         elif wizard.type == 'per_warehouse':
-            moves_domain = [('date', '>=', wizard.date_from), ('date', '<=', wizard.date_to), ('state', '=', 'done'), '|', '|', ('warehouse_id', '=', wizard.warehouse_id.id), ('location_id.name', 'ilike', wizard.warehouse_id.name),
-                            ('location_dest_id.name', 'ilike', wizard.warehouse_id.name)]
+            moves_domain = [('date', '>=', wizard.date_from), ('date', '<=', wizard.date_to), ('state', '=', 'done'), '|', '|', ('warehouse_id', '=', wizard.warehouse_id.id), ('location_id.display_name', 'ilike', wizard.warehouse_id.name),
+                            ('location_dest_id.display_name', 'ilike', wizard.warehouse_id.name)]
             moves_objs = self.env['stock.move'].search(moves_domain)
 
             products_dict = {}
