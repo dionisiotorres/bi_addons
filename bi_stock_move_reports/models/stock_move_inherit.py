@@ -56,19 +56,21 @@ class StockMoveInherit(models.Model):
             else:
                 if rec.location_id.usage in ['supplier']:
                     rec.transaction_type = 'receipt'
-                if rec.location_dest_id.usage in ['customer']:
+                elif rec.location_dest_id.usage in ['customer']:
                     rec.transaction_type = 'delivery'
-                if rec.location_id.usage in ['production'] or rec.location_dest_id.usage in ['production']:
+                elif rec.location_id.usage in ['production'] or rec.location_dest_id.usage in ['production']:
                     rec.transaction_type = 'manufacturing'
+                elif rec.location_id.usage in ['inventory'] or rec.location_dest_id.usage in ['inventory']:
+                    rec.transaction_type = 'inventory_adjustment'
 
     @api.multi
     @api.depends('location_id', 'location_id.usage', 'location_dest_id', 'location_dest_id.usage')
     def _compute_in_out_flag(self):
         for rec in self:
             rec.in_out_flag = '0'
-            if rec.location_id.usage in ['supplier', 'production']:
+            if rec.location_id.usage in ['supplier', 'production', 'inventory']:
                 rec.in_out_flag = '1'
-            if rec.location_dest_id.usage in ['customer', 'production']:
+            if rec.location_dest_id.usage in ['customer', 'production', 'inventory']:
                 rec.in_out_flag = '-1'
             if rec.location_id.usage in ['transit'] or rec.location_dest_id.usage in ['transit']:
                 rec.in_out_flag = '0'

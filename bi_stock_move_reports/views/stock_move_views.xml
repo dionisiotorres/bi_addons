@@ -16,18 +16,26 @@
                 <field name="picking_code"/>
                 <field name="warehouse_id"/>
             </xpath>
-            <xpath expr="//field[@name='state']" position="before">
+            <xpath expr="//field[@name='product_uom']" position="before">
+                <field name="item_standard_price"/>
+                <field name="prod_opening_balance"/>
                 <field name="quantity_done"/>
+            </xpath>
+            <xpath expr="//field[@name='product_uom']" position="after">
                 <field name="value"/>
+                <field name="item_value"/>
+                <field name="prod_ending_balance"/>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="before">
                 <field name="in_out_flag"/>
                 <field name="xl_in_out_flag" invisible="1"/>
-                <field name="item_standard_price"/>
-                <field name="item_value"/>
                 <field name="item_total_cost"/>
                 <field name="xl_item_total_cost" invisible="1"/>
                 <field name="transaction_type"/>
-                <field name="prod_opening_balance"/>
-                <field name="prod_ending_balance"/>
+            </xpath>
+            <xpath expr="//field[@name='product_uom_qty']" position="replace"/>
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="product_uom_qty"/>
             </xpath>
         </field>
     </record>
