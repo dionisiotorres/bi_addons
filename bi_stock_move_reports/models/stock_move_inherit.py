@@ -68,9 +68,9 @@ class StockMoveInherit(models.Model):
     def _compute_in_out_flag(self):
         for rec in self:
             rec.in_out_flag = '0'
-            if rec.location_id.usage in ['supplier', 'production', 'inventory']:
+            if rec.location_id.usage in ['supplier', 'customer', 'production', 'inventory']:
                 rec.in_out_flag = '1'
-            if rec.location_dest_id.usage in ['customer', 'production', 'inventory']:
+            if rec.location_dest_id.usage in ['supplier', 'customer', 'production', 'inventory']:
                 rec.in_out_flag = '-1'
             if rec.location_id.usage in ['transit'] or rec.location_dest_id.usage in ['transit']:
                 rec.in_out_flag = '0'
@@ -81,9 +81,9 @@ class StockMoveInherit(models.Model):
         for rec in self:
             rec.xl_in_out_flag = '0'
             if rec.location_id.usage in ['transit']:
-                rec.in_out_flag = '-1'
+                rec.xl_in_out_flag = '-1'
             if rec.location_dest_id.usage in ['transit']:
-                rec.in_out_flag = '1'
+                rec.xl_in_out_flag = '1'
 
     @api.multi
     @api.depends('value', 'quantity_done')

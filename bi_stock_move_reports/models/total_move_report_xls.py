@@ -51,7 +51,7 @@ class TotalMoveReportXls(models.AbstractModel):
             worksheet.write(row_no, col_no + 1, datetime.datetime.strftime(date_time_from, DEFAULT_SERVER_DATETIME_FORMAT), )
             row_no += 1
             worksheet.write(row_no, col_no, 'Date To : ', f1)
-            worksheet.write(row_no, col_no + 1, datetime.datetime.strftime(date_time_from, DEFAULT_SERVER_DATETIME_FORMAT), )
+            worksheet.write(row_no, col_no + 1, datetime.datetime.strftime(date_time_to, DEFAULT_SERVER_DATETIME_FORMAT), )
             row_no += 3
 
             # Header Of Table Data
@@ -209,7 +209,7 @@ class TotalMoveReportXls(models.AbstractModel):
             worksheet.write(row_no, col_no + 1, datetime.datetime.strftime(date_time_from, DEFAULT_SERVER_DATETIME_FORMAT), )
             row_no += 1
             worksheet.write(row_no, col_no, 'Date To : ', f1)
-            worksheet.write(row_no, col_no + 1, datetime.datetime.strftime(date_time_from, DEFAULT_SERVER_DATETIME_FORMAT), )
+            worksheet.write(row_no, col_no + 1, datetime.datetime.strftime(date_time_to, DEFAULT_SERVER_DATETIME_FORMAT), )
             row_no += 3
 
             # Header Of Table Data
