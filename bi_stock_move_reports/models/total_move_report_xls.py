@@ -129,7 +129,7 @@ class TotalMoveReportXls(models.AbstractModel):
         elif wizard.type == 'per_location':
             moves_domain = [('date', '>=', wizard.date_from), ('date', '<=', wizard.date_to), ('state', '=', 'done'), '|', ('location_id', '=', wizard.location_id.id),
                             ('location_dest_id', '=', wizard.location_id.id)]
-            moves_objs = self.env['stock.move'].search(moves_domain)
+            moves_objs = self.env['stock.move'].search(moves_domain, order="date ASC")
 
             products_dict = {}
             for move in moves_objs:
@@ -174,8 +174,10 @@ class TotalMoveReportXls(models.AbstractModel):
                     products_dict[move.product_id.id]['transit_balance'] += transit_balance
                     products_dict[move.product_id.id]['transit_balance_cost'] += transit_balance_cost
                     products_dict[move.product_id.id]['total_balance_cost'] += total_balance_cost
-                    products_dict[move.product_id.id]['open_balance'] += open_balance
-                    products_dict[move.product_id.id]['end_balance'] += end_balance
+                    if move.location_id.id in products_dict[move.product_id.id]['locations']:
+                        products_dict[move.product_id.id]['locations'][move.location_id.id]['end_balance'] += end_balance
+                    else:
+                        products_dict[move.product_id.id]['locations'][move.location_id.id] = {'open_balance': open_balance, 'end_balance': end_balance}
                 else:
                     products_dict[move.product_id.id] = {
                         'reference': move.product_id.default_code,
@@ -195,8 +197,9 @@ class TotalMoveReportXls(models.AbstractModel):
                         'transit_balance': transit_balance,
                         'transit_balance_cost': transit_balance_cost,
                         'total_balance_cost': total_balance_cost,
-                        'open_balance': open_balance,
-                        'end_balance': end_balance,
+                        'locations': {
+                            move.location_id.id: {'open_balance': open_balance, 'end_balance': end_balance}
+                        },
                     }
 
             worksheet.write(row_no, col_no, 'Total Moves Per Location Report', f1)
@@ -245,6 +248,12 @@ class TotalMoveReportXls(models.AbstractModel):
 
             move_row = 8
             for line in products_dict.values():
+                total_open_balance = 0.0
+                total_end_balance = 0.0
+                for loc in line['locations'].values():
+                    total_open_balance += loc['open_balance']
+                    total_end_balance += loc['end_balance']
+
                 move_row += 1
                 worksheet.write(move_row, 0, line['reference'])
                 worksheet.write(move_row, 1, line['product'])
@@ -258,12 +267,12 @@ class TotalMoveReportXls(models.AbstractModel):
                 worksheet.write(move_row, 9, line['stock_balance'])
                 worksheet.write(move_row, 10, line['stock_balance_value'])
                 worksheet.write(move_row, 11, line['stock_balance_cost'])
-                worksheet.write(move_row, 12, line['open_balance'])
-                worksheet.write(move_row, 13, line['end_balance'])
+                worksheet.write(move_row, 12, total_open_balance)
+                worksheet.write(move_row, 13, total_end_balance)
         elif wizard.type == 'per_warehouse':
             moves_domain = [('date', '>=', wizard.date_from), ('date', '<=', wizard.date_to), ('state', '=', 'done'), '|', '|', ('warehouse_id', '=', wizard.warehouse_id.id), ('location_id.display_name', 'ilike', wizard.warehouse_id.name),
                             ('location_dest_id.display_name', 'ilike', wizard.warehouse_id.name)]
-            moves_objs = self.env['stock.move'].search(moves_domain)
+            moves_objs = self.env['stock.move'].search(moves_domain, order="date ASC")
 
             products_dict = {}
             for move in moves_objs:
@@ -285,6 +294,7 @@ class TotalMoveReportXls(models.AbstractModel):
                 total_balance_cost = stock_balance_cost + transit_balance_cost
                 open_balance = move.prod_opening_balance
                 end_balance = move.prod_ending_balance
+                warehouse = move.location_id.sudo().get_warehouse() or move.location_dest_id.sudo().get_warehouse()
                 if move.product_id.id in products_dict:
                     products_dict[move.product_id.id]['stock_qty_in'] += move.quantity_done if move.in_out_flag == '1' else 0.0
                     products_dict[move.product_id.id]['stock_qty_in_value'] += move.value if move.in_out_flag == '1' else 0.0
@@ -300,8 +310,11 @@ class TotalMoveReportXls(models.AbstractModel):
                     products_dict[move.product_id.id]['transit_balance'] += transit_balance
                     products_dict[move.product_id.id]['transit_balance_cost'] += transit_balance_cost
                     products_dict[move.product_id.id]['total_balance_cost'] += total_balance_cost
-                    products_dict[move.product_id.id]['open_balance'] += open_balance
-                    products_dict[move.product_id.id]['end_balance'] += end_balance
+
+                    if warehouse and warehouse.id in products_dict[move.product_id.id]['warehouses']:
+                        products_dict[move.product_id.id]['warehouses'][warehouse.id]['end_balance'] += end_balance
+                    else:
+                        products_dict[move.product_id.id]['warehouses'][warehouse.id] = {'open_balance': open_balance, 'end_balance': end_balance}
                 else:
                     products_dict[move.product_id.id] = {
                         'reference': move.product_id.default_code,
@@ -321,9 +334,10 @@ class TotalMoveReportXls(models.AbstractModel):
                         'transit_balance': transit_balance,
                         'transit_balance_cost': transit_balance_cost,
                         'total_balance_cost': total_balance_cost,
-                        'open_balance': open_balance,
-                        'end_balance': end_balance,
+                        'warehouses': {}
                     }
+                    if warehouse:
+                        products_dict[move.product_id.id]['warehouses'][warehouse.id] = {'open_balance': open_balance, 'end_balance': end_balance}
 
             worksheet.write(row_no, col_no, 'Total Moves Per Warehouse Report', f1)
             row_no += 2
@@ -381,6 +395,12 @@ class TotalMoveReportXls(models.AbstractModel):
 
             move_row = 8
             for line in products_dict.values():
+                total_open_balance = 0.0
+                total_end_balance = 0.0
+                for wh in line['warehouses'].values():
+                    total_open_balance += wh['open_balance']
+                    total_end_balance += wh['end_balance']
+
                 move_row += 1
                 worksheet.write(move_row, 0, line['reference'])
                 worksheet.write(move_row, 1, line['product'])
@@ -399,5 +419,5 @@ class TotalMoveReportXls(models.AbstractModel):
                 worksheet.write(move_row, 14, line['transit_balance'])
                 worksheet.write(move_row, 15, line['transit_balance_cost'])
                 worksheet.write(move_row, 16, line['total_balance_cost'])
-                worksheet.write(move_row, 17, line['open_balance'])
-                worksheet.write(move_row, 18, line['end_balance'])
+                worksheet.write(move_row, 17, total_open_balance)
+                worksheet.write(move_row, 18, total_end_balance)
