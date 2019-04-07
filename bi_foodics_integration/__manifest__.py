@@ -8,7 +8,7 @@
     'author': "BI Solutions Development Team",
     'category': '',
     'version': '0.1',
-    'depends': ['point_of_sale', 'account', 'product','stock_force_availability12'],
+    'depends': ['point_of_sale', 'account', 'product', 'mrp','stock_force_availability12'],
     'data': [
         'security/ir.model.access.csv',
         'wizard/import_foodics_wizard.xml',

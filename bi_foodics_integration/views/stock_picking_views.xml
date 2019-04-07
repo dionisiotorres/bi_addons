@@ -15,5 +15,12 @@
             <field name="state">code</field>
             <field name="code">records.do_unreserve()</field>
         </record>
+        <record id="stock_picking_mark_astodo_action" model="ir.actions.server">
+            <field name="name">Mark As Todo Pickings</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="binding_model_id" ref="stock.model_stock_picking"/>
+            <field name="state">code</field>
+            <field name="code">records.action_confirm()</field>
+        </record>
     </data>
 </odoo>
