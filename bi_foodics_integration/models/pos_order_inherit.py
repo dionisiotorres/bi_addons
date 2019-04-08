@@ -77,12 +77,11 @@ class PosOrderInherit(models.Model):
     @api.model
     def create_from_ui_foodics(self, orders):
         # Keep only new orders
-        # submitted_references = [o['data']['name'] for o in orders]
-        # pos_order = self.search([('pos_reference', 'in', submitted_references)])
-        # existing_orders = pos_order.read(['pos_reference'])
-        # existing_references = set([o['pos_reference'] for o in existing_orders])
-        # orders_to_save = [o for o in orders if o['data']['name'] not in existing_references]
-        orders_to_save = [o for o in orders]
+        submitted_references = [o['data']['name'] for o in orders]
+        pos_order = self.search([('pos_reference', 'in', submitted_references)])
+        existing_orders = pos_order.read(['pos_reference'])
+        existing_references = set([o['pos_reference'] for o in existing_orders])
+        orders_to_save = [o for o in orders if o['data']['name'] not in existing_references]
         order_ids = []
         pos_orders = False
         for tmp_order in orders_to_save:
