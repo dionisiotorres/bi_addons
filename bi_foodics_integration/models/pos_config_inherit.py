@@ -429,34 +429,31 @@ class PosConfigInherit(models.Model):
             return
             # raise ValidationError(_('No orders found.'))
 
-        orders_lists = self.chunks(orders_list, 10)
+        # orders_lists = self.chunks(orders_list, 400)
+        if not self.current_session_id:
+            opened_session = self.env['pos.session'].search(
+                [('config_id', '=', self.id), ('state', 'in', ['opened'])], limit=1)
+            if opened_session:
+                self.current_session_id = opened_session
+            else:
+                self.current_session_id = self.env['pos.session'].create({
+                    'user_id': self.pos_branch_id.responsible_id.id,
+                    'config_id': self.id,
+                    'start_at': date
+                })
 
-        for orders in orders_lists:
-            if not self.current_session_id:
-                opened_session = self.env['pos.session'].search(
-                    [('config_id', '=', self.id), ('state', 'in', ['opened'])], limit=1)
-                if opened_session:
-                    self.current_session_id = opened_session
-                else:
-                    self.current_session_id = self.env['pos.session'].create({
-                        'user_id': self.pos_branch_id.responsible_id.id,
-                        'config_id': self.id,
-                        'start_at': date
-                    })
+        pos_orders = []
 
-            pos_orders = []
-            for order in orders:
-                if 'payments' in order and order['payments']:
-                    pos_order = self._prepare_api_order(order, self.current_session_id)
-                    pos_orders.append(pos_order)
+        for order in orders_list:
+            if 'payments' in order and order['payments']:
+                pos_order = self._prepare_api_order(order, self.current_session_id)
+                pos_orders.append(pos_order)
 
-            created_order_ids = self.env['pos.order'].with_context(keep_dates=True , force_period_date=date).create_from_ui_foodics(pos_orders)
-            new_order_ids = self.env['pos.order'].browse(created_order_ids)
-            self._update_orders_amount_all(new_order_ids)
-            # new_order_ids.create_picking_new()
-            #
-            # # close and validate session
-            # self.current_session_id.action_pos_session_closing_control()
+        created_order_ids = self.env['pos.order'].with_context(keep_dates=True , force_period_date=date).create_from_ui_foodics(pos_orders)
+        new_order_ids = self.env['pos.order'].browse(created_order_ids)
+        self._update_orders_amount_all(new_order_ids)
+        # # close and validate session
+        # self.current_session_id.action_pos_session_closing_control()
 
     @api.multi
     def import_foodics_data_per_session(self, date):
@@ -506,9 +503,6 @@ class PosConfigInherit(models.Model):
         created_order_ids = self.env['pos.order'].with_context(keep_dates=True, force_period_date=date).create_from_ui_foodics(pos_orders)
         new_order_ids = self.env['pos.order'].browse(created_order_ids)
         self._update_orders_amount_all(new_order_ids)
-        # new_order_ids.create_picking()
-
-        # self._update_orders_amount_all(created_order_ids)
 
         # if self.current_session_id and self.current_session_id.start_at:
         #     current_opened_session = self.current_session_id

@@ -54,7 +54,9 @@ class StockPickingInherit(models.Model):
     @api.multi
     def action_validate_picking_foodics(self):
         for picking_id in self:
-            picking_id.action_assign_foodics()
-            picking_id.extra_force_assign()
-            self.env['stock.immediate.transfer'].create(
-                {'pick_ids': [(4, picking_id.id)]}).process()
+            pos_order_id = self.env['pos.order'].search([('picking_id','=',picking_id.id)], limit=1)
+            if pos_order_id:
+                picking_id.action_assign_foodics()
+                wrong_lots = pos_order_id.set_pack_operation_lot(picking_id)
+                if not wrong_lots:
+                    picking_id.action_done()
