@@ -405,7 +405,7 @@ class PosConfigInherit(models.Model):
             yield l[i:i + n]
 
     @api.multi
-    def import_foodics_data(self, date):
+    def import_foodics_data(self, start_date, end_date):
         self.ensure_one()
 
         foodics_base_url = self.env['ir.config_parameter'].sudo().get_param('bi_foodics_integration.foodics_base_url')
@@ -420,10 +420,17 @@ class PosConfigInherit(models.Model):
         if not self.pos_branch_id.responsible_id:
             raise ValidationError(_('Please set the responsible in the pos branch.'))
 
-        business_date = date.strftime('%Y-%m-%d')
-
         headers = self.get_headers(foodics_base_url, foodics_secret)
-        orders_list = self.get_orders(foodics_base_url, headers, business_date, self.pos_branch_id.hid)
+        #getting all dates between start and end dates
+        dates_list = []
+        orders_list = []
+        delta = end_date - start_date
+        for i in range(delta.days + 1):
+            dates_list.append((start_date + timedelta(i)).strftime('%Y-%m-%d'))
+        for business_date in dates_list:
+            orders_foodics = self.get_orders(foodics_base_url, headers, business_date, self.pos_branch_id.hid)
+            if orders_foodics:
+                orders_list += orders_foodics
 
         if not orders_list:
             return
@@ -439,7 +446,7 @@ class PosConfigInherit(models.Model):
                 self.current_session_id = self.env['pos.session'].create({
                     'user_id': self.pos_branch_id.responsible_id.id,
                     'config_id': self.id,
-                    'start_at': date
+                    'start_at': start_date
                 })
 
         pos_orders = []
@@ -449,14 +456,14 @@ class PosConfigInherit(models.Model):
                 pos_order = self._prepare_api_order(order, self.current_session_id)
                 pos_orders.append(pos_order)
 
-        created_order_ids = self.env['pos.order'].with_context(keep_dates=True , force_period_date=date).create_from_ui_foodics(pos_orders)
+        created_order_ids = self.env['pos.order'].with_context(keep_dates=True , force_period_date=start_date).create_from_ui_foodics(pos_orders)
         new_order_ids = self.env['pos.order'].browse(created_order_ids)
         self._update_orders_amount_all(new_order_ids)
         # # close and validate session
         # self.current_session_id.action_pos_session_closing_control()
 
     @api.multi
-    def import_foodics_data_per_session(self, date):
+    def import_foodics_data_per_session(self, start_date, end_date):
         self.ensure_one()
 
         foodics_base_url = self.env['ir.config_parameter'].sudo().get_param(
@@ -472,10 +479,17 @@ class PosConfigInherit(models.Model):
         if not self.pos_branch_id.responsible_id:
             raise ValidationError(_('Please set the responsible in the pos branch.'))
 
-        business_date = date.strftime('%Y-%m-%d')
-
         headers = self.get_headers(foodics_base_url, foodics_secret)
-        orders_list = self.get_orders(foodics_base_url, headers, business_date, self.pos_branch_id.hid)
+        #getting all dates between start and end dates
+        dates_list = []
+        orders_list = []
+        delta = end_date - start_date
+        for i in range(delta.days + 1):
+            dates_list.append((start_date + timedelta(i)).strftime('%Y-%m-%d'))
+        for business_date in dates_list:
+            orders_foodics = self.get_orders(foodics_base_url, headers, business_date, self.pos_branch_id.hid)
+            if orders_foodics:
+                orders_list += orders_foodics
 
         if not orders_list:
             logger.warning('no orders found!')

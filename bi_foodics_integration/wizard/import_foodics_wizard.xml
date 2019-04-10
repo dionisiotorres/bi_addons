@@ -7,8 +7,14 @@
         <field name="arch" type="xml">
             <form string="Import Foodics Data">
                 <group>
-                    <field name="pos_id" invisible="1"/>
-                    <field name="date"/>
+                    <group>
+                        <field name="pos_id" invisible="1"/>
+                        <field name="date"/>
+                    </group>
+                    <group>
+                        <field name="end_date"/>
+                    </group>
+
                 </group>
                 <footer>
                     <button string='Import Data' name="import_foodics_data" type="object" class="btn-primary"/>
@@ -38,14 +44,14 @@
     </record>
 
     <act_window
-        id="action_import_foodics_orders_all"
-        res_model="import.foodics.wizard"
-        src_model="pos.config"
-        target="new"
-        multi="True"
-        key2="action_import_foodics_all_wizard"
-        view_mode="form"
-        name="Import Foodics Data"/>
+            id="action_import_foodics_orders_all"
+            res_model="import.foodics.wizard"
+            src_model="pos.config"
+            target="new"
+            multi="True"
+            key2="action_import_foodics_all_wizard"
+            view_mode="form"
+            name="Import Foodics Data"/>
 
 
     <record id="import_foodics_per_session_wizard" model="ir.ui.view">
@@ -54,11 +60,18 @@
         <field name="arch" type="xml">
             <form string="Import Foodics Data">
                 <group>
-                    <field name="pos_id" invisible="1"/>
-                    <field name="date"/>
+                    <group>
+                        <field name="pos_id" invisible="1"/>
+                        <field name="date"/>
+                    </group>
+                    <group>
+                        <field name="end_date"/>
+                    </group>
+
                 </group>
                 <footer>
-                    <button string='Import Data' name="import_foodics_data_per_session" type="object" class="btn-primary"/>
+                    <button string='Import Data' name="import_foodics_data_per_session" type="object"
+                            class="btn-primary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>

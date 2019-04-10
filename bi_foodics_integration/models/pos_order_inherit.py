@@ -161,7 +161,7 @@ class PosOrderInherit(models.Model):
             message = _(
                 "This transfer has been created from the point of sale session:%s</a>") % (picking_origin)
             picking_vals = {
-                'origin': picking_origin,
+                # 'origin': picking_origin,
                 'date_done': date_order,
                 'picking_type_id': picking_type.id,
                 'company_id': company_id,
