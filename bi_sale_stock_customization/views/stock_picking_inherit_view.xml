@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_picking_form_dates_inherit" model="ir.ui.view">
+            <field name="name">view.picking.form.dates.inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='date_done']" position="attributes">
+                    <attribute name="attrs">{'readonly':True, 'invisible':False}</attribute>
+                </xpath>
+            </field>
+        </record>
+        <record id="view_picking_form_dates_admin_inherit" model="ir.ui.view">
+            <field name="name">view.picking.form.dates.inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="bi_sale_stock_customization.view_picking_form_dates_inherit"/>
+            <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='date_done']" position="attributes">
+                    <attribute name="attrs">{'readonly':[('state', '=', 'done')],'invisible':False}</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
