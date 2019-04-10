@@ -427,6 +427,7 @@ class PosConfigInherit(models.Model):
         delta = end_date - start_date
         for i in range(delta.days + 1):
             dates_list.append((start_date + timedelta(i)).strftime('%Y-%m-%d'))
+
         for business_date in dates_list:
             orders_foodics = self.get_orders(foodics_base_url, headers, business_date, self.pos_branch_id.hid)
             if orders_foodics:
@@ -486,6 +487,7 @@ class PosConfigInherit(models.Model):
         delta = end_date - start_date
         for i in range(delta.days + 1):
             dates_list.append((start_date + timedelta(i)).strftime('%Y-%m-%d'))
+
         for business_date in dates_list:
             orders_foodics = self.get_orders(foodics_base_url, headers, business_date, self.pos_branch_id.hid)
             if orders_foodics:
@@ -503,9 +505,8 @@ class PosConfigInherit(models.Model):
             self.current_session_id = self.env['pos.session'].create({
                 'user_id': self.pos_branch_id.responsible_id.id,
                 'config_id': self.id,
-                'start_at': date
+                'start_at': start_date
             })
-
         logger.warning('opened session id %s' %(self.current_session_id))
 
         pos_orders = []
@@ -514,15 +515,15 @@ class PosConfigInherit(models.Model):
                 pos_order = self._prepare_api_order(order, self.current_session_id)
                 pos_orders.append(pos_order)
 
-        created_order_ids = self.env['pos.order'].with_context(keep_dates=True, force_period_date=date).create_from_ui_foodics(pos_orders)
+        created_order_ids = self.env['pos.order'].with_context(keep_dates=True, force_period_date=start_date).create_from_ui_foodics(pos_orders)
         new_order_ids = self.env['pos.order'].browse(created_order_ids)
         self._update_orders_amount_all(new_order_ids)
 
         # if self.current_session_id and self.current_session_id.start_at:
         #     current_opened_session = self.current_session_id
         # else:
-        current_opened_session = self.env['pos.session'].search([('config_id', '=', self.id), ('state', 'in', ['opened'])],
-                                                        limit=1)
+        # current_opened_session = self.env['pos.session'].search([('config_id', '=', self.id), ('state', 'in', ['opened'])],
+        #                                                 limit=1)
 
         # if  current_opened_session and current_opened_session.start_at:
         #     # now_utc = datetime.now(pytz.UTC)
