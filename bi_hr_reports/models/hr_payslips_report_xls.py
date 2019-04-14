@@ -52,6 +52,8 @@ class EmployeesPayslipReportXls(models.AbstractModel):
         col_no += 1
         worksheet.write(row_no, col_no, "Employee Name", f1)
         col_no += 1
+        worksheet.write(row_no, col_no, "Employee Category", f1)
+        col_no += 1
         worksheet.write(row_no, col_no, "Department", f1)
         col_no += 1
         worksheet.write(row_no, col_no, "PaySlip / State ", f1)
@@ -122,10 +124,11 @@ class EmployeesPayslipReportXls(models.AbstractModel):
                     worksheet.write(rule_row, 0, payslip.employee_id.bank_account_id.acc_number or " " + " - " + str(
                         payslip.employee_id.bank_account_id.bank_id.name or ' '))
                     worksheet.write(rule_row, 1, payslip.employee_id.name)
-                    worksheet.write(rule_row, 2, payslip.employee_id.department_id.name or ' ')
-                    worksheet.write(rule_row, 3, str(payslip.number or ' ') + " / " + str(payslip.state.capitalize()))
-                    worksheet.write(rule_row, 4, payslip.struct_id.name)
-                    worksheet.write(rule_row, 5, payslip.contract_id.analytic_account_id.name or ' ')
+                    worksheet.write(rule_row, 2, payslip.contract_id.type_id.name or ' ')
+                    worksheet.write(rule_row, 3, payslip.employee_id.department_id.name or ' ')
+                    worksheet.write(rule_row, 4, str(payslip.number or ' ') + " / " + str(payslip.state.capitalize()))
+                    worksheet.write(rule_row, 5, payslip.struct_id.name)
+                    worksheet.write(rule_row, 6, payslip.contract_id.analytic_account_id.name or ' ')
 
                     for line in payslip.line_ids:
                         if line.salary_rule_id.id == rule.id:
@@ -139,7 +142,7 @@ class EmployeesPayslipReportXls(models.AbstractModel):
                 worksheet.write(footer_row + 2, col_no, total_rule_amount, blue)
                 col_no += 1
 
-            worksheet.write(footer_row + 2, 5, "Total", red)
+            worksheet.write(footer_row + 2, 6, "Total", red)
 
         elif wizard.group_by == 'salary_categories':
             rules_categ_objs = self.env['hr.salary.rule.category'].search([('view_in_report', '=', True)],
@@ -173,10 +176,11 @@ class EmployeesPayslipReportXls(models.AbstractModel):
                     worksheet.write(rule_row, 0, payslip.employee_id.bank_account_id.acc_number or " " + " - " + str(
                         payslip.employee_id.bank_account_id.bank_id.name or ' '))
                     worksheet.write(rule_row, 1, payslip.employee_id.name)
-                    worksheet.write(rule_row, 2, payslip.employee_id.department_id.name or ' ')
-                    worksheet.write(rule_row, 3, str(payslip.number or ' ') + " / " + str(payslip.state.capitalize()))
-                    worksheet.write(rule_row, 4, payslip.struct_id.name)
-                    worksheet.write(rule_row, 5, payslip.contract_id.analytic_account_id.name or ' ')
+                    worksheet.write(rule_row, 2, payslip.contract_id.type_id.name or ' ')
+                    worksheet.write(rule_row, 3, payslip.employee_id.department_id.name or ' ')
+                    worksheet.write(rule_row, 4, str(payslip.number or ' ') + " / " + str(payslip.state.capitalize()))
+                    worksheet.write(rule_row, 5, payslip.struct_id.name)
+                    worksheet.write(rule_row, 6, payslip.contract_id.analytic_account_id.name or ' ')
 
                     total_categ = 0.0
                     for line in payslip.line_ids:
@@ -191,4 +195,4 @@ class EmployeesPayslipReportXls(models.AbstractModel):
                 total_rule_categ_amount = sum(lines.total for lines in lines_objs)
                 worksheet.write(footer_row + 2, col_no, total_rule_categ_amount, blue)
                 col_no += 1
-            worksheet.write(footer_row + 2, 5, "Total", red)
+            worksheet.write(footer_row + 2, 6, "Total", red)
