@@ -8,7 +8,7 @@
     'author': "BI Solutions Development Team",
     'category': '',
     'version': '0.1',
-    'depends': ['point_of_sale', 'account', 'product', 'mrp'],
+    'depends': ['point_of_sale', 'account', 'product', 'mrp', 'bi_pos_analytic_account'],
     'data': [
         'security/ir.model.access.csv',
         'wizard/import_foodics_wizard.xml',
