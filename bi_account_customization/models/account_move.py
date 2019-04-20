@@ -6,22 +6,20 @@ from odoo import models, fields, api
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
-    reference_order = fields.Char('Order Ref', compute='_get_reference_order', store=True)
+    ref_order = fields.Char('Order Ref', compute='_get_ref_order', store=True)
 
     @api.multi
-    @api.depends('invoice_id', 'move_id.stock_move_id', 'move_id.ref', 'move_id.stock_move_id.picking_id.origin')
-    def _get_reference_order(self):
+    @api.depends('invoice_id', 'invoice_id.origin', 'move_id', 'move_id.stock_move_id',
+                 'move_id.stock_move_id.picking_id.group_id')
+    def _get_ref_order(self):
         for line in self:
-            reference_order = False
-            if line.invoice_id:
-                reference_order = line.invoice_id.number
+            ref_order = False
+            if line.invoice_id.origin:
+                ref_order = line.invoice_id.origin
 
-            elif line.move_id.stock_move_id.picking_id.origin:
-                reference_order = line.move_id.stock_move_id.picking_id.origin
-
-            else:
-                reference_order = line.move_id.ref
+            elif line.move_id.stock_move_id.picking_id.group_id:
+                ref_order = line.move_id.stock_move_id.picking_id.group_id
 
             line.update({
-                'reference_order': reference_order,
+                'ref_order': ref_order,
             })
