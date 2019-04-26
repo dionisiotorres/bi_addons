@@ -453,7 +453,7 @@ class PosConfigInherit(models.Model):
         pos_orders = []
 
         for order in orders_list:
-            if 'payments' in order and order['payments']:
+            if 'payments' in order and order['payments'] and 'void_reason' in order and not order['void_reason']:
                 pos_order = self._prepare_api_order(order, self.current_session_id)
                 pos_orders.append(pos_order)
 
@@ -511,7 +511,7 @@ class PosConfigInherit(models.Model):
 
         pos_orders = []
         for order in orders_list:
-            if 'payments' in order and order['payments']:
+            if 'payments' in order and order['payments'] and 'void_reason' in order and not order['void_reason']:
                 pos_order = self._prepare_api_order(order, self.current_session_id)
                 pos_orders.append(pos_order)
 
