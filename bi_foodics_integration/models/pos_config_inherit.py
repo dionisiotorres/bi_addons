@@ -299,7 +299,7 @@ class PosConfigInherit(models.Model):
                         'price_subtotal': order['delivery_price'],
                         'price_subtotal_incl': order['delivery_price'],
                         'qty': 1.0,
-                        'tax_ids': False
+                        'tax_ids': [(6, 0, taxes)] if taxes else False
                     }
                 ])
 
