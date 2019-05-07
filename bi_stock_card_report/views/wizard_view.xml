@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model='ir.ui.view' id='wizard_form'>
+            <field name="name">wizard.stock.card.form</field>
+            <field name="model">wizard.stock.card</field>
+            <field name="arch" type="xml">
+                <form string="Report Data">
+                    <group>
+                        <field name="location"/>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                    </group>
+                    <footer>
+                        <button name="export_xls" type="object" default_focus="1"
+                                string="Generate Report" class="oe_highlight"
+                                context="{'xls_export':1}" icon="fa-download"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record model='ir.actions.act_window' id='wizard_act'>
+            <field name="name">Stock card in Excel</field>
+            <field name="res_model">wizard.stock.card</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="wizard_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <report
+            id="stock_card_xlsx"
+            model="wizard.stock.card"
+            string="Excel Report"
+            report_type="xlsx"
+            name="bi_stock_card_report.report_stock_card_excel"
+            file="Stock Card Report"
+        />
+        <menuitem name="Stock Card - Excel" parent="stock.menu_warehouse_report" id="export_stock_card_excel" action="wizard_act" sequence="3"/>
+    </data>
+</odoo>
