@@ -291,6 +291,10 @@ class PosConfigInherit(models.Model):
         if 'delivery_price' in order and order['delivery_price']:
             delivery_product = self.current_session_id.config_id.delivery_product_id
             if delivery_product:
+                delivery_product_taxes = []
+                for tax in delivery_product.taxes_id:
+                    delivery_product_taxes.append(tax.id)
+
                 p_lines.append([0, 0, {
                         'discount': 0.0,
                         'pack_lot_ids': [],
@@ -299,7 +303,7 @@ class PosConfigInherit(models.Model):
                         'price_subtotal': order['delivery_price'],
                         'price_subtotal_incl': order['delivery_price'],
                         'qty': 1.0,
-                        'tax_ids': [(6, 0, taxes)] if taxes else False
+                        'tax_ids': [(6, 0, delivery_product_taxes)] if delivery_product_taxes else False
                     }
                 ])
 
