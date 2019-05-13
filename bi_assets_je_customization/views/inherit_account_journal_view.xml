@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="account_reconcile" model="account.journal">
+            <field name="name">Asset Reconcile</field>
+            <field name="code">AR</field>
+            <field name="type">general</field>
+            <!--<field name="default_credit_account_id" ref="received"/>-->
+            <!--<field name="default_debit_account_id" ref="delivered"/>-->
+            <field name="refund_sequence" eval="True"/>
+        </record>
+    </data>
+</odoo>
