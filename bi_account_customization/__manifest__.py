@@ -5,9 +5,9 @@
     'description': """
     """,
     'author': "BI Solutions Development Team",
-    'category': 'accounting',
+    'category': 'Accounting',
     'version': '0.1',
-    'depends': ['base', 'account', 'sale_management', 'account_accountant', 'stock', 'stock_account'],
+    'depends': ['base', 'stock_account'],
     'data': [
         'views/account_move_view.xml',
     ],
