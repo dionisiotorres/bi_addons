@@ -9,6 +9,12 @@ class StockPicking(models.Model):
     transfer_request_id = fields.Many2one('transfer.request', string='Transfer Request')
 
 
+class StockMove(models.Model):
+    _inherit = 'stock.move'
+
+    transfer_request_id = fields.Many2one('transfer.request', string='Transfer Request')
+
+
 class TransferRequestReason(models.Model):
     _name = 'transfer.request.reason'
 
@@ -46,7 +52,8 @@ class TransferRequest(models.Model):
     cancel_reason = fields.Html(string='Cancellation Reason')
     transfer_request_line_ids = fields.One2many('transfer.request.line', 'transfer_request_id',
                                                 string='Transferred Products')
-    source_stock_location_id = fields.Many2one('stock.location', string='Source Location', domain=[('usage', '=', 'internal')])
+    source_stock_location_id = fields.Many2one('stock.location', string='Source Location',
+                                               domain=[('usage', '=', 'internal')])
     destination_stock_location_id = fields.Many2one('stock.location', string='Destination Location',
                                                     domain=[('usage', '=', 'transit')], default=_default_dest_location)
     state = fields.Selection(
@@ -55,6 +62,8 @@ class TransferRequest(models.Model):
 
     picking_count = fields.Integer(string='Transfers', compute='get_request_picking_count')
     transfer_reason = fields.Many2one('transfer.request.reason', string='Transfer Reason')
+    scheduled_date = fields.Datetime(
+        'Scheduled Date', help="Scheduled time for the first part of the shipment to be processed.")
 
     @api.model
     def create(self, vals):
@@ -133,7 +142,6 @@ class TransferRequest(models.Model):
             #     },
             # }
 
-
     def create_transfer_for_products(self):
         picking_line_vals = []
         source_warehouse = self.source_stock_location_id.get_warehouse()
@@ -153,12 +161,12 @@ class TransferRequest(models.Model):
                     'product_uom': line.product_uom_id.id,
                     'company_id': self.env.user.company_id.id,
                     'location_id': self.source_stock_location_id.id,
-                    'location_dest_id': self.destination_stock_location_id.id,
+                    'location_dest_id': self.destination_stock_location_id.id, 'transfer_request_id': self.id
                 }))
         if len(picking_line_vals):
             picking_vals = {
                 'origin': self.name,
-                'scheduled_date': fields.Datetime.now(),
+                'scheduled_date': self.scheduled_date or fields.Datetime.now(),
                 'picking_type_id': internal_picking_type_id,
                 'location_id': self.source_stock_location_id.id,
                 'location_dest_id': self.destination_stock_location_id.id,
